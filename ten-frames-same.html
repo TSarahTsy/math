@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>十格框找相同遊戲</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF6E9;
+    --cream-2:#F4EDD8;
+    --ink:#2E2B24;
+    --ink-soft:#5B564A;
+    --teal:#2E8F8A;
+    --teal-deep:#1F6A66;
+    --coral:#E9814A;
+    --coral-deep:#C85E2A;
+    --frame-bg:#FCEBA6;
+    --frame-border:#2E2B24;
+    --matched:#8FAF7E;
+    --mismatch:#D64545;
+    --card-shadow: 0 10px 24px rgba(46,43,36,0.10);
+    box-sizing:border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --cream:#20231F;
+      --cream-2:#262A24;
+      --ink:#F1EEE3;
+      --ink-soft:#C9C4B4;
+      --frame-bg:#4A431F;
+      --frame-border:#EDE7D0;
+      --card-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --cream:#20231F;
+    --cream-2:#262A24;
+    --ink:#F1EEE3;
+    --ink-soft:#C9C4B4;
+    --frame-bg:#4A431F;
+    --frame-border:#EDE7D0;
+    --card-shadow: 0 10px 24px rgba(0,0,0,0.35);
+  }
+  html{ scroll-padding-top: env(safe-area-inset-top, 0px); height:100%; }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    min-height:100%;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  #app{
+    max-width:720px;
+    margin:0 auto;
+    padding:28px 18px 60px;
+  }
+
+  header{ text-align:center; margin-bottom:20px; }
+  header h1{
+    font-size:clamp(1.4rem, 3vw, 2.1rem);
+    font-weight:900;
+    margin:0 0 6px;
+    color:var(--teal-deep);
+  }
+  header p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:0.95rem;
+    line-height:1.6;
+  }
+
+  .controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    align-items:flex-end;
+    justify-content:center;
+    background:var(--cream-2);
+    border-radius:18px;
+    padding:14px 18px;
+    margin-bottom:18px;
+    box-shadow:var(--card-shadow);
+  }
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field label{ font-size:0.82rem; font-weight:700; color:var(--ink-soft); }
+  .field input{
+    width:76px;
+    font-size:1.1rem;
+    font-weight:700;
+    text-align:center;
+    padding:8px 6px;
+    border-radius:10px;
+    border:2px solid #D8D0B4;
+    background:#fff;
+    color:var(--ink);
+    font-family:inherit;
+  }
+  .field input:focus{ outline:3px solid var(--teal); outline-offset:1px; }
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:none;
+    border-radius:12px;
+    font-weight:700;
+    font-size:0.95rem;
+    padding:11px 20px;
+    transition:transform .12s ease;
+  }
+  button:active{ transform:translateY(1px); }
+  button:focus-visible{ outline:3px solid var(--teal-deep); outline-offset:2px; }
+  #startBtn{ background:var(--teal); color:#fff; box-shadow:0 6px 14px rgba(46,143,138,0.32); }
+  #startBtn:hover{ background:var(--teal-deep); }
+  #muteBtn{ background:#fff; color:var(--ink-soft); border:2px solid #D8D0B4; }
+  #muteBtn:hover{ background:var(--cream-2); }
+  #muteBtn[aria-pressed="true"]{ color:var(--coral-deep); border-color:var(--coral); }
+
+  .scoreboard{
+    display:flex;
+    justify-content:center;
+    gap:22px;
+    margin-bottom:20px;
+    font-weight:700;
+    color:var(--teal-deep);
+    font-size:0.92rem;
+    flex-wrap:wrap;
+  }
+  .scoreboard span.num{ color:var(--coral-deep); }
+
+  .status-bar{
+    text-align:center;
+    font-size:1rem;
+    font-weight:700;
+    color:var(--teal-deep);
+    min-height:1.4em;
+    margin-bottom:14px;
+  }
+  .status-bar.wrong{ color:var(--mismatch); }
+  .status-bar.correct{ color:var(--matched); }
+
+  .main-block{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    margin-bottom:26px;
+  }
+  .frame-label{
+    font-size:0.85rem;
+    font-weight:700;
+    color:var(--ink-soft);
+    letter-spacing:0.04em;
+  }
+
+  .tenframe{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    grid-template-rows:repeat(2,1fr);
+    width:100%;
+    aspect-ratio:5/2;
+    background:var(--frame-bg);
+    border:3px solid var(--frame-border);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .cell{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-right:2px solid var(--frame-border);
+    border-bottom:2px solid var(--frame-border);
+  }
+  .cell:nth-child(5n){ border-right:none; }
+  .cell:nth-child(n+6){ border-bottom:none; }
+  .dot{
+    width:60%;
+    height:60%;
+    border-radius:50%;
+    background:var(--teal);
+  }
+
+  .main-block .tenframe{ max-width:380px; }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  @media (min-width:640px){
+    .options{ flex-direction:row; }
+  }
+  .option{
+    position:relative;
+    flex:1;
+    background:#fff;
+    border-radius:16px;
+    padding:12px 12px 10px;
+    box-shadow:var(--card-shadow);
+    cursor:pointer;
+    border:3px solid transparent;
+    transition: transform .12s ease, border-color .15s ease, opacity .3s ease;
+  }
+  .check-badge{
+    position:absolute;
+    top:-14px;
+    right:-10px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:var(--matched);
+    color:#fff;
+    font-size:1.2rem;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.22);
+    transform:scale(0);
+    animation:badgePop .4s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes badgePop{
+    0%{ transform:scale(0); }
+    70%{ transform:scale(1.2); }
+    100%{ transform:scale(1); }
+  }
+  .option:hover:not(.correct):not(.disabled){ transform:translateY(-2px); }
+  .option:focus-visible{ outline:3px solid var(--teal-deep); outline-offset:2px; }
+  .option .dot{ background:var(--coral); }
+  .option-label{
+    text-align:center;
+    font-size:0.8rem;
+    font-weight:700;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .option.correct{
+    border-color:var(--matched);
+    box-shadow:0 0 0 4px rgba(143,175,126,0.25), var(--card-shadow);
+  }
+  .option.wrong{
+    border-color:var(--mismatch);
+    animation:shakeCard .35s ease;
+  }
+  @keyframes shakeCard{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-5px); }
+    50%{ transform:translateX(5px); }
+    75%{ transform:translateX(-3px); }
+  }
+  .option.disabled{ pointer-events:none; opacity:0.85; }
+
+  .result{
+    margin-top:24px;
+    background:var(--cream-2);
+    border-radius:18px;
+    padding:20px 22px;
+    text-align:center;
+    box-shadow:var(--card-shadow);
+    font-size:1.05rem;
+    font-weight:700;
+    color:var(--teal-deep);
+  }
+  .result .big{ font-size:1.3rem; color:var(--coral-deep); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>十格框找相同</h1>
+    <p>請觀察上方主要的十格框，數一數有多少個點；再在下方三個選項之中，選出點數相同的一個。</p>
+  </header>
+
+  <div class="controls">
+    <div class="field">
+      <label for="roundsInput">關卡數量</label>
+      <input type="number" id="roundsInput" min="4" max="15" value="8" inputmode="numeric">
+    </div>
+    <button id="startBtn">開始新一輪</button>
+    <button id="muteBtn" aria-pressed="false">🔊 音效</button>
+  </div>
+
+  <div class="scoreboard">
+    <div>第 <span class="num" id="roundLabel">1</span> / <span id="totalRoundsLabel">8</span> 關</div>
+    <div>答對：<span class="num" id="correctLabel">0</span> 次</div>
+    <div>答錯：<span class="num" id="wrongLabel">0</span> 次</div>
+  </div>
+
+  <div class="status-bar" id="statusBar">請選出相同數量的十格框。</div>
+
+  <div class="main-block">
+    <div class="frame-label">主要十格框</div>
+    <div class="tenframe" id="mainFrame"></div>
+  </div>
+
+  <div class="options" id="optionsWrap"></div>
+
+  <div class="result" id="resultPanel" hidden></div>
+</div>
+
+<script>
+(function(){
+  const startBtn = document.getElementById('startBtn');
+  const muteBtn = document.getElementById('muteBtn');
+  const roundsInput = document.getElementById('roundsInput');
+  const mainFrame = document.getElementById('mainFrame');
+  const optionsWrap = document.getElementById('optionsWrap');
+  const statusBar = document.getElementById('statusBar');
+  const roundLabel = document.getElementById('roundLabel');
+  const totalRoundsLabel = document.getElementById('totalRoundsLabel');
+  const correctLabel = document.getElementById('correctLabel');
+  const wrongLabel = document.getElementById('wrongLabel');
+  const resultPanel = document.getElementById('resultPanel');
+
+  const INSTRUCTION_TEXT = '請選出相同數量的十格框。';
+  let totalRounds = 8;
+  let round = 1;
+  let mainQty = 0;
+  let correctCount = 0;
+  let wrongCount = 0;
+  let locked = false;
+
+  function clampRounds(v){
+    v = parseInt(v, 10);
+    if (isNaN(v)) v = 8;
+    return Math.max(4, Math.min(15, v));
+  }
+
+  // ---- sound effects (Web Audio API, no external files) ----
+  let soundOn = true;
+  let audioCtx = null;
+  function ensureAudioCtx(){
+    if (!audioCtx){
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return null;
+      audioCtx = new Ctx();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function playTone(freq, duration, waveType, volume){
+    if (!soundOn) return;
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = waveType || 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(volume || 0.18, ctx.currentTime + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration + 0.02);
+  }
+  function playChime(freqs, gap){
+    if (!soundOn) return;
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+    freqs.forEach(function(f, i){
+      const t = ctx.currentTime + i * gap;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, t);
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.2, t + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + gap);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + gap + 0.02);
+    });
+  }
+  function soundCorrect(){ playChime([659, 880], 0.12); }
+  function soundWrong(){ playTone(180, 0.18, 'sawtooth', 0.15); }
+  function soundFinish(){ playChime([523, 659, 784], 0.15); }
+
+  muteBtn.addEventListener('click', function(){
+    soundOn = !soundOn;
+    muteBtn.textContent = soundOn ? '🔊 音效' : '🔇 靜音';
+    muteBtn.setAttribute('aria-pressed', String(!soundOn));
+  });
+
+  function shuffle(arr){
+    for (let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function renderFrame(container, qty){
+    container.innerHTML = '';
+    for (let i = 0; i < 10; i++){
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      if (i < qty){
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        cell.appendChild(dot);
+      }
+      container.appendChild(cell);
+    }
+  }
+
+  function updateScore(){
+    correctLabel.textContent = correctCount;
+    wrongLabel.textContent = wrongCount;
+  }
+
+  function startRound(){
+    locked = false;
+    roundLabel.textContent = round;
+    statusBar.textContent = INSTRUCTION_TEXT;
+    statusBar.classList.remove('wrong', 'correct');
+    resultPanel.hidden = true;
+    resultPanel.innerHTML = '';
+
+    mainQty = 1 + Math.floor(Math.random() * 10);
+    renderFrame(mainFrame, mainQty);
+
+    const pool = [];
+    for (let n = 1; n <= 10; n++) if (n !== mainQty) pool.push(n);
+    shuffle(pool);
+    const distractors = pool.slice(0, 2);
+    const optionQtys = shuffle([mainQty, distractors[0], distractors[1]]);
+
+    optionsWrap.innerHTML = '';
+    optionQtys.forEach(function(qty, i){
+      const opt = document.createElement('div');
+      opt.className = 'option';
+      opt.tabIndex = 0;
+      opt.setAttribute('role', 'button');
+      opt.setAttribute('aria-label', '選項 ' + (i + 1));
+
+      const label = document.createElement('div');
+      label.className = 'option-label';
+      label.textContent = '選項 ' + (i + 1);
+      opt.appendChild(label);
+
+      const frame = document.createElement('div');
+      frame.className = 'tenframe';
+      opt.appendChild(frame);
+      renderFrame(frame, qty);
+
+      function activate(){ onOptionClick(opt, qty); }
+      opt.addEventListener('click', activate);
+      opt.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); activate(); }
+      });
+
+      optionsWrap.appendChild(opt);
+    });
+  }
+
+  function onOptionClick(opt, qty){
+    if (locked) return;
+    if (qty === mainQty){
+      locked = true;
+      opt.classList.add('correct');
+      const badge = document.createElement('div');
+      badge.className = 'check-badge';
+      badge.textContent = '✓';
+      opt.appendChild(badge);
+      document.querySelectorAll('.option').forEach(function(o){ o.classList.add('disabled'); });
+      statusBar.textContent = '答對了！';
+      statusBar.classList.remove('wrong');
+      statusBar.classList.add('correct');
+      soundCorrect();
+      correctCount++;
+      updateScore();
+      setTimeout(advance, 900);
+    } else {
+      opt.classList.remove('wrong');
+      void opt.offsetWidth;
+      opt.classList.add('wrong');
+      statusBar.textContent = '再試一次！';
+      statusBar.classList.remove('correct');
+      statusBar.classList.add('wrong');
+      soundWrong();
+      wrongCount++;
+      updateScore();
+      setTimeout(function(){
+        opt.classList.remove('wrong');
+        if (!locked){
+          statusBar.textContent = INSTRUCTION_TEXT;
+          statusBar.classList.remove('wrong');
+        }
+      }, 700);
+    }
+  }
+
+  function advance(){
+    round++;
+    if (round > totalRounds){
+      finishGame();
+    } else {
+      startRound();
+    }
+  }
+
+  function finishGame(){
+    soundFinish();
+    statusBar.textContent = '全部完成！';
+    statusBar.classList.remove('wrong');
+    resultPanel.hidden = false;
+    resultPanel.innerHTML = '全部 ' + totalRounds + ' 關已完成！答對 <span class="big">' + correctCount +
+      '</span> 次，答錯 <span class="big">' + wrongCount + '</span> 次。';
+    optionsWrap.querySelectorAll('.option').forEach(function(o){ o.classList.add('disabled'); });
+  }
+
+  startBtn.addEventListener('click', function(){
+    totalRounds = clampRounds(roundsInput.value);
+    roundsInput.value = totalRounds;
+    totalRoundsLabel.textContent = totalRounds;
+    round = 1;
+    correctCount = 0;
+    wrongCount = 0;
+    updateScore();
+    startRound();
+  });
+
+  totalRounds = clampRounds(roundsInput.value);
+  totalRoundsLabel.textContent = totalRounds;
+  startRound();
+})();
+</script>
+</body>
+</html>
