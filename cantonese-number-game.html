@@ -9,42 +9,42 @@
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 /* ===== 自訂數字字體 =====
-   1. 將字體檔（建議 .woff2，亦可用 .woff / .ttf / .otf）放在與本 HTML 同一資料夾的 fonts/ 內
-   2. 修改下方 url() 的檔名及 format()
-   若找不到字體檔，會自動改用 Chakra Petch。 */
+  1. 將字體檔（建議 .woff2，亦可用 .woff / .ttf / .otf）放在與本 HTML 同一資料夾的 fonts/ 內
+  2. 修改下方 url() 的檔名及 format()
+  若找不到字體檔，會自動改用 Chakra Petch。 */
 @font-face{
-  font-family:"MyNumberFont";
-  src:url("maths_thin_v2.ttf") format("truetype");
-  font-display:swap;
+ font-family:"MyNumberFont";
+ src:url("fonts/my-number-font.woff2") format("woff2");
+ font-display:swap;
 }
 :root{
-  --num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",system-ui,sans-serif;
-  --bg:#EEF3FA; --panel:#FFFFFF; --ink:#0E1B2E; --muted:#5A6B82;
-  --cyan:#0A9DB8; --purple:#6B4EE0; --amber:#D48A00; --mint:#12A574;
-  --line:rgba(14,27,46,.14); --glow:rgba(10,157,184,.18);
-  box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
+ --num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",system-ui,sans-serif;
+ --bg:#EEF3FA; --panel:#FFFFFF; --ink:#0E1B2E; --muted:#5A6B82;
+ --cyan:#0A9DB8; --purple:#6B4EE0; --amber:#D48A00; --mint:#12A574;
+ --line:rgba(14,27,46,.14); --glow:rgba(10,157,184,.18);
+ box-sizing:border-box;
+ padding-top:env(safe-area-inset-top,0px);
+ padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
-    --cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0;
-    --line:rgba(61,224,245,.2); --glow:rgba(61,224,245,.22);
-  }
+ :root:not([data-theme="light"]){
+   --bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
+   --cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0;
+   --line:rgba(61,224,245,.2); --glow:rgba(61,224,245,.22);
+ }
 }
 :root[data-theme="dark"]{
-  --bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
-  --cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0;
-  --line:rgba(61,224,245,.2); --glow:rgba(61,224,245,.22);
+ --bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
+ --cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0;
+ --line:rgba(61,224,245,.2); --glow:rgba(61,224,245,.22);
 }
 *,*::before,*::after{box-sizing:border-box}
 html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
 body{
-  height:100%;margin:0;background:var(--bg);color:var(--ink);
-  font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
-  overflow:hidden;-webkit-tap-highlight-color:transparent;
-  background-image:radial-gradient(circle at 50% 30%,var(--glow),transparent 60%);
+ height:100%;margin:0;background:var(--bg);color:var(--ink);
+ font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+ overflow:hidden;-webkit-tap-highlight-color:transparent;
+ background-image:radial-gradient(circle at 50% 30%,var(--glow),transparent 60%);
 }
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
@@ -62,9 +62,9 @@ header{display:flex;align-items:center;gap:12px}
 
 .stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 .sonar{
-  position:relative;width:min(46vw,200px);aspect-ratio:1;border-radius:50%;
-  border:2px solid var(--cyan);background:var(--panel);display:grid;place-items:center;
-  box-shadow:0 0 0 10px var(--glow);color:var(--cyan);
+ position:relative;width:min(46vw,200px);aspect-ratio:1;border-radius:50%;
+ border:2px solid var(--cyan);background:var(--panel);display:grid;place-items:center;
+ box-shadow:0 0 0 10px var(--glow);color:var(--cyan);
 }
 .sonar svg{width:42%;height:42%}
 .sonar::before,.sonar::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--cyan);opacity:0;pointer-events:none}
@@ -79,9 +79,9 @@ header{display:flex;align-items:center;gap:12px}
 .choices{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
 .choices.n3{grid-template-columns:repeat(3,1fr)}
 .choice{
-  aspect-ratio:1.25;border-radius:20px;border:1.5px solid var(--line);background:var(--panel);
-  font-family:var(--num-font);font-weight:700;
-  font-size:clamp(46px,14vw,80px);line-height:1;transition:transform .12s,opacity .2s,border-color .2s;
+ aspect-ratio:1.25;border-radius:20px;border:1.5px solid var(--line);background:var(--panel);
+ font-family:var(--num-font);font-weight:700;
+ font-size:clamp(46px,14vw,80px);line-height:1;transition:transform .12s,opacity .2s,border-color .2s;
 }
 .choices.n3 .choice{font-size:clamp(38px,11vw,64px)}
 .choice:active{transform:scale(.96)}
@@ -90,7 +90,7 @@ header{display:flex;align-items:center;gap:12px}
 @keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
 
 .screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;z-index:5;
-  padding-top:calc(24px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+ padding-top:calc(24px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 .screen[hidden]{display:none}
 .screen h1{margin:0;font-size:clamp(32px,9vw,48px);font-weight:900;letter-spacing:.04em}
 .screen p{margin:0;max-width:30em;color:var(--muted);line-height:1.7}
@@ -99,60 +99,63 @@ header{display:flex;align-items:center;gap:12px}
 .score{font-family:var(--num-font);font-size:64px;font-weight:700;color:var(--amber)}
 
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--panel);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;
-  padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;max-width:560px;margin:0 auto}
+ padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;max-width:560px;margin:0 auto}
 .sheet.open{transform:none}
 .sheet h2{margin:0 0 12px;font-size:18px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
-.seg{display:flex;gap:6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.row>span{white-space:nowrap}
 .seg button{min-width:56px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:transparent;font-weight:700}
 .seg button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}
 .sheet .big-btn{width:100%;margin-top:16px}
+.vsel{max-width:62%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:15px}
 
 @media (prefers-reduced-motion:reduce){
-  .sonar.speaking::before,.sonar.speaking::after,.choice.wrong{animation:none}
-  .sheet{transition:none}
+ .sonar.speaking::before,.sonar.speaking::after,.choice.wrong{animation:none}
+ .sheet{transition:none}
 }
 </style>
 </head>
 <body>
 <div class="app">
-  <header>
-    <div class="track" id="track" aria-label="進度"></div>
-    <button class="gear" id="gearBtn" aria-label="設定">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
-    </button>
-  </header>
+ <header>
+   <div class="track" id="track" aria-label="進度"></div>
+   <button class="gear" id="gearBtn" aria-label="設定">
+     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+   </button>
+ </header>
 
-  <section class="stage">
-    <button class="sonar" id="sonar" aria-label="再聽一次">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
-    </button>
-    <div class="cue" id="cue" aria-live="polite"></div>
-  </section>
+ <section class="stage">
+   <button class="sonar" id="sonar" aria-label="再聽一次">
+     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+   </button>
+   <div class="cue" id="cue" aria-live="polite"></div>
+ </section>
 
-  <section class="choices" id="choices"></section>
+ <section class="choices" id="choices"></section>
 </div>
 
 <div class="screen" id="startScreen">
-  <h1>聽音選數字</h1>
-  <p>聆聽廣東話讀出的數字，然後選出正確答案。每局共十題，第一次便答對可得一粒星。</p>
-  <p class="note" id="voiceNote" hidden></p>
-  <button class="big-btn" id="startBtn">開始</button>
+ <h1>聽音選數字</h1>
+ <p>聆聽廣東話讀出的數字，然後選出正確答案。每局共十題，第一次便答對可得一粒星。</p>
+ <p class="note" id="voiceNote" hidden></p>
+ <button class="big-btn" id="startBtn">開始</button>
 </div>
 
 <div class="screen" id="endScreen" hidden>
-  <h1>完成了！</h1>
-  <div class="score" id="score"></div>
-  <p id="endMsg"></p>
-  <button class="big-btn" id="againBtn">再玩一次</button>
+ <h1>完成了！</h1>
+ <div class="score" id="score"></div>
+ <p id="endMsg"></p>
+ <button class="big-btn" id="againBtn">再玩一次</button>
 </div>
 
 <div class="sheet" id="sheet" role="dialog" aria-label="設定">
-  <h2>設定</h2>
-  <div class="row"><span>數字範圍</span><div class="seg" data-key="max"><button data-val="10">1–10</button><button data-val="20">1–20</button></div></div>
-  <div class="row"><span>選項數目</span><div class="seg" data-key="n"><button data-val="2">2</button><button data-val="3">3</button><button data-val="4">4</button></div></div>
-  <div class="row"><span>讀音速度</span><div class="seg" data-key="rate"><button data-val="0.65">慢</button><button data-val="0.9">正常</button></div></div>
-  <button class="big-btn" id="applyBtn">套用並重新開始</button>
+ <h2>設定</h2>
+ <div class="row"><span>數字範圍</span><div class="seg" data-key="range"><button data-val="1-10">1–10</button><button data-val="1-15">1–15</button><button data-val="1-20">1–20</button><button data-val="11-15">11–15</button><button data-val="16-20">16–20</button></div></div>
+ <div class="row"><span>選項數目</span><div class="seg" data-key="n"><button data-val="2">2</button><button data-val="3">3</button><button data-val="4">4</button></div></div>
+ <div class="row"><span>廣東話聲音</span><select id="voiceSel" class="vsel" aria-label="廣東話聲音"></select></div>
+ <div class="row"><span>讀音速度</span><div class="seg" data-key="rate"><button data-val="0.65">慢</button><button data-val="0.9">正常</button></div></div>
+ <button class="big-btn" id="applyBtn">套用並重新開始</button>
 </div>
 
 <script>
@@ -165,25 +168,43 @@ const toJP = n => n <= 10 ? JP[n] : n < 20 ? 'sap6 ' + JP[n-10] : 'ji6 sap6';
 const $ = id => document.getElementById(id);
 const els = { track:$('track'), sonar:$('sonar'), cue:$('cue'), choices:$('choices'), sheet:$('sheet') };
 
-let settings = { max:20, n:4, rate:0.9 };
+let settings = { range:'1-20', n:4, rate:0.9 };
 try { Object.assign(settings, JSON.parse(localStorage.getItem('rcgs-num-game') || '{}')); } catch(e){}
+// 舊版只記錄 max（10 或 20），轉為新的範圍格式
+if (settings.max && !/^\d+-\d+$/.test(String(settings.range))) settings.range = '1-' + settings.max;
+if (!/^\d+-\d+$/.test(String(settings.range))) settings.range = '1-20';
+delete settings.max;
 
 /* ---------- 語音 ---------- */
 const hasSpeech = 'speechSynthesis' in window;
 let voice = null;
+/* 與「11至20」頁面使用同一套粵語聲音清單及次序；
+  在任何一個頁面選擇的聲音，會記錄在 rcgs-cantonese-voice，所有遊戲共用 */
+function cantoneseVoices(){
+ return speechSynthesis.getVoices().filter(v =>
+   /^yue(?:[-_]|$)/i.test(v.lang) || /^zh[-_](HK|Hant[-_]HK)/i.test(v.lang) || /cantonese|廣東話|粤语|粵語/i.test(v.name));
+}
 function pickVoice(){
-  const vs = speechSynthesis.getVoices();
-  return vs.find(v => /^(zh|yue)[-_]HK/i.test(v.lang))
-      || vs.find(v => /yue|cantonese|粵|廣東/i.test(v.lang + ' ' + v.name)) || null;
+ const vs = cantoneseVoices();
+ let saved = '';
+ try { saved = localStorage.getItem('rcgs-cantonese-voice') || ''; } catch(e){}
+ return vs.find(v => v.name === saved) || vs[0] || null;
 }
 function refreshVoice(){
-  if (!hasSpeech) return;
-  voice = pickVoice();
-  const note = $('voiceNote');
-  if (!voice){
-    note.textContent = '此裝置未找到粵語語音，讀音可能不準確，遊戲會同時顯示中文數字作提示。';
-    note.hidden = false;
-  } else note.hidden = true;
+ if (!hasSpeech) return;
+ voice = pickVoice();
+ const sel = $('voiceSel'), vs = cantoneseVoices();
+ sel.replaceChildren(...(vs.length ? vs : [null]).map((v, i) => {
+   const o = document.createElement('option');
+   o.value = v ? v.name : ''; o.textContent = v ? v.name + '（' + v.lang + '）' : '未找到廣東話聲音';
+   return o;
+ }));
+ if (voice) sel.value = voice.name;
+ const note = $('voiceNote');
+ if (!voice){
+   note.textContent = '此裝置未找到粵語語音，讀音可能不準確，遊戲會同時顯示中文數字作提示。';
+   note.hidden = false;
+ } else note.hidden = true;
 }
 if (hasSpeech){ refreshVoice(); speechSynthesis.onvoiceschanged = refreshVoice; }
 else { $('voiceNote').textContent = '此瀏覽器不支援語音，遊戲會改為顯示中文數字。'; $('voiceNote').hidden = false; }
@@ -191,134 +212,142 @@ const showText = () => !hasSpeech || !voice;
 
 let speakTimer;
 function speak(text, done){
-  if (!hasSpeech){ done && setTimeout(done, 600); return; }
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = voice ? voice.lang : 'zh-HK';
-  if (voice) u.voice = voice;
-  u.rate = Number(settings.rate);
-  let finished = false;
-  const finish = () => {
-    if (finished) return; finished = true;
-    clearTimeout(speakTimer); els.sonar.classList.remove('speaking'); done && done();
-  };
-  u.onend = finish; u.onerror = finish;
-  speakTimer = setTimeout(finish, 4000);
-  els.sonar.classList.add('speaking');
-  speechSynthesis.speak(u);
+ if (!hasSpeech){ done && setTimeout(done, 600); return; }
+ const busy = speechSynthesis.speaking || speechSynthesis.pending;
+ if (busy){ speechSynthesis.cancel(); clearTimeout(speakTimer); setTimeout(() => speak(text, done), 120); return; }
+ if (speechSynthesis.paused) speechSynthesis.resume();
+ const u = new SpeechSynthesisUtterance(text);
+ u.lang = voice ? voice.lang : 'zh-HK';
+ if (voice) u.voice = voice;
+ u.rate = Number(settings.rate);
+ let finished = false;
+ const finish = () => {
+   if (finished) return; finished = true;
+   clearTimeout(speakTimer); els.sonar.classList.remove('speaking'); done && done();
+ };
+ u.onend = finish; u.onerror = finish;
+ speakTimer = setTimeout(finish, 4000);
+ els.sonar.classList.add('speaking');
+ speechSynthesis.speak(u);
 }
 
 /* ---------- 音效 ---------- */
 let actx;
 function tone(freqs, dur = .12){
-  try {
-    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-    freqs.forEach((f, i) => {
-      const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + i * dur;
-      o.type = 'sine'; o.frequency.value = f;
-      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18, t + .02);
-      g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + dur + .02);
-    });
-  } catch(e){}
+ try {
+   actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+   freqs.forEach((f, i) => {
+     const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + i * dur;
+     o.type = 'sine'; o.frequency.value = f;
+     g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18, t + .02);
+     g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+     o.connect(g).connect(actx.destination); o.start(t); o.stop(t + dur + .02);
+   });
+ } catch(e){}
 }
 
 /* ---------- 遊戲 ---------- */
 const state = { i:0, results:[], answer:0, prev:0, retried:false, locked:true };
-const rand = max => 1 + Math.floor(Math.random() * max);
+const rand = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
 
 function buildTrack(){
-  els.track.innerHTML = '';
-  for (let k = 0; k < ROUNDS; k++){
-    const s = document.createElement('span'); s.className = 'slot'; els.track.appendChild(s);
-  }
+ els.track.innerHTML = '';
+ for (let k = 0; k < ROUNDS; k++){
+   const s = document.createElement('span'); s.className = 'slot'; els.track.appendChild(s);
+ }
 }
 function updateTrack(){
-  [...els.track.children].forEach((s, k) => {
-    s.className = 'slot' + (state.results[k] === true ? ' star' : state.results[k] === false ? ' done' : k === state.i ? ' now' : '');
-  });
+ [...els.track.children].forEach((s, k) => {
+   s.className = 'slot' + (state.results[k] === true ? ' star' : state.results[k] === false ? ' done' : k === state.i ? ' now' : '');
+ });
 }
 function setCue(html){ els.cue.innerHTML = html; }
 function idleCue(){
-  setCue(showText() ? `<span class="big">${toCN(state.answer)}</span>` : '按圓形按鈕可再聽一次');
+ setCue(showText() ? `<span class="big">${toCN(state.answer)}</span>` : '按圓形按鈕可再聽一次');
 }
 
 function newGame(){
-  state.i = 0; state.results = []; state.prev = 0;
-  buildTrack(); nextQ();
+ state.i = 0; state.results = []; state.prev = 0;
+ buildTrack(); nextQ();
 }
 function nextQ(){
-  if (state.i >= ROUNDS) return endGame();
-  const max = Number(settings.max), n = Math.min(Number(settings.n), max);
-  let a; do { a = rand(max); } while (a === state.prev && max > 1);
-  state.answer = a; state.prev = a; state.retried = false; state.locked = false;
-  const opts = new Set([a]);
-  while (opts.size < n) opts.add(rand(max));
-  const list = [...opts].sort(() => Math.random() - .5);
-  els.choices.className = 'choices' + (n === 3 ? ' n3' : '');
-  els.choices.innerHTML = '';
-  list.forEach(v => {
-    const b = document.createElement('button');
-    b.className = 'choice'; b.textContent = v; b.setAttribute('aria-label', '數字 ' + v);
-    b.onclick = () => choose(b, v);
-    els.choices.appendChild(b);
-  });
-  updateTrack(); idleCue();
-  setTimeout(() => speak(toCN(a)), 350);
+ if (state.i >= ROUNDS) return endGame();
+ const [lo, hi] = settings.range.split('-').map(Number);
+ const n = Math.min(Number(settings.n), hi - lo + 1);
+ let a; do { a = rand(lo, hi); } while (a === state.prev && hi > lo);
+ state.answer = a; state.prev = a; state.retried = false; state.locked = false;
+ const opts = new Set([a]);
+ while (opts.size < n) opts.add(rand(lo, hi));
+ const list = [...opts].sort(() => Math.random() - .5);
+ els.choices.className = 'choices' + (n === 3 ? ' n3' : '');
+ els.choices.innerHTML = '';
+ list.forEach(v => {
+   const b = document.createElement('button');
+   b.className = 'choice'; b.textContent = v; b.setAttribute('aria-label', '數字 ' + v);
+   b.onclick = () => choose(b, v);
+   els.choices.appendChild(b);
+ });
+ updateTrack(); idleCue();
+ setTimeout(() => speak(toCN(a)), 350);
 }
 function choose(btn, v){
-  if (state.locked || btn.disabled) return;
-  if (v === state.answer){
-    state.locked = true;
-    btn.classList.add('correct');
-    state.results[state.i] = !state.retried;
-    updateTrack();
-    tone([660, 880]);
-    setCue(`<span class="big">${toCN(v)}</span><span class="jp">${toJP(v)}</span>`);
-    setTimeout(() => speak(toCN(v), () => setTimeout(() => { state.i++; nextQ(); }, 800)), 300);
-  } else {
-    state.retried = true;
-    btn.classList.add('wrong'); btn.disabled = true;
-    tone([220], .2);
-    setTimeout(() => speak(toCN(state.answer)), 450);
-  }
+ if (state.locked || btn.disabled) return;
+ if (v === state.answer){
+   state.locked = true;
+   btn.classList.add('correct');
+   state.results[state.i] = !state.retried;
+   updateTrack();
+   tone([660, 880]);
+   setCue(`<span class="big">${toCN(v)}</span><span class="jp">${toJP(v)}</span>`);
+   setTimeout(() => speak(toCN(v), () => setTimeout(() => { state.i++; nextQ(); }, 800)), 300);
+ } else {
+   state.retried = true;
+   btn.classList.add('wrong'); btn.disabled = true;
+   tone([220], .2);
+   setTimeout(() => speak(toCN(state.answer)), 450);
+ }
 }
 function endGame(){
-  const stars = state.results.filter(Boolean).length;
-  $('score').textContent = `★ ${stars} / ${ROUNDS}`;
-  $('endMsg').textContent = stars >= 8 ? '表現非常出色！' : stars >= 5 ? '做得好，繼續努力！' : '多聽幾次，下一局會更好！';
-  $('endScreen').hidden = false;
-  speak('做得好');
+ const stars = state.results.filter(Boolean).length;
+ $('score').textContent = `★ ${stars} / ${ROUNDS}`;
+ $('endMsg').textContent = stars >= 8 ? '表現非常出色！' : stars >= 5 ? '做得好，繼續努力！' : '多聽幾次，下一局會更好！';
+ $('endScreen').hidden = false;
+ speak('做得好');
 }
 
 /* ---------- 介面事件 ---------- */
 els.sonar.onclick = () => { if (state.answer) speak(toCN(state.answer)); };
 $('startBtn').onclick = () => {
-  if (hasSpeech){ refreshVoice(); speechSynthesis.speak(new SpeechSynthesisUtterance('')); } // 解鎖 iOS 語音
-  $('startScreen').hidden = true; newGame();
+ if (hasSpeech){ refreshVoice(); speechSynthesis.speak(new SpeechSynthesisUtterance('')); } // 解鎖 iOS 語音
+ $('startScreen').hidden = true; newGame();
 };
 $('againBtn').onclick = () => { $('endScreen').hidden = true; newGame(); };
 
 function syncSeg(){
-  document.querySelectorAll('.seg').forEach(seg => {
-    const key = seg.dataset.key;
-    seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val) === String(settings[key])));
-  });
+ document.querySelectorAll('.seg').forEach(seg => {
+   const key = seg.dataset.key;
+   seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val) === String(settings[key])));
+ });
 }
 document.querySelectorAll('.seg').forEach(seg => {
-  seg.addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b) return;
-    settings[seg.dataset.key] = Number(b.dataset.val); syncSeg();
-  });
+ seg.addEventListener('click', e => {
+   const b = e.target.closest('button'); if (!b) return;
+   settings[seg.dataset.key] = seg.dataset.key === 'range' ? b.dataset.val : Number(b.dataset.val); syncSeg();
+ });
 });
 $('gearBtn').onclick = () => { syncSeg(); els.sheet.classList.toggle('open'); };
 $('applyBtn').onclick = () => {
-  try { localStorage.setItem('rcgs-num-game', JSON.stringify(settings)); } catch(e){}
-  els.sheet.classList.remove('open');
-  if (hasSpeech) speechSynthesis.cancel();
-  $('endScreen').hidden = true;
-  if ($('startScreen').hidden) newGame();
+ try { localStorage.setItem('rcgs-num-game', JSON.stringify(settings)); } catch(e){}
+ els.sheet.classList.remove('open');
+ if (hasSpeech) speechSynthesis.cancel();
+ $('endScreen').hidden = true;
+ if ($('startScreen').hidden) newGame();
 };
+$('voiceSel').addEventListener('change', e => {
+ try { localStorage.setItem('rcgs-cantonese-voice', e.target.value); } catch(err){}
+ refreshVoice();
+ speak('十三'); // 試聽
+});
 syncSeg();
 </script>
 </body>
