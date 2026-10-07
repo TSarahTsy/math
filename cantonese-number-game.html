@@ -179,13 +179,17 @@ delete settings.max;
 const hasSpeech = 'speechSynthesis' in window;
 let voice = null;
 /* 與「11至20」頁面使用同一套粵語聲音清單及次序；
-  在任何一個頁面選擇的聲音，會記錄在 rcgs-cantonese-voice，所有遊戲共用 */
+*/
 function cantoneseVoices(){
  return speechSynthesis.getVoices().filter(v =>
    /^yue(?:[-_]|$)/i.test(v.lang) || /^zh[-_](HK|Hant[-_]HK)/i.test(v.lang) || /cantonese|廣東話|粤语|粵語/i.test(v.name));
 }
+/* 固定使用的聲音：iPad 用 Sinji，Windows 用 Microsoft Danny。
+  兩者都找不到時，才使用之前選擇的聲音或清單中的第一個。 */
+const PREFERRED_VOICES = [/^Sinji\b/i, /Microsoft Danny/i];
 function pickVoice(){
  const vs = cantoneseVoices();
+ for (const re of PREFERRED_VOICES){ const v = vs.find(x => re.test(x.name)); if (v) return v; }
  let saved = '';
  try { saved = localStorage.getItem('rcgs-cantonese-voice') || ''; } catch(e){}
  return vs.find(v => v.name === saved) || vs[0] || null;
@@ -200,6 +204,8 @@ function refreshVoice(){
    return o;
  }));
  if (voice) sel.value = voice.name;
+ sel.disabled = !!voice && PREFERRED_VOICES.some(re => re.test(voice.name));
+ sel.title = sel.disabled ? '已固定使用此聲音' : '';
  const note = $('voiceNote');
  if (!voice){
    note.textContent = '此裝置未找到粵語語音，讀音可能不準確，遊戲會同時顯示中文數字作提示。';
