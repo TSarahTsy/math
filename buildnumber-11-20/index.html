@@ -17,7 +17,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
 /* ===== 自訂數字字體 =====
-  字體檔放在上一層資料夾；若找不到，會自動改用 Chakra Petch。 */
+ 字體檔放在上一層資料夾；若找不到，會自動改用 Chakra Petch。 */
 @font-face{
 font-family:"MyNumberFont";
 src:url("../maths_thin_v2.ttf") format("truetype");
@@ -34,9 +34,9 @@ padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
 :root:not([data-theme="light"]){
-   --bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
-   --cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0; --red:#FF7A7A;
-   --line:rgba(61,224,245,.2); --glow:rgba(61,224,245,.22);
+  --bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
+  --cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0; --red:#FF7A7A;
+  --line:rgba(61,224,245,.2); --glow:rgba(61,224,245,.22);
 }
 }
 :root[data-theme="dark"]{
@@ -54,9 +54,9 @@ background-image:radial-gradient(circle at 50% 20%,var(--glow),transparent 55%);
 }
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 button:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
- 
+
 .app{height:100%;max-width:520px;margin:0 auto;padding:12px 20px 18px;display:flex;flex-direction:column;gap:10px}
- 
+
 header{display:flex;align-items:center;gap:12px}
 .track{flex:1;display:flex;gap:6px;justify-content:center}
 .slotdot{width:22px;height:22px;display:grid;place-items:center;line-height:1}
@@ -65,7 +65,7 @@ header{display:flex;align-items:center;gap:12px}
 .slotdot.done::before{background:var(--cyan)}
 .slotdot.star::before{content:"★";width:auto;height:auto;background:none;color:var(--amber);font-size:20px}
 .gear{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);display:grid;place-items:center}
- 
+
 .stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
 .sonar{
 position:relative;width:min(30vw,17vh,140px);aspect-ratio:1;border-radius:50%;
@@ -81,7 +81,7 @@ box-shadow:0 0 0 8px var(--glow);color:var(--cyan);flex-shrink:0;
 .cue{min-height:2.8em;text-align:center;color:var(--muted);font-size:15px;line-height:1.45}
 .cue .big{display:block;font-size:28px;font-weight:900;color:var(--ink)}
 .cue .jp{display:block;font-family:"Chakra Petch",ui-monospace,monospace;color:var(--mint);font-size:17px;letter-spacing:.04em}
- 
+
 /* 數位格 */
 .slots{display:flex;gap:14px;justify-content:center}
 .slot{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -97,7 +97,7 @@ transition:border-color .15s,color .15s;
 .slot.ok .box{border-style:solid;border-color:var(--mint);color:var(--mint)}
 .slot.bad .box{border-style:solid;border-color:var(--red);color:var(--red);animation:shake .35s}
 @keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-3px)}}
- 
+
 /* 數字鍵盤 */
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .key{
@@ -108,7 +108,7 @@ transition:transform .1s;
 .key:active{transform:scale(.95)}
 .key.fn{font-family:inherit;font-size:17px;font-weight:700;color:var(--muted)}
 .key:disabled{opacity:.35}
- 
+
 .screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;z-index:5;
 padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
 .screen[hidden]{display:none}
@@ -117,7 +117,7 @@ padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area
 .note{font-size:14px;color:var(--amber)!important}
 .big-btn{min-width:200px;padding:16px 28px;border-radius:999px;border:none;background:var(--cyan);color:var(--bg);font-size:22px;font-weight:900}
 .score{font-family:var(--num-font);font-size:64px;color:var(--amber)}
- 
+
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--panel);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;
 padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;max-width:520px;margin:0 auto}
 .sheet.open{transform:none}
@@ -127,7 +127,7 @@ padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:transla
 .seg button{min-width:56px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:transparent;font-weight:700}
 .seg button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}
 .sheet .big-btn{width:100%;margin-top:16px}
- 
+
 @media (prefers-reduced-motion:reduce){
 .sonar.speaking::before,.sonar.speaking::after,.slot.bad .box{animation:none}
 .sheet{transition:none}
@@ -137,37 +137,37 @@ padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:transla
 <body>
 <div class="app">
 <header>
-   <div class="track" id="track" aria-label="進度"></div>
-   <button class="gear" id="gearBtn" aria-label="設定">
-     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
-   </button>
+  <div class="track" id="track" aria-label="進度"></div>
+  <button class="gear" id="gearBtn" aria-label="設定">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+  </button>
 </header>
- 
+
 <section class="stage">
-   <button class="sonar" id="sonar" aria-label="再聽一次">
-     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
-   </button>
-   <div class="cue" id="cue" aria-live="polite"></div>
-   <div class="slots" id="slots"></div>
+  <button class="sonar" id="sonar" aria-label="再聽一次">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+  </button>
+  <div class="cue" id="cue" aria-live="polite"></div>
+  <div class="slots" id="slots"></div>
 </section>
- 
+
 <section class="pad" id="pad" aria-label="數字鍵盤"></section>
 </div>
- 
+
 <div class="screen" id="startScreen">
 <h1>聽音拼數字</h1>
 <p>聆聽廣東話讀出的數字，再用數字鍵把它拼出來。每局共十題，第一次便拼對可得一粒星。</p>
 <p class="note" id="voiceNote" hidden></p>
 <button class="big-btn" id="startBtn">開始</button>
 </div>
- 
+
 <div class="screen" id="endScreen" hidden>
 <h1>完成了！</h1>
 <div class="score" id="score"></div>
 <p id="endMsg"></p>
 <button class="big-btn" id="againBtn">再玩一次</button>
 </div>
- 
+
 <div class="sheet" id="sheet" role="dialog" aria-label="設定">
 <h2>設定</h2>
 <div class="row"><span>數字範圍</span><div class="seg" data-key="range"><button data-val="11-20">11–20</button><button data-val="1-20">1–20</button><button data-val="1-99">1–99</button></div></div>
@@ -175,21 +175,21 @@ padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:transla
 <div class="row"><span>讀音速度</span><div class="seg" data-key="rate"><button data-val="slow">慢</button><button data-val="normal">正常</button></div></div>
 <button class="big-btn" id="applyBtn">套用並重新開始</button>
 </div>
- 
+
 <script>
 'use strict';
 const ROUNDS = 10;
 const CN = ['零','一','二','三','四','五','六','七','八','九','十'];
 const JP = ['ling4','jat1','ji6','saam1','sei3','ng5','luk6','cat1','baat3','gau2','sap6'];
 function toCN(n){
-  if (n <= 10) return CN[n];
-  const t = Math.floor(n / 10), u = n % 10;
-  return (t === 1 ? '' : CN[t]) + '十' + (u ? CN[u] : '');
+ if (n <= 10) return CN[n];
+ const t = Math.floor(n / 10), u = n % 10;
+ return (t === 1 ? '' : CN[t]) + '十' + (u ? CN[u] : '');
 }
 function toJP(n){
-  if (n <= 10) return JP[n];
-  const t = Math.floor(n / 10), u = n % 10;
-  return [t === 1 ? '' : JP[t], 'sap6', u ? JP[u] : ''].filter(Boolean).join(' ');
+ if (n <= 10) return JP[n];
+ const t = Math.floor(n / 10), u = n % 10;
+ return [t === 1 ? '' : JP[t], 'sap6', u ? JP[u] : ''].filter(Boolean).join(' ');
 }
 
 const $ = id => document.getElementById(id);
@@ -201,155 +201,155 @@ try { Object.assign(settings, JSON.parse(localStorage.getItem('rcgs-build-game')
 if (settings.rate !== 'slow' && settings.rate !== 'normal') settings.rate = Number(settings.rate) < 0.8 ? 'slow' : 'normal';
 
 /* ---------- 讀音（mp3 組合） ----------
-   聲音檔位置：上一層的 audio 資料夾（../audio/1.mp3 至 10.mp3）
-   組合規則：1–10 直接讀；11–19 = 十 + 個位；20、30… = 幾 + 十；21–99 = 幾 + 十 + 個位 */
+  聲音檔位置：上一層的 audio 資料夾（../audio/1.mp3 至 10.mp3）
+  組合規則：1–10 直接讀；11–19 = 十 + 個位；20、30… = 幾 + 十；21–99 = 幾 + 十 + 個位 */
 const AUDIO_DIR = '../audio/';
 const GAP = { slow:300, normal:100 };          /* 字與字之間的停頓（毫秒） */
 function clipsFor(n){
-  if (n <= 10) return [n];
-  const t = Math.floor(n / 10), u = n % 10;
-  return [...(t === 1 ? [] : [t]), 10, ...(u ? [u] : [])];
+ if (n <= 10) return [n];
+ const t = Math.floor(n / 10), u = n % 10;
+ return [...(t === 1 ? [] : [t]), 10, ...(u ? [u] : [])];
 }
 
 try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
 let ctx = null, loading = null, audioReady = false, src = null, sayToken = 0, sayTimer = 0;
 const clips = {};
 function getCtx(){
-  if (!ctx){ const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; ctx = new AC(); }
-  return ctx;
+ if (!ctx){ const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; ctx = new AC(); }
+ return ctx;
 }
 function unlock(){ /* 必須在按鍵當下呼叫，iPad 才會允許發聲 */
-  const c = getCtx(); if (!c || c.state === 'running') return;
-  c.resume().catch(() => {});
-  try { const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, 22050); s.connect(c.destination); s.start(0); } catch(e){}
+ const c = getCtx(); if (!c || c.state === 'running') return;
+ c.resume().catch(() => {});
+ try { const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, 22050); s.connect(c.destination); s.start(0); } catch(e){}
 }
 function decode(c, ab){ return new Promise((res, rej) => { const p = c.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); }); }
 function loadAll(){
-  if (loading) return loading;
-  const c = getCtx(); if (!c) return Promise.reject(new Error('此瀏覽器未支援音訊播放'));
-  loading = Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n => {
-    const r = await fetch(AUDIO_DIR + n + '.mp3');
-    if (!r.ok) throw new Error('找不到 ' + n + '.mp3');
-    clips[n] = await decode(c, await r.arrayBuffer());
-  })).then(() => { audioReady = true; });
-  loading.catch(() => { loading = null; });
-  return loading;
+ if (loading) return loading;
+ const c = getCtx(); if (!c) return Promise.reject(new Error('此瀏覽器未支援音訊播放'));
+ loading = Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n => {
+   const r = await fetch(AUDIO_DIR + n + '.mp3');
+   if (!r.ok) throw new Error('找不到 ' + n + '.mp3');
+   clips[n] = await decode(c, await r.arrayBuffer());
+ })).then(() => { audioReady = true; });
+ loading.catch(() => { loading = null; });
+ return loading;
 }
 function playClip(n){
-  return new Promise(resolve => {
-    const s = ctx.createBufferSource(); s.buffer = clips[n]; s.connect(ctx.destination);
-    let done = false;
-    const finish = () => { if (done) return; done = true; clearTimeout(guard); if (src === s) src = null; resolve(); };
-    s.onended = finish;
-    const guard = setTimeout(finish, (clips[n].duration + 2) * 1000);
-    src = s; s.start(0);
-  });
+ return new Promise(resolve => {
+   const s = ctx.createBufferSource(); s.buffer = clips[n]; s.connect(ctx.destination);
+   let done = false;
+   const finish = () => { if (done) return; done = true; clearTimeout(guard); if (src === s) src = null; resolve(); };
+   s.onended = finish;
+   const guard = setTimeout(finish, (clips[n].duration + 2) * 1000);
+   src = s; s.start(0);
+ });
 }
 const wait = ms => new Promise(r => { sayTimer = setTimeout(r, ms); });
 function stopSay(){
-  sayToken++; clearTimeout(sayTimer);
-  if (src){ const s = src; src = null; try { s.stop(); } catch(e){} }
-  els.sonar.classList.remove('speaking');
+ sayToken++; clearTimeout(sayTimer);
+ if (src){ const s = src; src = null; try { s.stop(); } catch(e){} }
+ els.sonar.classList.remove('speaking');
 }
 /* 讀出數字 n；讀完後呼叫 done（如有） */
 async function speak(n, done){
-  stopSay(); const run = sayToken;
-  const fin = () => { if (run !== sayToken) return; els.sonar.classList.remove('speaking'); done && done(); };
-  const c = getCtx();
-  if (!c){ sayTimer = setTimeout(fin, 600); return; }
-  unlock();
-  try { await loadAll(); } catch(e){ showAudioError(e); if (run === sayToken){ idleCue(); sayTimer = setTimeout(fin, 600); } return; }
-  if (run !== sayToken) return;
-  if (c.state !== 'running'){ try { await c.resume(); } catch(e){} }
-  if (run !== sayToken) return;
-  if (c.state !== 'running'){ sayTimer = setTimeout(fin, 600); return; }
-  els.sonar.classList.add('speaking');
-  const parts = clipsFor(n), gap = GAP[settings.rate] || GAP.normal;
-  for (let i = 0; i < parts.length; i++){
-    await playClip(parts[i]); if (run !== sayToken) return;
-    if (i < parts.length - 1){ await wait(gap); if (run !== sayToken) return; }
-  }
-  fin();
+ stopSay(); const run = sayToken;
+ const fin = () => { if (run !== sayToken) return; els.sonar.classList.remove('speaking'); done && done(); };
+ const c = getCtx();
+ if (!c){ sayTimer = setTimeout(fin, 600); return; }
+ unlock();
+ try { await loadAll(); } catch(e){ showAudioError(e); if (run === sayToken){ idleCue(); sayTimer = setTimeout(fin, 600); } return; }
+ if (run !== sayToken) return;
+ if (c.state !== 'running'){ try { await c.resume(); } catch(e){} }
+ if (run !== sayToken) return;
+ if (c.state !== 'running'){ sayTimer = setTimeout(fin, 600); return; }
+ els.sonar.classList.add('speaking');
+ const parts = clipsFor(n), gap = GAP[settings.rate] || GAP.normal;
+ for (let i = 0; i < parts.length; i++){
+   await playClip(parts[i]); if (run !== sayToken) return;
+   if (i < parts.length - 1){ await wait(gap); if (run !== sayToken) return; }
+ }
+ fin();
 }
 function showAudioError(e){
-  const note = $('voiceNote');
-  note.textContent = '未能載入聲音（' + e.message + '）。請確認上一層 audio 資料夾內有1.mp3至10.mp3。遊戲會改為顯示中文數字。';
-  note.hidden = false;
+ const note = $('voiceNote');
+ note.textContent = '未能載入聲音（' + e.message + '）。請確認上一層 audio 資料夾內有1.mp3至10.mp3。遊戲會改為顯示中文數字。';
+ note.hidden = false;
 }
 const showText = () => !audioReady;
 loadAll().catch(showAudioError);
 
 /* ---------- 聲效 ----------
-   以程式合成 WAV，再用 <audio> 播放。
-   iPad／iPhone 的靜音模式會令 Web Audio 無聲，但 <audio> 播放不受影響。 */
+  以程式合成 WAV，再用 <audio> 播放。
+  iPad／iPhone 的靜音模式會令 Web Audio 無聲，但 <audio> 播放不受影響。 */
 const SR = 22050;
 const SOUNDS = {
-  tap:     { len:.12, notes:[[620,0,.07,'sine',.25]] },
-  correct: { len:.8,  notes:[[523.25,0,.22,'tri',.4],[659.25,.09,.22,'tri',.4],[783.99,.18,.22,'tri',.4],
-                             [1046.5,.27,.45,'tri',.45],[2093,.3,.4,'sine',.12],[1567.98,.36,.35,'sine',.1]] },
-  wrong:   { len:.55, notes:[[330,0,.18,'tri',.45,300],[247,.2,.3,'tri',.45,196]] },
-  finish:  { len:1.4, notes:[[523.25,0,.3,'tri',.38],[659.25,.12,.3,'tri',.38],[783.99,.24,.3,'tri',.38],[1046.5,.36,.5,'tri',.4],
-                             [1046.5,.5,.8,'sine',.1],[1318.5,.5,.8,'sine',.1],[1567.98,.5,.8,'sine',.1]] }
+ tap:     { len:.12, notes:[[620,0,.07,'sine',.25]] },
+ correct: { len:.8,  notes:[[523.25,0,.22,'tri',.4],[659.25,.09,.22,'tri',.4],[783.99,.18,.22,'tri',.4],
+                            [1046.5,.27,.45,'tri',.45],[2093,.3,.4,'sine',.12],[1567.98,.36,.35,'sine',.1]] },
+ wrong:   { len:.55, notes:[[330,0,.18,'tri',.45,300],[247,.2,.3,'tri',.45,196]] },
+ finish:  { len:1.4, notes:[[523.25,0,.3,'tri',.38],[659.25,.12,.3,'tri',.38],[783.99,.24,.3,'tri',.38],[1046.5,.36,.5,'tri',.4],
+                            [1046.5,.5,.8,'sine',.1],[1318.5,.5,.8,'sine',.1],[1567.98,.5,.8,'sine',.1]] }
 };
 function renderWav({ len, notes }){
-  const n = Math.ceil(len * SR), buf = new Float32Array(n);
-  for (const [f, at, dur, type, vol, glide] of notes){
-    const s0 = Math.floor(at * SR), sN = Math.floor(dur * SR), atk = .015;
-    let ph = 0;
-    for (let i = 0; i < sN && s0 + i < n; i++){
-      const t = i / SR, fr = glide ? f * Math.pow(glide / f, t / dur) : f;
-      ph += 2 * Math.PI * fr / SR;
-      const w = type === 'sine' ? Math.sin(ph) : (2 / Math.PI) * Math.asin(Math.sin(ph));
-      const env = t < atk ? t / atk : Math.pow(1 - (t - atk) / (dur - atk), 2);
-      buf[s0 + i] += w * env * vol;
-    }
-  }
-  const out = new DataView(new ArrayBuffer(44 + n * 2));
-  const str = (o, x) => [...x].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
-  str(0,'RIFF'); out.setUint32(4, 36 + n * 2, true); str(8,'WAVE'); str(12,'fmt ');
-  out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,1,true);
-  out.setUint32(24,SR,true); out.setUint32(28,SR*2,true); out.setUint16(32,2,true); out.setUint16(34,16,true);
-  str(36,'data'); out.setUint32(40, n * 2, true);
-  for (let i = 0; i < n; i++) out.setInt16(44 + i * 2, Math.max(-1, Math.min(1, buf[i])) * 32767, true);
-  return URL.createObjectURL(new Blob([out], { type:'audio/wav' }));
+ const n = Math.ceil(len * SR), buf = new Float32Array(n);
+ for (const [f, at, dur, type, vol, glide] of notes){
+   const s0 = Math.floor(at * SR), sN = Math.floor(dur * SR), atk = .015;
+   let ph = 0;
+   for (let i = 0; i < sN && s0 + i < n; i++){
+     const t = i / SR, fr = glide ? f * Math.pow(glide / f, t / dur) : f;
+     ph += 2 * Math.PI * fr / SR;
+     const w = type === 'sine' ? Math.sin(ph) : (2 / Math.PI) * Math.asin(Math.sin(ph));
+     const env = t < atk ? t / atk : Math.pow(1 - (t - atk) / (dur - atk), 2);
+     buf[s0 + i] += w * env * vol;
+   }
+ }
+ const out = new DataView(new ArrayBuffer(44 + n * 2));
+ const str = (o, x) => [...x].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+ str(0,'RIFF'); out.setUint32(4, 36 + n * 2, true); str(8,'WAVE'); str(12,'fmt ');
+ out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,1,true);
+ out.setUint32(24,SR,true); out.setUint32(28,SR*2,true); out.setUint16(32,2,true); out.setUint16(34,16,true);
+ str(36,'data'); out.setUint32(40, n * 2, true);
+ for (let i = 0; i < n; i++) out.setInt16(44 + i * 2, Math.max(-1, Math.min(1, buf[i])) * 32767, true);
+ return URL.createObjectURL(new Blob([out], { type:'audio/wav' }));
 }
 const players = {};
 for (const k in SOUNDS){ const a = new Audio(renderWav(SOUNDS[k])); a.preload = 'auto'; players[k] = a; }
 
 let audioUnlocked = false;
 function ensureAudio(){ // 須在使用者按鍵時呼叫，以解鎖 iOS 的播放限制
-  unlock();
-  if (audioUnlocked) return; audioUnlocked = true;
-  Object.values(players).forEach(a => {
-    a.muted = true;
-    const p = a.play();
-    const reset = () => { a.pause(); a.currentTime = 0; a.muted = false; };
-    p && p.then ? p.then(reset).catch(() => { a.muted = false; audioUnlocked = false; }) : reset();
-  });
+ unlock();
+ if (audioUnlocked) return; audioUnlocked = true;
+ Object.values(players).forEach(a => {
+   a.muted = true;
+   const p = a.play();
+   const reset = () => { a.pause(); a.currentTime = 0; a.muted = false; };
+   p && p.then ? p.then(reset).catch(() => { a.muted = false; audioUnlocked = false; }) : reset();
+ });
 }
 function playSfx(k){
-  if (settings.sfx === 'off') return;
-  const a = players[k]; if (!a) return;
-  try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(() => {}); } catch(e){}
+ if (settings.sfx === 'off') return;
+ const a = players[k]; if (!a) return;
+ try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(() => {}); } catch(e){}
 }
 const sfx = { tap:() => playSfx('tap'), correct:() => playSfx('correct'), wrong:() => playSfx('wrong'), finish:() => playSfx('finish') };
 
 /* ---------- 鍵盤 ---------- */
 const KEYS = ['1','2','3','4','5','6','7','8','9','del','0','hear'];
 KEYS.forEach(k => {
-  const b = document.createElement('button');
-  b.className = 'key' + (k === 'del' || k === 'hear' ? ' fn' : '');
-  b.textContent = k === 'del' ? '刪除' : k === 'hear' ? '再聽' : k;
-  b.setAttribute('aria-label', k === 'del' ? '刪除' : k === 'hear' ? '再聽一次' : '數字 ' + k);
-  b.onclick = () => { ensureAudio(); k === 'del' ? del() : k === 'hear' ? replay() : press(Number(k)); };
-  els.pad.appendChild(b);
+ const b = document.createElement('button');
+ b.className = 'key' + (k === 'del' || k === 'hear' ? ' fn' : '');
+ b.textContent = k === 'del' ? '刪除' : k === 'hear' ? '再聽' : k;
+ b.setAttribute('aria-label', k === 'del' ? '刪除' : k === 'hear' ? '再聽一次' : '數字 ' + k);
+ b.onclick = () => { ensureAudio(); k === 'del' ? del() : k === 'hear' ? replay() : press(Number(k)); };
+ els.pad.appendChild(b);
 });
 document.addEventListener('keydown', e => {
-  if (!$('startScreen').hidden || !$('endScreen').hidden || els.sheet.classList.contains('open')) return;
-  ensureAudio();
-  if (/^[0-9]$/.test(e.key)) press(Number(e.key));
-  else if (e.key === 'Backspace') del();
-  else if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); replay(); }
+ if (!$('startScreen').hidden || !$('endScreen').hidden || els.sheet.classList.contains('open')) return;
+ ensureAudio();
+ if (/^[0-9]$/.test(e.key)) press(Number(e.key));
+ else if (e.key === 'Backspace') del();
+ else if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); replay(); }
 });
 
 /* ---------- 遊戲 ---------- */
@@ -358,96 +358,96 @@ const LABELS = { 2:['十位','個位'], 1:['個位'] };
 
 function rangeBounds(){ const [a, b] = settings.range.split('-').map(Number); return [a, b]; }
 function buildTrack(){
-  els.track.innerHTML = '';
-  for (let k = 0; k < ROUNDS; k++){ const s = document.createElement('span'); s.className = 'slotdot'; els.track.appendChild(s); }
+ els.track.innerHTML = '';
+ for (let k = 0; k < ROUNDS; k++){ const s = document.createElement('span'); s.className = 'slotdot'; els.track.appendChild(s); }
 }
 function updateTrack(){
-  [...els.track.children].forEach((s, k) => {
-    s.className = 'slotdot' + (state.results[k] === true ? ' star' : state.results[k] === false ? ' done' : k === state.i ? ' now' : '');
-  });
+ [...els.track.children].forEach((s, k) => {
+   s.className = 'slotdot' + (state.results[k] === true ? ' star' : state.results[k] === false ? ' done' : k === state.i ? ' now' : '');
+ });
 }
 function idleCue(){
-  els.cue.innerHTML = showText() ? `<span class="big">${toCN(state.answer)}</span>` : '聽清楚，再拼出數字';
+ els.cue.innerHTML = showText() ? `<span class="big">${toCN(state.answer)}</span>` : '聽清楚，再拼出數字';
 }
 function renderSlots(extra = {}){
-  const labels = LABELS[state.target.length];
-  const next = state.entry.findIndex(v => v === null);
-  els.slots.innerHTML = '';
-  state.target.forEach((_, k) => {
-    const d = document.createElement('div');
-    const cls = ['slot'];
-    if (state.fixed[k] || extra.ok) cls.push('ok');
-    else if (extra.bad && extra.bad.includes(k)) cls.push('bad');
-    else if (state.entry[k] !== null) cls.push('filled');
-    else if (k === next && !state.locked) cls.push('active');
-    d.className = cls.join(' ');
-    d.innerHTML = `<span class="lab">${labels[k]}</span><span class="box">${state.entry[k] ?? ''}</span>`;
-    els.slots.appendChild(d);
-  });
+ const labels = LABELS[state.target.length];
+ const next = state.entry.findIndex(v => v === null);
+ els.slots.innerHTML = '';
+ state.target.forEach((_, k) => {
+   const d = document.createElement('div');
+   const cls = ['slot'];
+   if (state.fixed[k] || extra.ok) cls.push('ok');
+   else if (extra.bad && extra.bad.includes(k)) cls.push('bad');
+   else if (state.entry[k] !== null) cls.push('filled');
+   else if (k === next && !state.locked) cls.push('active');
+   d.className = cls.join(' ');
+   d.innerHTML = `<span class="lab">${labels[k]}</span><span class="box">${state.entry[k] ?? ''}</span>`;
+   els.slots.appendChild(d);
+ });
 }
 
 function newGame(){ stopSay(); state.i = 0; state.results = []; state.prev = 0; buildTrack(); nextQ(); }
 function nextQ(){
-  if (state.i >= ROUNDS) return endGame();
-  const [lo, hi] = rangeBounds();
-  let a; do { a = lo + Math.floor(Math.random() * (hi - lo + 1)); } while (a === state.prev && hi > lo);
-  Object.assign(state, {
-    answer:a, prev:a, target:String(a).split('').map(Number),
-    retried:false, locked:false
-  });
-  state.entry = state.target.map(() => null);
-  state.fixed = state.target.map(() => false);
-  updateTrack(); idleCue(); renderSlots();
-  stopSay(); sayTimer = setTimeout(() => speak(a), 350);
+ if (state.i >= ROUNDS) return endGame();
+ const [lo, hi] = rangeBounds();
+ let a; do { a = lo + Math.floor(Math.random() * (hi - lo + 1)); } while (a === state.prev && hi > lo);
+ Object.assign(state, {
+   answer:a, prev:a, target:String(a).split('').map(Number),
+   retried:false, locked:false
+ });
+ state.entry = state.target.map(() => null);
+ state.fixed = state.target.map(() => false);
+ updateTrack(); idleCue(); renderSlots();
+ stopSay(); sayTimer = setTimeout(() => speak(a), 350);
 }
 function press(d){
-  if (state.locked) return;
-  const k = state.entry.findIndex(v => v === null);
-  if (k < 0) return;
-  state.entry[k] = d;
-  sfx.tap();
-  renderSlots();
-  if (state.entry.every(v => v !== null)){ state.locked = true; setTimeout(check, 250); }
+ if (state.locked) return;
+ const k = state.entry.findIndex(v => v === null);
+ if (k < 0) return;
+ state.entry[k] = d;
+ sfx.tap();
+ renderSlots();
+ if (state.entry.every(v => v !== null)){ state.locked = true; setTimeout(check, 250); }
 }
 function del(){
-  if (state.locked) return;
-  for (let k = state.entry.length - 1; k >= 0; k--){
-    if (state.entry[k] !== null && !state.fixed[k]){ state.entry[k] = null; break; }
-  }
-  renderSlots();
+ if (state.locked) return;
+ for (let k = state.entry.length - 1; k >= 0; k--){
+   if (state.entry[k] !== null && !state.fixed[k]){ state.entry[k] = null; break; }
+ }
+ renderSlots();
 }
 function replay(){ if (state.answer && !state.locked) speak(state.answer); } /* 判斷對錯期間不重讀，以免打斷自動進入下一題 */
 
 function check(){
-  const bad = state.target.map((t, k) => state.entry[k] === t ? -1 : k).filter(k => k >= 0);
-  if (!bad.length){
-    state.results[state.i] = !state.retried;
-    updateTrack();
-    renderSlots({ ok:true });
-    sfx.correct();
-    els.cue.innerHTML = `<span class="big">${toCN(state.answer)}</span><span class="jp">${toJP(state.answer)}</span>`;
-    stopSay();
-    sayTimer = setTimeout(() => speak(state.answer, () => { sayTimer = setTimeout(() => { state.i++; nextQ(); }, 900); }), 800);
-    return;
-  }
-  state.retried = true;
-  state.target.forEach((t, k) => { if (state.entry[k] === t) state.fixed[k] = true; });
-  renderSlots({ bad });
-  sfx.wrong();
-  setTimeout(() => {
-    bad.forEach(k => state.entry[k] = null);
-    state.locked = false;
-    renderSlots();
-    speak(state.answer);
-  }, 800);
+ const bad = state.target.map((t, k) => state.entry[k] === t ? -1 : k).filter(k => k >= 0);
+ if (!bad.length){
+   state.results[state.i] = !state.retried;
+   updateTrack();
+   renderSlots({ ok:true });
+   sfx.correct();
+   els.cue.innerHTML = `<span class="big">${toCN(state.answer)}</span><span class="jp">${toJP(state.answer)}</span>`;
+   stopSay();
+   sayTimer = setTimeout(() => speak(state.answer, () => { sayTimer = setTimeout(() => { state.i++; nextQ(); }, 900); }), 800);
+   return;
+ }
+ state.retried = true;
+ state.target.forEach((t, k) => { if (state.entry[k] === t) state.fixed[k] = true; });
+ renderSlots({ bad });
+ sfx.wrong();
+ setTimeout(() => {
+   bad.forEach(k => state.entry[k] = null);
+   state.locked = false;
+   renderSlots();
+   speak(state.answer);
+ }, 800);
 }
 function endGame(){
-  stopSay();
-  const stars = state.results.filter(Boolean).length;
-  $('score').textContent = `★ ${stars} / ${ROUNDS}`;
-  $('endMsg').textContent = stars >= 8 ? '表現非常出色！' : stars >= 5 ? '做得好，繼續努力！' : '多聽幾次，下一局會更好！';
-  $('endScreen').hidden = false;
-  sfx.finish();
+ stopSay();
+ const stars = state.results.filter(Boolean).length;
+ $('score').textContent = `★ ${stars} / ${ROUNDS}`;
+ $('endMsg').textContent = stars >= 8 ? '表現非常出色！' : stars >= 5 ? '做得好，繼續努力！' : '多聽幾次，下一局會更好！';
+ $('endScreen').hidden = false;
+ sfx.finish();
 }
 
 /* ---------- 介面事件 ---------- */
@@ -456,25 +456,25 @@ $('startBtn').onclick = () => { ensureAudio(); $('startScreen').hidden = true; n
 $('againBtn').onclick = () => { ensureAudio(); $('endScreen').hidden = true; newGame(); };
 
 function syncSeg(){
-  document.querySelectorAll('.seg').forEach(seg => {
-    seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === String(settings[seg.dataset.key]))));
-  });
+ document.querySelectorAll('.seg').forEach(seg => {
+   seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === String(settings[seg.dataset.key]))));
+ });
 }
 document.querySelectorAll('.seg').forEach(seg => {
-  seg.addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b) return;
-    settings[seg.dataset.key] = b.dataset.val;
-    syncSeg();
-  });
+ seg.addEventListener('click', e => {
+   const b = e.target.closest('button'); if (!b) return;
+   settings[seg.dataset.key] = b.dataset.val;
+   syncSeg();
+ });
 });
 $('gearBtn').onclick = () => { syncSeg(); els.sheet.classList.toggle('open'); };
 $('applyBtn').onclick = () => {
-  ensureAudio();
-  try { localStorage.setItem('rcgs-build-game', JSON.stringify(settings)); } catch(e){}
-  els.sheet.classList.remove('open');
-  stopSay();
-  $('endScreen').hidden = true;
-  if ($('startScreen').hidden) newGame();
+ ensureAudio();
+ try { localStorage.setItem('rcgs-build-game', JSON.stringify(settings)); } catch(e){}
+ els.sheet.classList.remove('open');
+ stopSay();
+ $('endScreen').hidden = true;
+ if ($('startScreen').hidden) newGame();
 };
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopSay(); });
 window.addEventListener('pagehide', stopSay);
@@ -482,7 +482,7 @@ syncSeg();
 
 /* PWA：離線快取 */
 if ('serviceWorker' in navigator && location.protocol !== 'file:')
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+ window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
 
 </script>
 </body>
