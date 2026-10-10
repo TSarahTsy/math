@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>聽音選數字</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0A9DB8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="聽音選數字">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<style>
+/* ===== 自訂數字字體 =====
+  字體檔放在上一層資料夾；若找不到，會自動改用 Chakra Petch。 */
+@font-face{
+font-family:"MyNumberFont";
+src:url("../maths_thin_v2.ttf") format("truetype");
+font-display:swap;
+}
+:root{
+--num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",system-ui,sans-serif;
+--bg:#EEF3FA; --panel:#FFFFFF; --ink:#0E1B2E; --muted:#5A6B82;
+--cyan:#0A9DB8; --purple:#6B4EE0; --amber:#D48A00; --mint:#12A574;
+--line:rgba(14,27,46,.14); --glow:rgba(10,157,184,.18);
+box-sizing:border-box;
+padding-top:env(safe-area-inset-top,0px);
+padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+:root:not([data-theme="light"]){
+   --bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
+   --cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0;
+   --line:rgba(61,224,245,.2); --glow:rgba(61,224,245,.22);
+}
+}
+:root[data-theme="dark"]{
+--bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
+--cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0;
+--line:rgba(61,224,245,.2); --glow:rgba(61,224,245,.22);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+height:100%;margin:0;background:var(--bg);color:var(--ink);
+font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+overflow:hidden;-webkit-tap-highlight-color:transparent;
+background-image:radial-gradient(circle at 50% 30%,var(--glow),transparent 60%);
+}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
+ 
+.app{height:100%;max-width:560px;margin:0 auto;padding:14px 20px 20px;display:flex;flex-direction:column;gap:12px}
+ 
+header{display:flex;align-items:center;gap:12px}
+.track{flex:1;display:flex;gap:6px;justify-content:center}
+.slot{width:22px;height:22px;display:grid;place-items:center;font-size:18px;line-height:1;color:var(--line)}
+.slot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line)}
+.slot.now::before{background:var(--cyan);box-shadow:0 0 0 4px var(--glow)}
+.slot.done::before{background:var(--cyan)}
+.slot.star::before{content:"★";width:auto;height:auto;background:none;color:var(--amber);font-size:20px}
+.gear{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);display:grid;place-items:center}
+ 
+.stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.sonar{
+position:relative;width:min(46vw,200px);aspect-ratio:1;border-radius:50%;
+border:2px solid var(--cyan);background:var(--panel);display:grid;place-items:center;
+box-shadow:0 0 0 10px var(--glow);color:var(--cyan);
+}
+.sonar svg{width:42%;height:42%}
+.sonar::before,.sonar::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--cyan);opacity:0;pointer-events:none}
+.sonar.speaking::before{animation:ping 1.2s ease-out infinite}
+.sonar.speaking::after{animation:ping 1.2s ease-out .4s infinite}
+@keyframes ping{from{transform:scale(1);opacity:.7}to{transform:scale(1.55);opacity:0}}
+.sonar:active{transform:scale(.97)}
+.cue{min-height:3.2em;text-align:center;color:var(--muted);font-size:16px;line-height:1.5}
+.cue .big{display:block;font-size:34px;font-weight:900;color:var(--ink)}
+.cue .jp{display:block;font-family:"Chakra Petch",ui-monospace,monospace;color:var(--mint);font-size:18px;letter-spacing:.04em}
+ 
+.choices{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
+.choices.n3{grid-template-columns:repeat(3,1fr)}
+.choice{
+aspect-ratio:1.25;border-radius:20px;border:1.5px solid var(--line);background:var(--panel);
+font-family:var(--num-font);font-weight:700;
+font-size:clamp(46px,14vw,80px);line-height:1;transition:transform .12s,opacity .2s,border-color .2s;
+}
+.choices.n3 .choice{font-size:clamp(38px,11vw,64px)}
+.choice:active{transform:scale(.96)}
+.choice.correct{border-color:var(--mint);color:var(--mint);box-shadow:0 0 0 4px color-mix(in srgb,var(--mint) 25%,transparent)}
+.choice.wrong{opacity:.3;animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+ 
+.screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;z-index:5;
+padding-top:calc(24px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+.screen[hidden]{display:none}
+.screen h1{margin:0;font-size:clamp(32px,9vw,48px);font-weight:900;letter-spacing:.04em}
+.screen p{margin:0;max-width:30em;color:var(--muted);line-height:1.7}
+.note{font-size:14px;color:var(--amber)!important}
+.big-btn{min-width:200px;padding:16px 28px;border-radius:999px;border:none;background:var(--cyan);color:var(--bg);font-size:22px;font-weight:900}
+.score{font-family:var(--num-font);font-size:64px;font-weight:700;color:var(--amber)}
+ 
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--panel);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;
+padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;max-width:560px;margin:0 auto}
+.sheet.open{transform:none}
+.sheet h2{margin:0 0 12px;font-size:18px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.row>span{white-space:nowrap}
+.seg button{min-width:56px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:transparent;font-weight:700}
+.seg button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}
+.sheet .big-btn{width:100%;margin-top:16px}
+.vsel{max-width:62%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:15px}
+ 
+@media (prefers-reduced-motion:reduce){
+.sonar.speaking::before,.sonar.speaking::after,.choice.wrong{animation:none}
+.sheet{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+   <div class="track" id="track" aria-label="進度"></div>
+   <button class="gear" id="gearBtn" aria-label="設定">
+     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+   </button>
+</header>
+ 
+<section class="stage">
+   <button class="sonar" id="sonar" aria-label="再聽一次">
+     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+   </button>
+   <div class="cue" id="cue" aria-live="polite"></div>
+</section>
+ 
+<section class="choices" id="choices"></section>
+</div>
+ 
+<div class="screen" id="startScreen">
+<h1>聽音選數字</h1>
+<p>聆聽廣東話讀出的數字，然後選出正確答案。每局共十題，第一次便答對可得一粒星。</p>
+<p class="note" id="voiceNote" hidden></p>
+<button class="big-btn" id="startBtn">開始</button>
+</div>
+ 
+<div class="screen" id="endScreen" hidden>
+<h1>完成了！</h1>
+<div class="score" id="score"></div>
+<p id="endMsg"></p>
+<button class="big-btn" id="againBtn">再玩一次</button>
+</div>
+ 
+<div class="sheet" id="sheet" role="dialog" aria-label="設定">
+<h2>設定</h2>
+<div class="row"><span>數字範圍</span><div class="seg" data-key="range"><button data-val="1-10">1–10</button><button data-val="1-15">1–15</button><button data-val="1-20">1–20</button><button data-val="11-15">11–15</button><button data-val="16-20">16–20</button></div></div>
+<div class="row"><span>選項數目</span><div class="seg" data-key="n"><button data-val="2">2</button><button data-val="3">3</button><button data-val="4">4</button></div></div>
+<div class="row"><span>讀音速度</span><div class="seg" data-key="rate"><button data-val="slow">慢</button><button data-val="normal">正常</button></div></div>
+<button class="big-btn" id="applyBtn">套用並重新開始</button>
+</div>
+ 
+<script>
+'use strict';
+const ROUNDS = 10;
+const CN = ['', '一','二','三','四','五','六','七','八','九','十'];
+const JP = ['', 'jat1','ji6','saam1','sei3','ng5','luk6','cat1','baat3','gau2','sap6'];
+const toCN = n => n <= 10 ? CN[n] : n < 20 ? '十' + CN[n-10] : '二十';
+const toJP = n => n <= 10 ? JP[n] : n < 20 ? 'sap6 ' + JP[n-10] : 'ji6 sap6';
+
+const $ = id => document.getElementById(id);
+const els = { track:$('track'), sonar:$('sonar'), cue:$('cue'), choices:$('choices'), sheet:$('sheet') };
+
+let settings = { range:'1-20', n:4, rate:'normal' };
+try { Object.assign(settings, JSON.parse(localStorage.getItem('rcgs-num-game') || '{}')); } catch(e){}
+// 舊版只記錄 max（10 或 20），轉為新的範圍格式
+if (settings.max && !/^\d+-\d+$/.test(String(settings.range))) settings.range = '1-' + settings.max;
+if (!/^\d+-\d+$/.test(String(settings.range))) settings.range = '1-20';
+delete settings.max;
+// 舊版以數字記錄速度（0.65／0.9），轉為「慢／正常」
+if (settings.rate !== 'slow' && settings.rate !== 'normal') settings.rate = Number(settings.rate) < 0.8 ? 'slow' : 'normal';
+
+/* ---------- 讀音（mp3 組合） ----------
+   聲音檔位置：上一層的 audio 資料夾（../audio/1.mp3 至 10.mp3）
+   組合規則：1–10 直接讀；11–19 = 十 + 個位；20、30… = 幾 + 十；21–99 = 幾 + 十 + 個位 */
+const AUDIO_DIR = '../audio/';
+const GAP = { slow:300, normal:100 };          /* 字與字之間的停頓（毫秒） */
+function clipsFor(n){
+  if (n <= 10) return [n];
+  const t = Math.floor(n / 10), u = n % 10;
+  return [...(t === 1 ? [] : [t]), 10, ...(u ? [u] : [])];
+}
+
+try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
+let ctx = null, loading = null, audioReady = false, src = null, sayToken = 0, sayTimer = 0;
+const clips = {};
+function getCtx(){
+  if (!ctx){ const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; ctx = new AC(); }
+  return ctx;
+}
+function unlock(){ /* 必須在按鍵當下呼叫，iPad 才會允許發聲 */
+  const c = getCtx(); if (!c || c.state === 'running') return;
+  c.resume().catch(() => {});
+  try { const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, 22050); s.connect(c.destination); s.start(0); } catch(e){}
+}
+function decode(c, ab){ return new Promise((res, rej) => { const p = c.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); }); }
+function loadAll(){
+  if (loading) return loading;
+  const c = getCtx(); if (!c) return Promise.reject(new Error('此瀏覽器未支援音訊播放'));
+  loading = Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n => {
+    const r = await fetch(AUDIO_DIR + n + '.mp3');
+    if (!r.ok) throw new Error('找不到 ' + n + '.mp3');
+    clips[n] = await decode(c, await r.arrayBuffer());
+  })).then(() => { audioReady = true; });
+  loading.catch(() => { loading = null; });
+  return loading;
+}
+function playClip(n){
+  return new Promise(resolve => {
+    const s = ctx.createBufferSource(); s.buffer = clips[n]; s.connect(ctx.destination);
+    let done = false;
+    const finish = () => { if (done) return; done = true; clearTimeout(guard); if (src === s) src = null; resolve(); };
+    s.onended = finish;
+    const guard = setTimeout(finish, (clips[n].duration + 2) * 1000);
+    src = s; s.start(0);
+  });
+}
+const wait = ms => new Promise(r => { sayTimer = setTimeout(r, ms); });
+function stopSay(){
+  sayToken++; clearTimeout(sayTimer);
+  if (src){ const s = src; src = null; try { s.stop(); } catch(e){} }
+  els.sonar.classList.remove('speaking');
+}
+/* 讀出數字 n；讀完後呼叫 done（如有） */
+async function speak(n, done){
+  stopSay(); const run = sayToken;
+  const fin = () => { if (run !== sayToken) return; els.sonar.classList.remove('speaking'); done && done(); };
+  const c = getCtx();
+  if (!c){ sayTimer = setTimeout(fin, 600); return; }
+  unlock();
+  try { await loadAll(); } catch(e){ showAudioError(e); if (run === sayToken){ if (!state.locked) idleCue(); sayTimer = setTimeout(fin, 600); } return; }
+  if (run !== sayToken) return;
+  if (c.state !== 'running'){ try { await c.resume(); } catch(e){} }
+  if (run !== sayToken) return;
+  if (c.state !== 'running'){ sayTimer = setTimeout(fin, 600); return; }
+  els.sonar.classList.add('speaking');
+  const parts = clipsFor(n), gap = GAP[settings.rate] || GAP.normal;
+  for (let i = 0; i < parts.length; i++){
+    await playClip(parts[i]); if (run !== sayToken) return;
+    if (i < parts.length - 1){ await wait(gap); if (run !== sayToken) return; }
+  }
+  fin();
+}
+function showAudioError(e){
+  const note = $('voiceNote');
+  note.textContent = '未能載入聲音（' + e.message + '）。請確認上一層 audio 資料夾內有1.mp3至10.mp3。遊戲會改為顯示中文數字。';
+  note.hidden = false;
+}
+const showText = () => !audioReady;
+loadAll().catch(showAudioError);
+
+/* ---------- 音效（與讀音共用同一個音訊環境） ---------- */
+function tone(freqs, dur = .12){
+  try {
+    const c = getCtx(); if (!c) return;
+    freqs.forEach((f, i) => {
+      const o = c.createOscillator(), g = c.createGain(), t = c.currentTime + i * dur;
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18, t + .02);
+      g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .02);
+    });
+  } catch(e){}
+}
+
+/* ---------- 遊戲 ---------- */
+const state = { i:0, results:[], answer:0, prev:0, retried:false, locked:true };
+const rand = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+
+function buildTrack(){
+  els.track.innerHTML = '';
+  for (let k = 0; k < ROUNDS; k++){
+    const s = document.createElement('span'); s.className = 'slot'; els.track.appendChild(s);
+  }
+}
+function updateTrack(){
+  [...els.track.children].forEach((s, k) => {
+    s.className = 'slot' + (state.results[k] === true ? ' star' : state.results[k] === false ? ' done' : k === state.i ? ' now' : '');
+  });
+}
+function setCue(html){ els.cue.innerHTML = html; }
+function idleCue(){
+  setCue(showText() ? `<span class="big">${toCN(state.answer)}</span>` : '按圓形按鈕可再聽一次');
+}
+
+function newGame(){
+  stopSay();
+  state.i = 0; state.results = []; state.prev = 0;
+  buildTrack(); nextQ();
+}
+function nextQ(){
+  if (state.i >= ROUNDS) return endGame();
+  const [lo, hi] = settings.range.split('-').map(Number);
+  const n = Math.min(Number(settings.n), hi - lo + 1);
+  let a; do { a = rand(lo, hi); } while (a === state.prev && hi > lo);
+  state.answer = a; state.prev = a; state.retried = false; state.locked = false;
+  const opts = new Set([a]);
+  while (opts.size < n) opts.add(rand(lo, hi));
+  const list = [...opts].sort(() => Math.random() - .5);
+  els.choices.className = 'choices' + (n === 3 ? ' n3' : '');
+  els.choices.innerHTML = '';
+  list.forEach(v => {
+    const b = document.createElement('button');
+    b.className = 'choice'; b.textContent = v; b.setAttribute('aria-label', '數字 ' + v);
+    b.onclick = () => { unlock(); choose(b, v); };
+    els.choices.appendChild(b);
+  });
+  updateTrack(); idleCue();
+  stopSay(); sayTimer = setTimeout(() => speak(a), 350);
+}
+function choose(btn, v){
+  if (state.locked || btn.disabled) return;
+  if (v === state.answer){
+    state.locked = true;
+    btn.classList.add('correct');
+    state.results[state.i] = !state.retried;
+    updateTrack();
+    tone([660, 880]);
+    setCue(`<span class="big">${toCN(v)}</span><span class="jp">${toJP(v)}</span>`);
+    stopSay();
+    sayTimer = setTimeout(() => speak(v, () => { sayTimer = setTimeout(() => { state.i++; nextQ(); }, 800); }), 300);
+  } else {
+    state.retried = true;
+    btn.classList.add('wrong'); btn.disabled = true;
+    tone([220], .2);
+    stopSay(); sayTimer = setTimeout(() => speak(state.answer), 450);
+  }
+}
+function endGame(){
+  stopSay();
+  const stars = state.results.filter(Boolean).length;
+  $('score').textContent = `★ ${stars} / ${ROUNDS}`;
+  $('endMsg').textContent = stars >= 8 ? '表現非常出色！' : stars >= 5 ? '做得好，繼續努力！' : '多聽幾次，下一局會更好！';
+  $('endScreen').hidden = false;
+  tone([523, 659, 784, 1047], .14);
+}
+
+/* ---------- 介面事件 ---------- */
+/* 答對後等待進入下一題期間不重讀，以免打斷流程 */
+els.sonar.onclick = () => { unlock(); if (state.answer && !state.locked) speak(state.answer); };
+$('startBtn').onclick = () => { unlock(); $('startScreen').hidden = true; newGame(); };
+$('againBtn').onclick = () => { unlock(); $('endScreen').hidden = true; newGame(); };
+
+function syncSeg(){
+  document.querySelectorAll('.seg').forEach(seg => {
+    const key = seg.dataset.key;
+    seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val) === String(settings[key])));
+  });
+}
+document.querySelectorAll('.seg').forEach(seg => {
+  seg.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    settings[seg.dataset.key] = seg.dataset.key === 'n' ? Number(b.dataset.val) : b.dataset.val; syncSeg();
+  });
+});
+$('gearBtn').onclick = () => { syncSeg(); els.sheet.classList.toggle('open'); };
+$('applyBtn').onclick = () => {
+  unlock();
+  try { localStorage.setItem('rcgs-num-game', JSON.stringify(settings)); } catch(e){}
+  els.sheet.classList.remove('open');
+  stopSay();
+  $('endScreen').hidden = true;
+  if ($('startScreen').hidden) newGame();
+};
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopSay(); });
+window.addEventListener('pagehide', stopSay);
+syncSeg();
+
+/* PWA：離線快取 */
+if ('serviceWorker' in navigator && location.protocol !== 'file:')
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+
+</script>
+</body>
+</html>
