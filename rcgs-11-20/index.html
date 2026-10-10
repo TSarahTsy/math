@@ -15,7 +15,7 @@
 </style></head><body><main><h1>11至20：聽廣東話讀數字</h1><p class="intro">按一個數字，聽讀音，看看哪個數位亮起。</p><section class="stage" aria-label="讀音示範"><div class="place"><div class="column"><span class="label">十位</span><span class="digit" id="tens">1</span></div><div class="column"><span class="label">個位</span><span class="digit" id="units">1</span></div></div><div class="reading" id="reading" aria-label="十一"></div><p id="status" class="status" role="status" aria-live="polite">正在載入聲音…</p><div class="controls"><button id="repeat" type="button">再聽一次</button><button id="all" type="button">順序讀11至20</button><button id="stop" type="button" class="stop">停止</button></div></section><div class="numbers" id="numbers" aria-label="11至20數字選擇"></div><div class="settings"><label>讀音速度 <select id="speed"><option value="slow">慢</option><option value="normal" selected>普通</option><option value="fast">快</option></select></label></div><p class="help">11讀「十、一」：先亮十位的1，再亮個位的1。<br>20讀「二、十」：兩段都亮十位的2；個位的0不讀出。</p><p class="help install-tip">在iPad用Safari開啟本頁，按「分享」→「加入主畫面」，即可像應用程式一樣使用，離線亦可播放。</p></main><script>
 'use strict';
 /* 聲音檔位置：1.mp3 至 10.mp3 與本頁放在同一資料夾。如放在子資料夾，改為例如 './audio/' */
-const AUDIO_DIR='./';
+const AUDIO_DIR='../audio/';
 const SPEED={slow:{gap:450,next:1300},normal:{gap:160,next:850},fast:{gap:60,next:500}};
 const $=id=>document.getElementById(id);
 const words=['','一','二','三','四','五','六','七','八','九','十'];
