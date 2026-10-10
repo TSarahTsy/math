@@ -1,0 +1,17 @@
+{
+  "name": "接續數數 1–20",
+  "short_name": "接續數數",
+  "description": "恩慈數字學習生態圈：由一個數字開始，接著數下去（1–20）",
+  "lang": "zh-HK",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EEF3FA",
+  "theme_color": "#0A9DB8",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
