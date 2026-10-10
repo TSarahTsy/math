@@ -1,12 +1,12 @@
-/* 每次更新 index.html 或任何 mp3，請把版本號加一（v1 → v2），iPad 才會取得新版本 */
-const CACHE = 'rcgs-11-20-v2';
+/* 每次更新 index.html、mp3 或字體，請把版本號加一，iPad 才會取得新版本 */
+const CACHE = 'rcgs-11-20-v4';
 const FILES = [
  './index.html', './manifest.webmanifest',
- './icon-180.png', './icon-192.png', './icon-512.png', '../maths_thin_v2.ttf',
+ './icon-180.png', './icon-192.png', './icon-512.png',
+ '../maths_thin_v2.ttf',
  '../audio/1.mp3', '../audio/2.mp3', '../audio/3.mp3', '../audio/4.mp3', '../audio/5.mp3',
  '../audio/6.mp3', '../audio/7.mp3', '../audio/8.mp3', '../audio/9.mp3', '../audio/10.mp3'
 ];
-
 self.addEventListener('install', e => {
  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
 });
@@ -35,7 +35,7 @@ self.addEventListener('fetch', e => {
    return;
  }
 
- /* 聲音、圖示等：先用快取，沒有才下載 */
+ /* 聲音、字體、圖示：先用快取，沒有才下載 */
  e.respondWith(
    caches.match(req).then(hit => hit || fetch(req).then(res => {
      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
