@@ -10,12 +10,54 @@
 <meta name="apple-mobile-web-app-title" content="11至20">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Noto+Sans+HK:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#173d47;--teal:#008f9a;--paper:#f0fafb;--gold:#ffe263}*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,'Microsoft JhengHei',sans-serif;-webkit-tap-highlight-color:transparent}main{max-width:1150px;margin:auto;padding:max(28px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(40px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left))}h1{font-size:clamp(25px,4vw,40px);margin:0 0 10px}p{line-height:1.6}.intro{margin:0 0 24px;font-size:20px}.stage{text-align:center;background:white;border-radius:24px;padding:22px;border:2px solid #d1e9ec}.place{display:flex;justify-content:center;gap:24px}.column{width:145px}.label{display:block;font-size:21px;margin-bottom:12px}.digit{display:grid;place-items:center;background:#e3f5f5;border:3px solid #b0dfe3;border-radius:20px;font-size:clamp(80px,14vw,128px);font-weight:750;line-height:1.2;min-height:160px;transition:background .1s,box-shadow .1s}.lit{background:var(--gold)!important;border-color:#e2a900!important;box-shadow:0 0 0 7px #ffe26366,0 0 32px #ffda51;color:#493100}.reading{min-height:60px;font-size:36px;font-weight:700;margin:20px 0 6px}.syllable{display:inline-block;min-width:56px;padding:4px 12px;border-radius:12px}.active-word{background:var(--gold);color:#493100}.status{min-height:30px;font-size:18px;margin:8px 0}.numbers{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:24px 0}button{font:inherit;cursor:pointer;touch-action:manipulation;color:var(--ink);-webkit-user-select:none;user-select:none}.number{border:2px solid #9bd9de;background:white;border-radius:17px;padding:16px 6px;font-size:clamp(34px,6vw,56px);font-weight:750}.number.chosen{border-color:var(--teal);background:#d7f4f5;box-shadow:0 0 0 2px var(--teal)}button:focus-visible,select:focus-visible{outline:4px solid #ce8c00;outline-offset:4px}.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:15px}.controls button{border:0;border-radius:12px;background:var(--teal);color:white;padding:12px 18px;font-size:19px}.controls button.stop{background:#5b6e74}select{font:inherit;max-width:100%;padding:9px;border:1px solid #9fc6ca;border-radius:8px;background:white}.settings{margin-top:24px;display:flex;flex-wrap:wrap;gap:15px;align-items:center;font-size:17px}.help{font-size:17px;color:#43636c}.error{color:#a23320;font-weight:600}@media(display-mode:standalone){.install-tip{display:none}}@media(max-width:500px){main{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));padding-top:max(20px,env(safe-area-inset-top))}.numbers{gap:8px}.number{padding:15px 3px}.column{width:120px}.digit{min-height:135px}.place{gap:18px}.intro{font-size:18px}}
-</style></head><body><main><h1>11至20：聽廣東話讀數字</h1><p class="intro">按一個數字，聽讀音，看看哪個數位亮起。</p><section class="stage" aria-label="讀音示範"><div class="place"><div class="column"><span class="label">十位</span><span class="digit" id="tens">1</span></div><div class="column"><span class="label">個位</span><span class="digit" id="units">1</span></div></div><div class="reading" id="reading" aria-label="十一"></div><p id="status" class="status" role="status" aria-live="polite">正在載入聲音…</p><div class="controls"><button id="repeat" type="button">再聽一次</button><button id="all" type="button">順序讀11至20</button><button id="stop" type="button" class="stop">停止</button></div></section><div class="numbers" id="numbers" aria-label="11至20數字選擇"></div><div class="settings"><label>讀音速度 <select id="speed"><option value="slow">慢</option><option value="normal" selected>普通</option><option value="fast">快</option></select></label></div><p class="help">11讀「十、一」：先亮十位的1，再亮個位的1。<br>20讀「二、十」：兩段都亮十位的2；個位的0不讀出。</p><p class="help install-tip">在iPad用Safari開啟本頁，按「分享」→「加入主畫面」，即可像應用程式一樣使用，離線亦可播放。</p></main><script>
+/* ===== 自訂數字字體 =====
+  字體檔與本 HTML 放在同一資料夾；若找不到，會自動改用 Chakra Petch */
+@font-face{font-family:"MyNumberFont";src:url("maths_thin_v2.ttf") format("truetype");font-display:swap}
+:root{--num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",sans-serif;--ink:#173d47;--teal:#008f9a;--paper:#f0fafb;--gold:#ffe263}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans HK",system-ui,-apple-system,'Microsoft JhengHei',sans-serif;-webkit-tap-highlight-color:transparent}
+main{max-width:1150px;margin:auto;padding:max(28px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(40px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left))}
+h1{font-size:clamp(25px,4vw,40px);margin:0 0 10px}p{line-height:1.6}.intro{margin:0 0 24px;font-size:20px}
+.stage{text-align:center;background:white;border-radius:24px;padding:22px;border:2px solid #d1e9ec}
+.place{display:flex;justify-content:center;gap:24px}.column{width:145px}.label{display:block;font-size:21px;margin-bottom:12px}
+.digit{display:grid;place-items:center;background:#e3f5f5;border:3px solid #b0dfe3;border-radius:20px;font-family:var(--num-font);font-size:clamp(80px,14vw,128px);font-weight:normal;line-height:1.2;min-height:160px;transition:background .1s,box-shadow .1s}
+.lit{background:var(--gold)!important;border-color:#e2a900!important;box-shadow:0 0 0 7px #ffe26366,0 0 32px #ffda51;color:#493100}
+.reading{min-height:60px;font-size:36px;font-weight:700;margin:20px 0 6px}.syllable{display:inline-block;min-width:56px;padding:4px 12px;border-radius:12px}.active-word{background:var(--gold);color:#493100}
+.status{min-height:30px;font-size:18px;margin:8px 0}
+.numbers{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:24px 0}
+button{font:inherit;cursor:pointer;touch-action:manipulation;color:var(--ink);-webkit-user-select:none;user-select:none}
+.number{border:2px solid #9bd9de;background:white;border-radius:17px;padding:16px 6px;font-family:var(--num-font);font-size:clamp(34px,6vw,56px);font-weight:normal}
+.number.chosen{border-color:var(--teal);background:#d7f4f5;box-shadow:0 0 0 2px var(--teal)}
+button:focus-visible,select:focus-visible{outline:4px solid #ce8c00;outline-offset:4px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:15px}
+.controls button{border:0;border-radius:12px;background:var(--teal);color:white;padding:12px 18px;font-size:19px}.controls button.stop{background:#5b6e74}
+select{font:inherit;max-width:100%;padding:9px;border:1px solid #9fc6ca;border-radius:8px;background:white}
+.settings{margin-top:24px;display:flex;flex-wrap:wrap;gap:15px;align-items:center;font-size:17px}
+.help{font-size:17px;color:#43636c}.error{color:#a23320;font-weight:600}
+@media(display-mode:standalone){.install-tip{display:none}}
+@media(max-width:500px){main{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));padding-top:max(20px,env(safe-area-inset-top))}.numbers{gap:8px}.number{padding:15px 3px}.column{width:120px}.digit{min-height:135px}.place{gap:18px}.intro{font-size:18px}}
+</style></head><body><main>
+<h1>11至20：聽廣東話讀數字</h1>
+<p class="intro">按一個數字，聽讀音，看看哪個數位亮起。</p>
+<section class="stage" aria-label="讀音示範">
+<div class="place"><div class="column"><span class="label">十位</span><span class="digit" id="tens">1</span></div><div class="column"><span class="label">個位</span><span class="digit" id="units">1</span></div></div>
+<div class="reading" id="reading" aria-label="十一"></div>
+<p id="status" class="status" role="status" aria-live="polite">正在載入聲音…</p>
+<div class="controls"><button id="repeat" type="button">再聽一次</button><button id="all" type="button">順序讀11至20</button><button id="stop" type="button" class="stop">停止</button></div>
+</section>
+<div class="numbers" id="numbers" aria-label="11至20數字選擇"></div>
+<div class="settings"><label>讀音速度 <select id="speed"><option value="slow">慢</option><option value="normal" selected>普通</option><option value="fast">快</option></select></label></div>
+<p class="help">11讀「十、一」：先亮十位的1，再亮個位的1。<br>20讀「二、十」：兩段都亮十位的2；個位的0不讀出。</p>
+<p class="help install-tip">在iPad用Safari開啟本頁，按「分享」→「加入主畫面」，即可像應用程式一樣使用，離線亦可播放。</p>
+</main><script>
 'use strict';
-/* 聲音檔位置：1.mp3 至 10.mp3 與本頁放在同一資料夾。如放在子資料夾，改為例如 './audio/' */
+/* 聲音檔位置：上一層的 audio 資料夾（../audio/1.mp3 至 10.mp3） */
 const AUDIO_DIR='../audio/';
+const AUDIO_HINT='請確認上一層 audio 資料夾內有1.mp3至10.mp3。';
 const SPEED={slow:{gap:450,next:1300},normal:{gap:160,next:850},fast:{gap:60,next:500}};
 const $=id=>document.getElementById(id);
 const words=['','一','二','三','四','五','六','七','八','九','十'];
@@ -30,8 +72,8 @@ function getCtx(){if(!ctx){const AC=window.AudioContext||window.webkitAudioConte
 function unlock(){const c=getCtx();if(!c||c.state==='running')return;c.resume().catch(()=>{});try{const s=c.createBufferSource();s.buffer=c.createBuffer(1,1,22050);s.connect(c.destination);s.start(0);}catch(e){}}
 function decode(c,ab){return new Promise((res,rej)=>{const p=c.decodeAudioData(ab,res,rej);if(p&&p.then)p.then(res,rej);});}
 function loadAll(){if(loading)return loading;const c=getCtx();if(!c)return Promise.reject(new Error('此瀏覽器未支援音訊播放'));
- loading=Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n=>{const r=await fetch(AUDIO_DIR+n+'.mp3');if(!r.ok)throw new Error('找不到 '+n+'.mp3');clips[n]=await decode(c,await r.arrayBuffer());}));
- loading.catch(()=>{loading=null;});return loading;}
+loading=Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n=>{const r=await fetch(AUDIO_DIR+n+'.mp3');if(!r.ok)throw new Error('找不到 '+n+'.mp3');clips[n]=await decode(c,await r.arrayBuffer());}));
+loading.catch(()=>{loading=null;});return loading;}
 function playClip(n){return new Promise(resolve=>{const s=ctx.createBufferSource();s.buffer=clips[n];s.connect(ctx.destination);let done=false;const finish=()=>{if(done)return;done=true;clearTimeout(guard);if(source===s)source=null;resolve();};s.onended=finish;const guard=setTimeout(finish,(clips[n].duration+2)*1000);source=s;s.start(0);});}
 const wait=ms=>new Promise(r=>{timer=setTimeout(r,ms);});
 
@@ -42,24 +84,24 @@ function status(msg){$('status').classList.remove('error');$('status').textConte
 function error(msg){clearLight();$('status').textContent=msg;$('status').classList.add('error');}
 
 async function read(n,all=false){
- halt();show(n);const run=token;
- const c=getCtx();if(!c)return error('此瀏覽器未支援音訊播放，請用Safari或Chrome開啟。');
- unlock(); /* 必須在按鍵當下呼叫，iPad才會允許發聲 */
- status('準備播放…');if(all)$('all').textContent='正在順序讀…';
- try{await loadAll();}catch(e){if(run===token){halt();error('未能載入聲音（'+e.message+'）。請確認1.mp3至10.mp3與本頁在同一資料夾。');}return;}
- if(run!==token)return;
- if(c.state!=='running'){try{await c.resume();}catch(e){}}
- if(run!==token)return;
- if(c.state!=='running'){halt();return error('聲音未能開始。請檢查裝置音量，再按一次。');}
- const parts=plan(n),sp=SPEED[$('speed').value]||SPEED.normal;
- for(let i=0;i<parts.length;i++){
-  const part=parts[i];
-  $(part.place).classList.add('lit');$('reading').children[i].classList.add('active-word');status('讀「'+part.word+'」');
-  await playClip(part.file);if(run!==token)return;
-  clearLight();if(i<parts.length-1){await wait(sp.gap);if(run!==token)return;}
- }
- status(n===20?'二十：個位的0不讀出。':'讀完了。你也讀一次。');
- if(all&&n<20){await wait(sp.next);if(run===token)read(n+1,true);}else $('all').textContent='順序讀11至20';
+halt();show(n);const run=token;
+const c=getCtx();if(!c)return error('此瀏覽器未支援音訊播放，請用Safari或Chrome開啟。');
+unlock(); /* 必須在按鍵當下呼叫，iPad才會允許發聲 */
+status('準備播放…');if(all)$('all').textContent='正在順序讀…';
+try{await loadAll();}catch(e){if(run===token){halt();error('未能載入聲音（'+e.message+'）。'+AUDIO_HINT);}return;}
+if(run!==token)return;
+if(c.state!=='running'){try{await c.resume();}catch(e){}}
+if(run!==token)return;
+if(c.state!=='running'){halt();return error('聲音未能開始。請檢查裝置音量，再按一次。');}
+const parts=plan(n),sp=SPEED[$('speed').value]||SPEED.normal;
+for(let i=0;i<parts.length;i++){
+ const part=parts[i];
+ $(part.place).classList.add('lit');$('reading').children[i].classList.add('active-word');status('讀「'+part.word+'」');
+ await playClip(part.file);if(run!==token)return;
+ clearLight();if(i<parts.length-1){await wait(sp.gap);if(run!==token)return;}
+}
+status(n===20?'二十：個位的0不讀出。':'讀完了。你也讀一次。');
+if(all&&n<20){await wait(sp.next);if(run===token)read(n+1,true);}else $('all').textContent='順序讀11至20';
 }
 
 for(let n=11;n<=20;n++){const b=document.createElement('button');b.type='button';b.className='number';b.dataset.number=String(n);b.textContent=String(n);b.setAttribute('aria-label','播放'+plan(n).map(x=>x.word).join('')+'的廣東話讀音');b.addEventListener('click',()=>read(n));$('numbers').append(b);}
@@ -70,7 +112,7 @@ $('speed').addEventListener('change',()=>halt());
 document.addEventListener('visibilitychange',()=>{if(document.hidden)halt();});
 window.addEventListener('pagehide',halt);
 show(11);
-loadAll().then(()=>{if(!source)status('聲音已準備好。按數字開始。');}).catch(e=>error('未能載入聲音（'+e.message+'）。請確認1.mp3至10.mp3與本頁在同一資料夾。'));
+loadAll().then(()=>{if(!source)status('聲音已準備好。按數字開始。');}).catch(e=>error('未能載入聲音（'+e.message+'）。'+AUDIO_HINT));
 
 /* PWA：離線快取 */
 if('serviceWorker' in navigator&&location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
