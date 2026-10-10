@@ -1,7 +1,7 @@
 {
   "name": "聽音拼數字",
   "short_name": "拼數字",
-  "description": "恩慈數字學習生態圈：聆聽廣東話讀數，再拼出數字",
+  "description": "數學：聆聽廣東話讀數，再拼出數字",
   "lang": "zh-HK",
   "start_url": "./index.html",
   "scope": "./",
