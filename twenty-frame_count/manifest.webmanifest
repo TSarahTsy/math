@@ -1,0 +1,17 @@
+{
+  "name": "二十格框：數一數有多少",
+  "short_name": "二十格框",
+  "description": "恩慈數字學習生態圈：看二十格框內有多少個圓點，再選出正確的數字",
+  "lang": "zh-HK",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EEF3FA",
+  "theme_color": "#0A9DB8",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
