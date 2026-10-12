@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="數字遊戲">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#e8873a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-48.png">
+<title>數字遊戲目錄｜恩慈數字學習生態圈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: "MathsThin";
+    src: url("maths_thin_v2.ttf") format("truetype");
+    font-display: swap;
+  }
+  :root {
+    --bg: #f6f3ec;
+    --ink: #1f2430;
+    --muted: #6b7280;
+    --card: #ffffff;
+    --line: #e7e1d4;
+    --num-font: "MathsThin", "Chakra Petch", "Noto Sans HK", sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 12% 8%, #ffe2b8 0, transparent 32%),
+      radial-gradient(circle at 92% 18%, #cfe8ff 0, transparent 30%),
+      radial-gradient(circle at 70% 95%, #d9f2dc 0, transparent 30%),
+      var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans HK", system-ui, sans-serif;
+    padding: max(24px, env(safe-area-inset-top)) 20px 48px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  header { text-align: center; margin: 12px 0 28px; }
+  .eyebrow {
+    display: inline-block; font-size: 14px; letter-spacing: .12em;
+    color: var(--muted); background: rgba(255,255,255,.7);
+    border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px;
+  }
+  h1 {
+    font-size: clamp(34px, 6vw, 56px); font-weight: 900; margin: 16px 0 6px;
+    letter-spacing: .04em;
+  }
+  h1 .digits { font-family: var(--num-font); font-weight: 600; color: #e8873a; }
+  .sub { color: var(--muted); font-size: 18px; margin: 0; }
+
+  .filters {
+    display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+    margin: 0 0 28px;
+  }
+  .filters button {
+    font: inherit; font-size: 18px; font-weight: 700;
+    min-height: 48px; padding: 0 22px; border-radius: 999px;
+    border: 2px solid var(--line); background: var(--card); color: var(--ink);
+    cursor: pointer; transition: transform .15s, background .15s, color .15s;
+  }
+  .filters button[aria-pressed="true"] {
+    background: var(--ink); color: #fff; border-color: var(--ink);
+  }
+  .filters button:active { transform: scale(.96); }
+
+  .grid {
+    display: grid; gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .card {
+    --accent: #e8873a; --tint: #fff3e6;
+    position: relative; display: flex; flex-direction: column;
+    text-decoration: none; color: inherit;
+    background: var(--card); border: 2px solid var(--line); border-radius: 26px;
+    padding: 22px 22px 20px; overflow: hidden;
+    box-shadow: 0 6px 0 var(--line);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s;
+    animation: rise .5s ease both;
+  }
+  .card:hover, .card:focus-visible {
+    transform: translateY(-4px); border-color: var(--accent);
+    box-shadow: 0 10px 0 var(--accent); outline: none;
+  }
+  .card:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--accent); }
+  .card::after {
+    content: ""; position: absolute; right: -40px; top: -40px;
+    width: 140px; height: 140px; border-radius: 50%; background: var(--tint);
+    z-index: 0;
+  }
+  .card > * { position: relative; z-index: 1; }
+  .icon {
+    width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center;
+    background: var(--tint); font-size: 34px; margin-bottom: 16px;
+  }
+  .range {
+    font-family: var(--num-font); font-size: 40px; line-height: 1;
+    color: var(--accent); margin-bottom: 8px; letter-spacing: .02em;
+  }
+  .title { font-size: 24px; font-weight: 900; margin: 0 0 6px; }
+  .desc { font-size: 16px; color: var(--muted); margin: 0 0 18px; line-height: 1.55; flex: 1; }
+  .go {
+    align-self: flex-start; font-weight: 700; font-size: 17px;
+    background: var(--accent); color: #fff; border-radius: 999px; padding: 8px 18px;
+  }
+  .card.hidden { display: none; }
+
+  footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+
+  .install {
+    display: none; margin: 18px auto 0; align-items: center; gap: 10px;
+    font: inherit; font-size: 17px; font-weight: 700; cursor: pointer;
+    background: #fff; color: var(--ink); border: 2px solid var(--line);
+    border-radius: 999px; padding: 10px 20px;
+  }
+  .install.show { display: inline-flex; }
+  .install:active { transform: scale(.96); }
+  .ios-tip {
+    display: none; max-width: 420px; margin: 14px auto 0; font-size: 16px; line-height: 1.6;
+    color: var(--muted); background: rgba(255,255,255,.8); border: 1px solid var(--line);
+    border-radius: 18px; padding: 12px 16px;
+  }
+  .ios-tip.show { display: block; }
+  .offline-badge {
+    position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+    background: var(--ink); color: #fff; font-size: 15px; border-radius: 999px; padding: 8px 16px;
+    opacity: 0; pointer-events: none; transition: opacity .3s;
+  }
+  .offline-badge.show { opacity: .92; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .card { animation: none; transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">恩慈數字學習生態圈</span>
+    <h1>數字遊戲 <span class="digits">1–20</span></h1>
+    <p class="sub">揀一個遊戲開始吧！</p>
+    <button type="button" class="install" id="installBtn">⬇️ 安裝到電腦／平板</button>
+    <p class="ios-tip" id="iosTip">在 iPad 上安裝：按 Safari 的「分享」<b>⬆︎</b>，再選「<b>加入主畫面</b>」。</p>
+  </header>
+
+  <nav class="filters" aria-label="篩選">
+    <button type="button" data-filter="all" aria-pressed="true">全部</button>
+    <button type="button" data-filter="1-10" aria-pressed="false">1–10</button>
+    <button type="button" data-filter="11-20" aria-pressed="false">11–20</button>
+    <button type="button" data-filter="1-20" aria-pressed="false">1–20</button>
+  </nav>
+
+  <main class="grid" id="grid"></main>
+
+  <footer>禮賢會恩慈學校</footer>
+</div>
+<div class="offline-badge" id="offlineBadge">已可離線使用</div>
+
+<script>
+/* ==========================================================
+   遊戲清單：新增或修改遊戲只需編輯此處
+   href   ：資料夾請以 "/" 結尾（自動開啟該資料夾的 index.html）
+   range  ：卡片上顯示的數字範圍
+   group  ：篩選分類（"1-10"、"11-20"、"1-20"）
+   ========================================================== */
+const GAMES = [
+  { href: "choosenumber-11-20/",   range: "11–20", group: "11-20",
+    icon: "👂", title: "聽數字・揀數字", desc: "聽廣東話讀音，選出正確的數字。",
+    accent: "#e8873a", tint: "#fff3e6" },
+
+  { href: "buildnumber-11-20/",    range: "11–20", group: "11-20",
+    icon: "🧱", title: "砌數字",       desc: "用十和一砌出聽到的數字。",
+    accent: "#2f8fd8", tint: "#e6f3ff" },
+
+  { href: "twenty-frame_count/",   range: "1–20",  group: "1-20",
+    icon: "🔢", title: "二十格框點數", desc: "數一數格框內有多少個點。",
+    accent: "#3aa76d", tint: "#e7f7ee" },
+
+  { href: "sequencenumber-1-20/",  range: "1–20",  group: "1-20",
+    icon: "➡️", title: "數字排序",     desc: "把數字由小至大順序排好。",
+    accent: "#8b5cf6", tint: "#f1ebff" },
+
+  { href: "rcgs-11-20/",           range: "11–20", group: "11-20",
+    icon: "⭐", title: "恩慈數字挑戰", desc: "綜合練習，認識 11 至 20。",
+    accent: "#e05d7b", tint: "#ffebf0" },
+
+  { href: "strokenumber-0-9/",     range: "0–9",   group: "1-10",
+    icon: "🖍️", title: "數字筆順",     desc: "跟住箭嘴，學寫 0 至 9 的筆順。",
+    accent: "#0f9fa8", tint: "#e3f7f8" },
+
+  { href: "writenumber-1-20/",     range: "1–20",  group: "1-20",
+    icon: "✏️", title: "寫數字",       desc: "跟筆順描寫或聽寫 1 至 20。",
+    accent: "#2b5fd9", tint: "#e8eefc" },
+
+  { href: "11-20-cantonese.html",  range: "11–20", group: "11-20",
+    icon: "🗣️", title: "廣東話讀數字", desc: "按一按，聽聽數字怎樣讀。",
+    accent: "#d4a017", tint: "#fff8dc" },
+
+  /* ↓ 以下兩個檔名在截圖中被截斷，請補上完整檔名及標題 */
+  { href: "cantonese-number-b….html", range: "1–10", group: "1-10",
+    icon: "🎯", title: "數字遊戲 B",   desc: "（請填寫簡介）",
+    accent: "#0f9fa8", tint: "#e3f7f8" },
+
+  { href: "cantonese-number-g….html", range: "1–10", group: "1-10",
+    icon: "🎮", title: "數字遊戲 G",   desc: "（請填寫簡介）",
+    accent: "#f06b3f", tint: "#ffece5" },
+];
+
+const grid = document.getElementById("grid");
+GAMES.forEach((g, i) => {
+  const a = document.createElement("a");
+  a.className = "card";
+  a.href = g.href;
+  a.dataset.group = g.group;
+  a.style.setProperty("--accent", g.accent);
+  a.style.setProperty("--tint", g.tint);
+  a.style.animationDelay = (i * 60) + "ms";
+  a.innerHTML = `
+    <div class="icon" aria-hidden="true">${g.icon}</div>
+    <div class="range">${g.range}</div>
+    <h2 class="title">${g.title}</h2>
+    <p class="desc">${g.desc}</p>
+    <span class="go">開始 ▶</span>`;
+  grid.appendChild(a);
+});
+
+document.querySelectorAll(".filters button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const f = btn.dataset.filter;
+    document.querySelectorAll(".filters button")
+      .forEach(b => b.setAttribute("aria-pressed", b === btn));
+    document.querySelectorAll(".card").forEach(c => {
+      c.classList.toggle("hidden", f !== "all" && c.dataset.group !== f);
+    });
+  });
+});
+
+/* ==========================================================
+   PWA：離線快取及安裝
+   ========================================================== */
+const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+
+if ("serviceWorker" in navigator) {
+  const firstInstall = !navigator.serviceWorker.controller;
+  navigator.serviceWorker.register("sw.js", { scope: "./" }).then(reg => {
+    if (!firstInstall) return;
+    const ready = () => {
+      const b = document.getElementById("offlineBadge");
+      b.classList.add("show"); setTimeout(() => b.classList.remove("show"), 2500);
+    };
+    const w = reg.installing || reg.waiting;
+    if (w) w.addEventListener("statechange", () => { if (w.state === "activated") ready(); });
+  }).catch(() => {});
+}
+
+// Windows（Edge／Chrome）：顯示安裝按鈕
+let deferredPrompt = null;
+const installBtn = document.getElementById("installBtn");
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); deferredPrompt = e;
+  installBtn.classList.add("show");
+});
+installBtn.addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null; installBtn.classList.remove("show");
+});
+window.addEventListener("appinstalled", () => installBtn.classList.remove("show"));
+
+// iPad：Safari 沒有安裝按鈕，顯示操作提示
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+if (isIOS && !standalone) document.getElementById("iosTip").classList.add("show");
+</script>
+</body>
+</html>
