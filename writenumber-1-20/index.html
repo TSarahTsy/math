@@ -10,206 +10,215 @@
 <link rel="manifest" href="../manifest.webmanifest">
 <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="../icons/favicon-48.png">
-<title>數字筆順 0–20</title>
+<title>數字筆順 0–31</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
- @font-face {
-   font-family: "MathsThin";
-   src: url("../maths_thin_v2.ttf") format("truetype");
-   font-display: block;
- }
- :root {
-   --bg: #f6f3ec; --ink: #1f2430; --muted: #6b7280; --line: #e7e1d4; --card: #fff;
-   --orange: #e8873a; --blue: #2f8fd8; --green: #3aa76d; --purple: #8b5cf6; --red: #e05d7b;
-   --num-font: "MathsThin", "Chakra Petch", "Noto Sans HK", sans-serif;
- }
- * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
- html, body { margin: 0; height: 100%; overscroll-behavior: none; }
- body {
-   background:
-     radial-gradient(circle at 10% 6%, #ffe2b8 0, transparent 30%),
-     radial-gradient(circle at 95% 15%, #cfe8ff 0, transparent 28%),
-     radial-gradient(circle at 75% 100%, #d9f2dc 0, transparent 30%),
-     var(--bg);
-   color: var(--ink);
-   font-family: "Noto Sans HK", system-ui, sans-serif;
-   user-select: none; -webkit-user-select: none; touch-action: manipulation;
- }
- button { font: inherit; cursor: pointer; color: inherit; }
- .screen { display: none; min-height: 100%; padding: max(16px, env(safe-area-inset-top)) 18px max(16px, env(safe-area-inset-bottom)); }
- .screen.active { display: flex; flex-direction: column; }
+  @font-face {
+    font-family: "MathsThin";
+    src: url("../maths_thin_v2.ttf") format("truetype");
+    font-display: block;
+  }
+  :root {
+    --bg: #f6f3ec; --ink: #1f2430; --muted: #6b7280; --line: #e7e1d4; --card: #fff;
+    --orange: #e8873a; --blue: #2f8fd8; --green: #3aa76d; --purple: #8b5cf6; --red: #e05d7b;
+    --num-font: "MathsThin", "Chakra Petch", "Noto Sans HK", sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; overscroll-behavior: none; }
+  body {
+    background:
+      radial-gradient(circle at 10% 6%, #ffe2b8 0, transparent 30%),
+      radial-gradient(circle at 95% 15%, #cfe8ff 0, transparent 28%),
+      radial-gradient(circle at 75% 100%, #d9f2dc 0, transparent 30%);
+    background-color: var(--bg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: "Noto Sans HK", system-ui, sans-serif;
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  button { font: inherit; cursor: pointer; color: inherit; }
+  .screen { display: none; min-height: 100%; padding: max(16px, env(safe-area-inset-top)) 18px max(16px, env(safe-area-inset-bottom)); }
+  .screen.active { display: flex; flex-direction: column; }
 
- /* ---------- 選擇畫面 ---------- */
- #start { align-items: center; justify-content: center; gap: 24px; }
- .back-link {
-   position: absolute; top: max(16px, env(safe-area-inset-top)); left: 18px;
-   text-decoration: none; color: var(--muted); font-weight: 700; font-size: 17px;
-   background: rgba(255,255,255,.75); border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px;
- }
- .hero { text-align: center; }
- .hero h1 { font-size: clamp(40px, 7vw, 64px); font-weight: 900; margin: 0; letter-spacing: .06em; }
- .hero h1 span { font-family: var(--num-font); color: var(--orange); font-weight: 600; }
- .hero p { margin: 6px 0 0; color: var(--muted); font-size: 19px; }
+  /* ---------- 選擇畫面 ---------- */
+  #start { align-items: center; justify-content: center; gap: 24px; }
+  .back-link {
+    position: absolute; top: max(16px, env(safe-area-inset-top)); left: 18px;
+    text-decoration: none; color: var(--muted); font-weight: 700; font-size: 17px;
+    background: rgba(255,255,255,.75); border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px;
+  }
+  .hero { text-align: center; }
+  .hero h1 { font-size: clamp(40px, 7vw, 64px); font-weight: 900; margin: 0; letter-spacing: .06em; }
+  .hero h1 span { font-family: var(--num-font); color: var(--orange); font-weight: 600; }
+  .hero p { margin: 6px 0 0; color: var(--muted); font-size: 19px; }
 
- .group { width: min(760px, 100%); }
- .group-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 4px 10px; }
- .group-head h2 { margin: 0; font-size: 22px; font-weight: 900; }
- .group-head h2 span { font-family: var(--num-font); font-weight: 600; color: var(--orange); }
- .digits { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
- #digitsB { grid-template-columns: repeat(6, 1fr); }
- .digit-btn {
-   --c: var(--orange);
-   position: relative; min-height: 96px; border: 2px solid var(--line); background: var(--card);
-   border-radius: 22px; box-shadow: 0 6px 0 var(--line);
-   font-family: var(--num-font); font-size: clamp(40px, 6vw, 56px); color: var(--c); line-height: 1;
-   transition: transform .15s, box-shadow .15s, border-color .15s;
- }
- .digit-btn:hover { border-color: var(--c); box-shadow: 0 8px 0 var(--c); transform: translateY(-3px); }
- .digit-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--c); }
- .digit-btn .star { position: absolute; top: 6px; right: 8px; font-size: 20px; font-family: system-ui; display: none; }
- .digit-btn.done .star { display: block; }
+  .group { width: min(760px, 100%); }
+  .group-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 4px 10px; }
+  .group-head h2 { margin: 0; font-size: 22px; font-weight: 900; }
+  .group-head h2 span { font-family: var(--num-font); font-weight: 600; color: var(--orange); }
+  .digits { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  #digitsC { grid-template-columns: repeat(6, 1fr); }
+  .digit-btn {
+    --c: var(--orange);
+    position: relative; min-height: 96px; border: 2px solid var(--line); background: var(--card);
+    border-radius: 22px; box-shadow: 0 6px 0 var(--line);
+    font-family: var(--num-font); font-size: clamp(40px, 6vw, 56px); color: var(--c); line-height: 1;
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .digit-btn:hover { border-color: var(--c); box-shadow: 0 8px 0 var(--c); transform: translateY(-3px); }
+  .digit-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--c); }
+  .digit-btn .star { position: absolute; top: 6px; right: 8px; font-size: 20px; font-family: system-ui; display: none; }
+  .digit-btn.done .star { display: block; }
 
- .all-btn {
-   border: 0; background: var(--ink); color: #fff; border-radius: 999px;
-   min-height: 48px; padding: 0 20px; font-size: 17px; font-weight: 700;
-   box-shadow: 0 4px 0 #000;
- }
- .all-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #000; }
+  .all-btn {
+    border: 0; background: var(--ink); color: #fff; border-radius: 999px;
+    min-height: 48px; padding: 0 20px; font-size: 17px; font-weight: 700;
+    box-shadow: 0 4px 0 #000;
+  }
+  .all-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #000; }
 
- /* ---------- 練習畫面 ---------- */
- .topbar { display: flex; align-items: center; gap: 12px; }
- .icon-btn {
-   width: 52px; height: 52px; border-radius: 18px; border: 2px solid var(--line);
-   background: #fff; font-size: 24px; display: grid; place-items: center; flex: none;
- }
- .icon-btn:active { transform: scale(.94); }
- .rounds { flex: 1; display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
- .round { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; color: var(--muted);
-   background: #fff; border: 2px solid var(--line); border-radius: 999px; padding: 6px 12px; }
- .round .dot { width: 14px; height: 14px; border-radius: 50%; background: #e3ddd0; }
- .round.now { border-color: var(--orange); color: var(--ink); }
- .round.done .dot { background: var(--green); }
- .round.gold .dot { background: #f5b52e; }
+  /* ---------- 練習畫面 ---------- */
+  .topbar { display: flex; align-items: center; gap: 12px; }
+  .icon-btn {
+    width: 52px; height: 52px; border-radius: 18px; border: 2px solid var(--line);
+    background: #fff; font-size: 24px; display: grid; place-items: center; flex: none;
+  }
+  .icon-btn:active { transform: scale(.94); }
+  .rounds { flex: 1; display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  .round { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; color: var(--muted);
+    background: #fff; border: 2px solid var(--line); border-radius: 999px; padding: 6px 12px; }
+  .round .dot { width: 14px; height: 14px; border-radius: 50%; background: #e3ddd0; }
+  .round.now { border-color: var(--orange); color: var(--ink); }
+  .round.done .dot { background: var(--green); }
+  .round.gold .dot { background: #f5b52e; }
 
- .prompt { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 12px 0 4px; flex-wrap: wrap; }
- .prompt .num { font-family: var(--num-font); font-size: 56px; line-height: 1; color: var(--orange); }
- .prompt .label { font-size: 22px; font-weight: 900; }
- .speak-btn {
-   border: 0; background: var(--orange); color: #fff; border-radius: 999px;
-   min-height: 50px; padding: 0 20px; font-size: 19px; font-weight: 700; box-shadow: 0 4px 0 #c46c25;
- }
- .speak-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #c46c25; }
- .hint { text-align: center; min-height: 30px; font-size: 20px; font-weight: 700; color: var(--red); margin: 0 0 6px; transition: opacity .3s; }
+  .prompt { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 12px 0 4px; flex-wrap: wrap; }
+  .prompt .num { font-family: var(--num-font); font-size: 56px; line-height: 1; color: var(--orange); }
+  .prompt .label { font-size: 22px; font-weight: 900; }
+  .speak-btn {
+    border: 0; background: var(--orange); color: #fff; border-radius: 999px;
+    min-height: 50px; padding: 0 20px; font-size: 19px; font-weight: 700; box-shadow: 0 4px 0 #c46c25;
+  }
+  .speak-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #c46c25; }
+  .hint { text-align: center; min-height: 30px; font-size: 20px; font-weight: 700; color: var(--red); margin: 0 0 6px; transition: opacity .3s; }
 
- .stage { flex: 1; display: flex; align-items: center; justify-content: center; gap: 18px; min-height: 0; }
- .pad {
-   position: relative; background: #fff; border: 3px solid var(--line); border-radius: 28px;
-   box-shadow: 0 6px 0 var(--line); transition: border-color .25s, box-shadow .25s, opacity .25s;
- }
- .pad.wait { opacity: .4; }
- .pad canvas { position: absolute; inset: 0; border-radius: 25px; }
- .pad canvas.ink { touch-action: none; cursor: crosshair; }
- .pad.ok { border-color: var(--green); box-shadow: 0 6px 0 var(--green); }
- .pad.bad { border-color: var(--red); box-shadow: 0 6px 0 var(--red); animation: shake .45s; }
- @keyframes shake { 0%,100%{transform:none} 20%{transform:translateX(-10px)} 40%{transform:translateX(10px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
+  .stage { flex: 1; display: flex; align-items: center; justify-content: center; gap: 18px; min-height: 0; }
+  .pad {
+    position: relative; background: #fff; border: 3px solid var(--line); border-radius: 28px;
+    box-shadow: 0 6px 0 var(--line); transition: border-color .25s, box-shadow .25s, opacity .25s;
+  }
+  .pad.wait { opacity: .4; }
+  .pad canvas { position: absolute; inset: 0; border-radius: 25px; }
+  .pad canvas.ink { touch-action: none; cursor: crosshair; }
+  .pad.ok { border-color: var(--green); box-shadow: 0 6px 0 var(--green); }
+  .pad.bad { border-color: var(--red); box-shadow: 0 6px 0 var(--red); animation: shake .45s; }
+  @keyframes shake { 0%,100%{transform:none} 20%{transform:translateX(-10px)} 40%{transform:translateX(10px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
 
- .controls { display: flex; justify-content: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
- .ctrl {
-   min-height: 60px; min-width: 130px; padding: 0 24px; border-radius: 20px;
-   border: 2px solid var(--line); background: #fff; font-size: 21px; font-weight: 700;
-   box-shadow: 0 5px 0 var(--line);
- }
- .ctrl:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--line); }
- .ctrl.go { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 5px 0 #2a7d51; min-width: 160px; }
- .ctrl.go:active { box-shadow: 0 1px 0 #2a7d51; }
+  .controls { display: flex; justify-content: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+  .ctrl {
+    min-height: 60px; min-width: 130px; padding: 0 24px; border-radius: 20px;
+    border: 2px solid var(--line); background: #fff; font-size: 21px; font-weight: 700;
+    box-shadow: 0 5px 0 var(--line);
+  }
+  .ctrl:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--line); }
+  .ctrl.go { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 5px 0 #2a7d51; min-width: 160px; }
+  .ctrl.go:active { box-shadow: 0 1px 0 #2a7d51; }
 
- .pop {
-   position: fixed; left: 50%; top: 45%; transform: translate(-50%,-50%) scale(.4);
-   font-size: 120px; pointer-events: none; opacity: 0; z-index: 10;
- }
- .pop.show { animation: pop 1.1s ease forwards; }
- @keyframes pop {
-   0% { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
-   25% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
-   60% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
-   100% { opacity: 0; transform: translate(-50%,-70%) scale(1); }
- }
+  .pop {
+    position: fixed; left: 50%; top: 45%; transform: translate(-50%,-50%) scale(.4);
+    font-size: 120px; pointer-events: none; opacity: 0; z-index: 10;
+  }
+  .pop.show { animation: pop 1.1s ease forwards; }
+  @keyframes pop {
+    0% { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
+    25% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+    60% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%,-70%) scale(1); }
+  }
 
- /* ---------- 完成畫面 ---------- */
- #end { align-items: center; justify-content: center; text-align: center; gap: 18px; }
- #end h2 { font-size: 56px; margin: 0; }
- #end .big { font-family: var(--num-font); font-size: 120px; line-height: 1; color: var(--orange); }
- #end .score { font-size: 22px; color: var(--muted); margin: 0; }
- .end-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  /* ---------- 完成畫面 ---------- */
+  #end { align-items: center; justify-content: center; text-align: center; gap: 18px; }
+  #end h2 { font-size: 56px; margin: 0; }
+  #end .big { font-family: var(--num-font); font-size: 120px; line-height: 1; color: var(--orange); }
+  #end .score { font-size: 22px; color: var(--muted); margin: 0; }
+  .end-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
 
- @media (max-width: 560px) { .digits, #digitsB { grid-template-columns: repeat(4, 1fr); gap: 8px; } .digit-btn { min-height: 72px; border-radius: 16px; } }
- @media (prefers-reduced-motion: reduce) { .pad, .pop { animation: none !important; transition: none !important; } }
+  @media (max-width: 560px) { .digits, #digitsC { grid-template-columns: repeat(4, 1fr); gap: 8px; } .digit-btn { min-height: 72px; border-radius: 16px; } }
+  @media (prefers-reduced-motion: reduce) { .pad, .pop { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
 
 <!-- 選擇畫面 -->
 <section class="screen active" id="start">
- <a class="back-link" href="../index.html">← 目錄</a>
- <div class="hero">
-   <h1>數字筆順 <span>0–20</span></h1>
-   <p>揀一個數字，跟住箭嘴學筆順</p>
- </div>
- <div class="group">
-   <div class="group-head">
-     <h2>一位數 <span>0–9</span></h2>
-     <button class="all-btn" data-seq="0-9">▶ 順序練習</button>
-   </div>
-   <div class="digits" id="digitsA"></div>
- </div>
- <div class="group">
-   <div class="group-head">
-     <h2>兩位數 <span>10–20</span></h2>
-     <button class="all-btn" data-seq="10-20">▶ 順序練習</button>
-   </div>
-   <div class="digits" id="digitsB"></div>
- </div>
+  <a class="back-link" href="../index.html">← 目錄</a>
+  <div class="hero">
+    <h1>數字筆順 <span>0–31</span></h1>
+    <p>選一個數字，跟著指示學筆順</p>
+  </div>
+  <div class="group">
+    <div class="group-head">
+      <h2>一位數 <span>0–9</span></h2>
+      <button class="all-btn" data-seq="0-9">▶ 順序練習</button>
+    </div>
+    <div class="digits" id="digitsA"></div>
+  </div>
+  <div class="group">
+    <div class="group-head">
+      <h2>兩位數 <span>10–19</span></h2>
+      <button class="all-btn" data-seq="10-19">▶ 順序練習</button>
+    </div>
+    <div class="digits" id="digitsB"></div>
+  </div>
+  <div class="group">
+    <div class="group-head">
+      <h2>兩位數 <span>20–31</span></h2>
+      <button class="all-btn" data-seq="20-31">▶ 順序練習</button>
+    </div>
+    <div class="digits" id="digitsC"></div>
+  </div>
 </section>
 
 <!-- 練習畫面 -->
 <section class="screen" id="game">
- <div class="topbar">
-   <button class="icon-btn" id="homeBtn" aria-label="返回選單">🏠</button>
-   <div class="rounds" id="rounds"></div>
-   <button class="icon-btn" id="skipBtn" aria-label="下一個">⏭</button>
- </div>
- <div class="prompt">
-   <span class="num" id="promptNum"></span>
-   <span class="label" id="roundLabel"></span>
-   <button class="speak-btn" id="speakBtn">🔊</button>
- </div>
- <p class="hint" id="hint"></p>
- <div class="stage" id="stage"></div>
- <div class="controls">
-   <button class="ctrl" id="demoBtn">▶ 示範筆順</button>
-   <button class="ctrl" id="clearBtn">↺ 重寫</button>
- </div>
+  <div class="topbar">
+    <button class="icon-btn" id="homeBtn" aria-label="返回選單">🏠</button>
+    <div class="rounds" id="rounds"></div>
+    <button class="icon-btn" id="skipBtn" aria-label="下一個">⏭</button>
+  </div>
+  <div class="prompt">
+    <span class="num" id="promptNum"></span>
+    <span class="label" id="roundLabel"></span>
+    <button class="speak-btn" id="speakBtn">🔊</button>
+  </div>
+  <p class="hint" id="hint"></p>
+  <div class="stage" id="stage"></div>
+  <div class="controls">
+    <button class="ctrl" id="demoBtn">▶ 示範筆順</button>
+    <button class="ctrl" id="clearBtn">↺ 重寫</button>
+  </div>
 </section>
 
 <!-- 完成畫面 -->
 <section class="screen" id="end">
- <h2>🎉 做得好！</h2>
- <div class="big" id="endNum"></div>
- <p class="score" id="endScore"></p>
- <div class="end-btns">
-   <button class="ctrl go" id="nextBtn">下一個數字</button>
-   <button class="ctrl" id="againBtn">再練一次</button>
-   <button class="ctrl" id="menuBtn">返回選單</button>
- </div>
+  <h2>🎉 做得好！</h2>
+  <div class="big" id="endNum"></div>
+  <p class="score" id="endScore"></p>
+  <div class="end-btns">
+    <button class="ctrl go" id="nextBtn">下一個數字</button>
+    <button class="ctrl" id="againBtn">再練一次</button>
+    <button class="ctrl" id="menuBtn">返回選單</button>
+  </div>
 </section>
 
 <div class="pop" id="pop">⭐</div>
 
 <script>
 /* =========================================================
-  設定
-  ========================================================= */
+   設定
+   ========================================================= */
 const AUDIO_BASE = "../audio/";               // 1.mp3 – 10.mp3（0 用瀏覽器語音）
 const INK = "#2b5fd9";
 const DEMO_INK = "#f2a65a";
@@ -218,486 +227,496 @@ const DEMO_INK = "#f2a65a";
 //   start：路線、紅色起點
 //   faint：只有極淡的路線
 const ROUNDS = [
- { guide: "full",  label: "跟住箭嘴寫" },
- { guide: "start", label: "由紅點開始寫" },
- { guide: "faint", label: "自己寫一次" },
+  { guide: "full",  label: "跟住箭嘴寫" },
+  { guide: "start", label: "由紅點開始寫" },
+  { guide: "faint", label: "自己寫一次" },
 ];
 // 寬鬆度（字格座標：數字高 140、闊 100）
 const TOL = {
- full:  { start: 15, off: 14, look: 30, end: 0.93 },
- start: { start: 15, off: 15, look: 30, end: 0.93 },
- faint: { start: 20, off: 18, look: 36, end: 0.90 },
+  full:  { start: 15, off: 14, look: 30, end: 0.93 },
+  start: { start: 15, off: 15, look: 30, end: 0.93 },
+  faint: { start: 20, off: 18, look: 36, end: 0.90 },
 };
 const REVEAL_AFTER = 2;   // 「自己寫」錯幾次後顯示完整提示
 
 /* =========================================================
-  筆順路線（座標：x 0–100，y 0–140，y 向下）
-  每個數字是一組「筆」，每筆是一條連續路線，按書寫次序排列
-  arc() 的角度遞增 = 順時針；遞減 = 逆時針
-  （0° 在右，90° 在下，180° 在左，270° 在上）
-  ========================================================= */
+   筆順路線（座標：x 0–100，y 0–140，y 向下）
+   每個數字是一組「筆」，每筆是一條連續路線，按書寫次序排列
+   arc() 的角度遞增 = 順時針；遞減 = 逆時針
+   （0° 在右，90° 在下，180° 在左，270° 在上）
+   ========================================================= */
 const rad = d => d * Math.PI / 180;
 function arc(cx, cy, rx, ry, a0, a1) {
- const n = Math.max(8, Math.ceil(Math.abs(a1 - a0) / 4)), pts = [];
- for (let i = 0; i <= n; i++) {
-   const a = rad(a0 + (a1 - a0) * i / n);
-   pts.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]);
- }
- return pts;
+  const n = Math.max(8, Math.ceil(Math.abs(a1 - a0) / 4)), pts = [];
+  for (let i = 0; i <= n; i++) {
+    const a = rad(a0 + (a1 - a0) * i / n);
+    pts.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]);
+  }
+  return pts;
 }
 const join = (...parts) => parts.flat();
 
 const STROKES = {
- // 0：由頂部開始，順時針一圈
- "0": [arc(50, 70, 36, 58, -90, 270)],
- // 1：由上而下
- "1": [[[50, 10], [50, 130]]],
- // 2：彎頂 → 斜落 → 打橫
- "2": [join(arc(50, 42, 31, 31, 200, 380), [[18, 130], [86, 130]])],
- // 3：兩個彎
- "3": [join(arc(48, 40, 29, 29, 205, 450), arc(48, 101, 32, 30, 270, 510))],
- // 4：第一筆斜落打橫，第二筆直落
- "4": [[[50, 10], [12, 92], [88, 92]], [[66, 40], [66, 130]]],
- // 5：第一筆直落彎肚，第二筆加帽
- "5": [join([[30, 12], [27, 62]], arc(50, 95, 32, 33, 222, 510)), [[30, 12], [80, 12]]],
- // 6：由上彎落，再逆時針圈
- "6": [join(arc(72, 82, 50, 70, 262, 165), arc(50, 100, 29, 29, 180, -180))],
- // 7：打橫再斜落
- "7": [[[18, 12], [82, 12], [42, 130]]],
- // 8：由中間接觸點開始，順時針向上繞上圈，回到中間後繞下圈，返回起點
- "8": [join(arc(50, 39, 25, 27, 90, 450), arc(50, 97, 31, 31, 270, -90))],
- // 9：逆時針圈，再直落
- "9": [join(arc(50, 44, 28, 31, -15, -375), [[78, 40], [75, 130]])],
+  // 0：由頂部開始，順時針一圈
+  "0": [arc(50, 70, 36, 58, -90, 270)],
+  // 1：由上而下
+  "1": [[[50, 10], [50, 130]]],
+  // 2：彎頂 → 斜落 → 打橫
+  "2": [join(arc(50, 42, 31, 31, 200, 380), [[18, 130], [86, 130]])],
+  // 3：兩個彎
+  "3": [join(arc(48, 40, 29, 29, 205, 450), arc(48, 101, 32, 30, 270, 510))],
+  // 4：第一筆斜落打橫，第二筆直落
+  "4": [[[50, 10], [12, 92], [88, 92]], [[66, 40], [66, 130]]],
+  // 5：第一筆直落彎肚，第二筆加帽
+  "5": [join([[30, 12], [27, 62]], arc(50, 95, 32, 33, 222, 510)), [[30, 12], [80, 12]]],
+  // 6：由上彎落，再逆時針圈
+  "6": [join(arc(72, 82, 50, 70, 262, 165), arc(50, 100, 29, 29, 180, -180))],
+  // 7：打橫再斜落
+  "7": [[[18, 12], [82, 12], [42, 130]]],
+  // 8：由中間接觸點開始，順時針向上繞上圈，回到中間後繞下圈，返回起點
+  "8": [join(arc(50, 39, 25, 27, 90, 450), arc(50, 97, 31, 31, 270, -90))],
+  // 9：逆時針圈，再直落
+  "9": [join(arc(50, 44, 28, 31, -15, -375), [[78, 40], [75, 130]])],
 };
 
 function resample(pts, step = 2) {
- const out = [pts[0]];
- let acc = 0;
- for (let i = 1; i < pts.length; i++) {
-   let a = pts[i - 1]; const b = pts[i];
-   let d = Math.hypot(b[0] - a[0], b[1] - a[1]);
-   while (acc + d >= step && d > 0) {
-     const t = (step - acc) / d;
-     a = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-     out.push(a);
-     d = Math.hypot(b[0] - a[0], b[1] - a[1]); acc = 0;
-   }
-   acc += d;
- }
- const last = pts[pts.length - 1], tail = out[out.length - 1];
- if (Math.hypot(last[0] - tail[0], last[1] - tail[1]) > 0.5) out.push(last);
- return out;
+  const out = [pts[0]];
+  let acc = 0;
+  for (let i = 1; i < pts.length; i++) {
+    let a = pts[i - 1]; const b = pts[i];
+    let d = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    while (acc + d >= step && d > 0) {
+      const t = (step - acc) / d;
+      a = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+      out.push(a);
+      d = Math.hypot(b[0] - a[0], b[1] - a[1]); acc = 0;
+    }
+    acc += d;
+  }
+  const last = pts[pts.length - 1], tail = out[out.length - 1];
+  if (Math.hypot(last[0] - tail[0], last[1] - tail[1]) > 0.5) out.push(last);
+  return out;
 }
 const PATHS = Object.fromEntries(Object.entries(STROKES).map(([d, s]) => [d, s.map(p => resample(p))]));
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
 /* =========================================================
-  聲音：數字用錄音，其他字詞用瀏覽器廣東話語音
-  ========================================================= */
+   聲音：數字用錄音，其他字詞用瀏覽器廣東話語音
+   ========================================================= */
 const CN = ["零","一","二","三","四","五","六","七","八","九","十"];
-const cnNum = n => n <= 10 ? CN[n] : n < 20 ? "十" + CN[n - 10] : "二十";
-const numberParts = n => n <= 10 ? [n] : n < 20 ? [10, n - 10] : [2, 10];
+// 讀法：21 = 二十一（2 + 10 + 1），30 = 三十（3 + 10）
+const cnNum = n => {
+  if (n <= 10) return CN[n];
+  const t = Math.floor(n / 10), u = n % 10;
+  return (t > 1 ? CN[t] : "") + "十" + (u ? CN[u] : "");
+};
+const numberParts = n => {
+  if (n <= 10) return [n];
+  const t = Math.floor(n / 10), u = n % 10;
+  return [...(t > 1 ? [t] : []), 10, ...(u ? [u] : [])];
+};
+const MAX_NUM = 31;
 
 let zhVoice = null;
 function pickVoice() {
- const vs = speechSynthesis.getVoices();
- const hk = vs.filter(v => /zh[-_]HK|yue/i.test(v.lang));
- zhVoice = hk.find(v => /Sinji|Danny|Siu|Hiu/i.test(v.name)) || hk[0] || null;
+  const vs = speechSynthesis.getVoices();
+  const hk = vs.filter(v => /zh[-_]HK|yue/i.test(v.lang));
+  zhVoice = hk.find(v => /Sinji|Danny|Siu|Hiu/i.test(v.name)) || hk[0] || null;
 }
 if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
 function say(text) {
- return new Promise(res => {
-   if (!("speechSynthesis" in window)) return res();
-   const u = new SpeechSynthesisUtterance(text);
-   u.lang = "zh-HK"; if (zhVoice) u.voice = zhVoice; u.rate = 0.9;
-   let done = false; const fin = () => { if (!done) { done = true; res(); } };
-   u.onend = fin; u.onerror = fin;
-   setTimeout(fin, 700 + text.length * 450);
-   speechSynthesis.cancel();
-   speechSynthesis.speak(u);
- });
+  return new Promise(res => {
+    if (!("speechSynthesis" in window)) return res();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "zh-HK"; if (zhVoice) u.voice = zhVoice; u.rate = 0.9;
+    let done = false; const fin = () => { if (!done) { done = true; res(); } };
+    u.onend = fin; u.onerror = fin;
+    setTimeout(fin, 700 + text.length * 450);
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  });
 }
 
 const AC = window.AudioContext || window.webkitAudioContext;
 const actx = AC ? new AC() : null;
 const buffers = {};
 const audioReady = !actx ? Promise.resolve() : Promise.all(
- Array.from({ length: 10 }, (_, i) => i + 1).map(async k => {
-   try {
-     const r = await fetch(AUDIO_BASE + k + ".mp3");
-     if (!r.ok) return;
-     const ab = await r.arrayBuffer();
-     buffers[k] = await new Promise((ok, no) => {
-       const p = actx.decodeAudioData(ab, ok, no);
-       if (p && p.catch) p.catch(no);
-     });
-   } catch (e) {}
- })
+  Array.from({ length: 10 }, (_, i) => i + 1).map(async k => {
+    try {
+      const r = await fetch(AUDIO_BASE + k + ".mp3");
+      if (!r.ok) return;
+      const ab = await r.arrayBuffer();
+      buffers[k] = await new Promise((ok, no) => {
+        const p = actx.decodeAudioData(ab, ok, no);
+        if (p && p.catch) p.catch(no);
+      });
+    } catch (e) {}
+  })
 );
 
 async function playNumber(n) {
- await audioReady;
- const parts = numberParts(n);
- if (!actx || parts.some(p => !buffers[p])) return say(cnNum(n));   // 0 或錄音缺失時用語音
- if (actx.state === "suspended") await actx.resume();
- return new Promise(res => {
-   let t = actx.currentTime + 0.05;
-   parts.forEach(p => {
-     const s = actx.createBufferSource();
-     s.buffer = buffers[p]; s.connect(actx.destination); s.start(t);
-     t += buffers[p].duration;
-   });
-   setTimeout(res, (t - actx.currentTime) * 1000 + 60);
- });
+  await audioReady;
+  const parts = numberParts(n);
+  if (!actx || parts.some(p => !buffers[p])) return say(cnNum(n));   // 0 或錄音缺失時用語音
+  if (actx.state === "suspended") await actx.resume();
+  return new Promise(res => {
+    let t = actx.currentTime + 0.05;
+    parts.forEach(p => {
+      const s = actx.createBufferSource();
+      s.buffer = buffers[p]; s.connect(actx.destination); s.start(t);
+      t += buffers[p].duration;
+    });
+    setTimeout(res, (t - actx.currentTime) * 1000 + 60);
+  });
 }
 
 let lastHint = 0, hintTimer = null;
 function hint(msg) {
- const el = $("hint"); el.textContent = msg; el.style.opacity = 1;
- clearTimeout(hintTimer); hintTimer = setTimeout(() => el.style.opacity = 0, 2200);
- const now = Date.now();
- if (now - lastHint > 1800) { lastHint = now; say(msg); }
+  const el = $("hint"); el.textContent = msg; el.style.opacity = 1;
+  clearTimeout(hintTimer); hintTimer = setTimeout(() => el.style.opacity = 0, 2200);
+  const now = Date.now();
+  if (now - lastHint > 1800) { lastHint = now; say(msg); }
 }
 
 /* =========================================================
-  書寫格
-  ========================================================= */
+   書寫格
+   ========================================================= */
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const frame = () => new Promise(r => requestAnimationFrame(r));
 
 class Pad {
- constructor(digit, guide) {
-   this.digit = digit; this.paths = PATHS[digit];
-   this.guide = guide;
-   this.k = 0; this.done = []; this.cur = null; this.j = 0;
-   this.active = false; this.complete = false; this.dead = false;
-   this.el = document.createElement("div"); this.el.className = "pad";
-   this.g = document.createElement("canvas");
-   this.d = document.createElement("canvas");
-   this.i = document.createElement("canvas"); this.i.className = "ink";
-   this.el.append(this.g, this.d, this.i);
-   this.i.addEventListener("pointerdown", e => this.down(e));
-   this.i.addEventListener("pointermove", e => this.move(e));
-   this.i.addEventListener("pointerup", () => this.up());
-   this.i.addEventListener("pointercancel", () => { this.cur = null; this.redrawInk(); });
- }
- tol() { return TOL[this.guide]; }
- setActive(on) { this.active = on; this.el.classList.toggle("wait", !on && !this.complete); this.drawGuide(); }
- resize(w, h) {
-   this.w = w; this.h = h;
-   this.s = Math.min(h * 0.8 / 140, w * 0.85 / 100);
-   this.ox = (w - 100 * this.s) / 2; this.oy = (h - 140 * this.s) / 2;
-   const dpr = Math.min(window.devicePixelRatio || 1, 3);
-   [this.g, this.d, this.i].forEach(c => {
-     c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
-     c.style.width = w + "px"; c.style.height = h + "px";
-     c.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0);
-   });
-   this.el.style.width = w + "px"; this.el.style.height = h + "px";
-   this.drawGuide(); this.redrawInk();
- }
- X(p) { return [this.ox + p[0] * this.s, this.oy + p[1] * this.s]; }
- line(c, pts, lw, color, dash) {
-   if (pts.length < 2) return;
-   c.save(); c.strokeStyle = color; c.lineWidth = lw; c.lineCap = "round"; c.lineJoin = "round";
-   if (dash) c.setLineDash(dash);
-   c.beginPath(); pts.forEach((p, i) => { const q = this.X(p); i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]); });
-   c.stroke(); c.restore();
- }
- circle(c, p, r, fill, label) {
-   const q = this.X(p);
-   c.beginPath(); c.arc(q[0], q[1], r, 0, Math.PI * 2); c.fillStyle = fill; c.fill();
-   if (label) {
-     c.fillStyle = "#fff"; c.font = `900 ${r * 1.2}px "Noto Sans HK", sans-serif`;
-     c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(label, q[0], q[1] + r * 0.05);
-   }
- }
- arrows(c, pts) {
-   const size = 5 * this.s;
-   for (let i = 14; i < pts.length - 6; i += 18) {
-     const a = this.X(pts[i - 2]), b = this.X(pts[i + 2]), q = this.X(pts[i]);
-     const ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
-     c.save(); c.translate(q[0], q[1]); c.rotate(ang);
-     c.beginPath(); c.moveTo(size, 0); c.lineTo(-size * 0.7, -size * 0.8); c.lineTo(-size * 0.7, size * 0.8); c.closePath();
-     c.fillStyle = "#8f9bb0"; c.fill(); c.restore();
-   }
- }
- drawGuide() {
-   const c = this.g.getContext("2d"), s = this.s;
-   c.clearRect(0, 0, this.w, this.h);
-   c.save(); c.strokeStyle = "#e1e6ee"; c.lineWidth = 2; c.setLineDash([8, 8]);
-   [10, 70, 130].forEach(y => { const yy = this.oy + y * s; c.beginPath(); c.moveTo(14, yy); c.lineTo(this.w - 14, yy); c.stroke(); });
-   c.restore();
-   const g = this.guide;
-   this.paths.forEach((P, i) => {
-     const color = i < this.k ? "#d4f0de" : g === "faint" ? "#f1f3f7" : "#e8ecf3";
-     this.line(c, P, 17 * s, color);
-   });
-   if (g === "faint" || this.complete) return;
-   const multi = this.paths.length > 1;
-   if (multi) for (let i = this.paths.length - 1; i > this.k; i--) this.circle(c, this.paths[i][0], 8 * s, "#b8c1d0", String(i + 1));
-   const P = this.paths[this.k];
-   if (g === "full") {
-     this.line(c, P, 2.2, "#a7b2c4", [6, 7]);
-     this.arrows(c, P);
-     this.circle(c, P[P.length - 1], 4 * s, "#a7b2c4");
-   }
-   this.circle(c, P[0], 9.5 * s, this.active ? "#e5484d" : "#d9a0a2", multi ? String(this.k + 1) : "");
- }
- redrawInk() {
-   const c = this.i.getContext("2d");
-   c.clearRect(0, 0, this.w, this.h);
-   this.done.forEach(st => this.line(c, st, 9 * this.s, INK));
-   if (this.cur) this.line(c, this.cur, 9 * this.s, INK);
- }
- toUnit(e) {
-   const r = this.i.getBoundingClientRect();
-   const px = (e.clientX - r.left) * this.w / r.width, py = (e.clientY - r.top) * this.h / r.height;
-   return [(px - this.ox) / this.s, (py - this.oy) / this.s];
- }
- down(e) {
-   if (game.locked || !this.active || this.complete) return;
-   e.preventDefault();
-   this.el.classList.remove("bad");
-   const p = this.toUnit(e), P = this.paths[this.k];
-   if (dist(p, P[0]) > this.tol().start) {
-     this.mistake(this.guide === "faint" ? "起點唔啱，再試一次" : "由紅點開始寫"); return;
-   }
-   this.i.setPointerCapture(e.pointerId);
-   this.cur = [P[0]]; this.j = 0;
-   this.redrawInk();
- }
- move(e) {
-   if (!this.cur) return;
-   const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
-   for (const ev of evs) {
-     const p = this.toUnit(ev), last = this.cur[this.cur.length - 1];
-     const n = Math.max(1, Math.ceil(dist(last, p) / 2));
-     for (let t = 1; t <= n; t++) {
-       const q = [last[0] + (p[0] - last[0]) * t / n, last[1] + (p[1] - last[1]) * t / n];
-       if (!this.track(q)) { this.cur = null; this.redrawInk(); this.mistake("跟住路線寫"); return; }
-       this.cur.push(q);
-     }
-   }
-   this.redrawInk();
- }
- track(q) {
-   const P = this.paths[this.k], tol = this.tol();
-   const end = Math.min(P.length - 1, this.j + Math.ceil(tol.look / 2));
-   const ds = [];
-   let best = Infinity;
-   for (let i = this.j; i <= end; i++) { ds.push(dist(q, P[i])); best = Math.min(best, ds[ds.length - 1]); }
-   if (best > tol.off) return false;
-   // 路線重疊時（例如 8、9）優先取較前的位置，避免跳筆
-   const bi = this.j + ds.findIndex(d => d <= best + 3);
-   if (bi > this.j) this.j = bi;
-   return true;
- }
- finished() {
-   const last = this.paths[this.k].length - 1;
-   return this.j >= last - Math.max(4, last * (1 - this.tol().end));
- }
- up() {
-   if (!this.cur) return;
-   if (this.finished()) {
-     this.done.push(this.cur); this.cur = null; this.k++;
-     if (this.k >= this.paths.length) {
-       this.complete = true; this.el.classList.add("ok");
-       this.drawGuide(); this.redrawInk(); game.onComplete(this);
-     } else { this.drawGuide(); this.redrawInk(); }
-   } else {
-     this.cur = null; this.redrawInk(); this.mistake("要一筆寫完先好放手");
-   }
- }
- mistake(msg) {
-   this.el.classList.remove("bad"); void this.el.offsetWidth; this.el.classList.add("bad");
-   game.onMistake(msg);
- }
- reset() {
-   this.k = 0; this.done = []; this.cur = null; this.complete = false;
-   this.el.classList.remove("ok", "bad"); this.drawGuide(); this.redrawInk();
- }
- async demo() {
-   const c = this.d.getContext("2d"), lw = 9 * this.s;
-   for (let si = 0; si < this.paths.length; si++) {
-     const P = this.paths[si];
-     for (let pi = 0; pi < P.length; pi += 2) {
-       if (this.dead) return c.clearRect(0, 0, this.w, this.h);
-       c.clearRect(0, 0, this.w, this.h);
-       for (let a = 0; a < si; a++) this.line(c, this.paths[a], lw, DEMO_INK);
-       this.line(c, P.slice(0, pi + 1), lw, DEMO_INK);
-       this.circle(c, P[pi], 7 * this.s, "#e5484d");
-       await frame();
-     }
-     await sleep(350);
-   }
-   await sleep(400);
-   c.clearRect(0, 0, this.w, this.h);
- }
+  constructor(digit, guide) {
+    this.digit = digit; this.paths = PATHS[digit];
+    this.guide = guide;
+    this.k = 0; this.done = []; this.cur = null; this.j = 0;
+    this.active = false; this.complete = false; this.dead = false;
+    this.el = document.createElement("div"); this.el.className = "pad";
+    this.g = document.createElement("canvas");
+    this.d = document.createElement("canvas");
+    this.i = document.createElement("canvas"); this.i.className = "ink";
+    this.el.append(this.g, this.d, this.i);
+    this.i.addEventListener("pointerdown", e => this.down(e));
+    this.i.addEventListener("pointermove", e => this.move(e));
+    this.i.addEventListener("pointerup", () => this.up());
+    this.i.addEventListener("pointercancel", () => { this.cur = null; this.redrawInk(); });
+  }
+  tol() { return TOL[this.guide]; }
+  setActive(on) { this.active = on; this.el.classList.toggle("wait", !on && !this.complete); this.drawGuide(); }
+  resize(w, h) {
+    this.w = w; this.h = h;
+    this.s = Math.min(h * 0.8 / 140, w * 0.85 / 100);
+    this.ox = (w - 100 * this.s) / 2; this.oy = (h - 140 * this.s) / 2;
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    [this.g, this.d, this.i].forEach(c => {
+      c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+      c.style.width = w + "px"; c.style.height = h + "px";
+      c.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0);
+    });
+    this.el.style.width = w + "px"; this.el.style.height = h + "px";
+    this.drawGuide(); this.redrawInk();
+  }
+  X(p) { return [this.ox + p[0] * this.s, this.oy + p[1] * this.s]; }
+  line(c, pts, lw, color, dash) {
+    if (pts.length < 2) return;
+    c.save(); c.strokeStyle = color; c.lineWidth = lw; c.lineCap = "round"; c.lineJoin = "round";
+    if (dash) c.setLineDash(dash);
+    c.beginPath(); pts.forEach((p, i) => { const q = this.X(p); i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]); });
+    c.stroke(); c.restore();
+  }
+  circle(c, p, r, fill, label) {
+    const q = this.X(p);
+    c.beginPath(); c.arc(q[0], q[1], r, 0, Math.PI * 2); c.fillStyle = fill; c.fill();
+    if (label) {
+      c.fillStyle = "#fff"; c.font = `900 ${r * 1.2}px "Noto Sans HK", sans-serif`;
+      c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(label, q[0], q[1] + r * 0.05);
+    }
+  }
+  arrows(c, pts) {
+    const size = 5 * this.s;
+    for (let i = 14; i < pts.length - 6; i += 18) {
+      const a = this.X(pts[i - 2]), b = this.X(pts[i + 2]), q = this.X(pts[i]);
+      const ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
+      c.save(); c.translate(q[0], q[1]); c.rotate(ang);
+      c.beginPath(); c.moveTo(size, 0); c.lineTo(-size * 0.7, -size * 0.8); c.lineTo(-size * 0.7, size * 0.8); c.closePath();
+      c.fillStyle = "#8f9bb0"; c.fill(); c.restore();
+    }
+  }
+  drawGuide() {
+    const c = this.g.getContext("2d"), s = this.s;
+    c.clearRect(0, 0, this.w, this.h);
+    c.save(); c.strokeStyle = "#e1e6ee"; c.lineWidth = 2; c.setLineDash([8, 8]);
+    [10, 70, 130].forEach(y => { const yy = this.oy + y * s; c.beginPath(); c.moveTo(14, yy); c.lineTo(this.w - 14, yy); c.stroke(); });
+    c.restore();
+    const g = this.guide;
+    this.paths.forEach((P, i) => {
+      const color = i < this.k ? "#d4f0de" : g === "faint" ? "#f1f3f7" : "#e8ecf3";
+      this.line(c, P, 17 * s, color);
+    });
+    if (g === "faint" || this.complete) return;
+    const multi = this.paths.length > 1;
+    if (multi) for (let i = this.paths.length - 1; i > this.k; i--) this.circle(c, this.paths[i][0], 8 * s, "#b8c1d0", String(i + 1));
+    const P = this.paths[this.k];
+    if (g === "full") {
+      this.line(c, P, 2.2, "#a7b2c4", [6, 7]);
+      this.arrows(c, P);
+      this.circle(c, P[P.length - 1], 4 * s, "#a7b2c4");
+    }
+    this.circle(c, P[0], 9.5 * s, this.active ? "#e5484d" : "#d9a0a2", multi ? String(this.k + 1) : "");
+  }
+  redrawInk() {
+    const c = this.i.getContext("2d");
+    c.clearRect(0, 0, this.w, this.h);
+    this.done.forEach(st => this.line(c, st, 9 * this.s, INK));
+    if (this.cur) this.line(c, this.cur, 9 * this.s, INK);
+  }
+  toUnit(e) {
+    const r = this.i.getBoundingClientRect();
+    const px = (e.clientX - r.left) * this.w / r.width, py = (e.clientY - r.top) * this.h / r.height;
+    return [(px - this.ox) / this.s, (py - this.oy) / this.s];
+  }
+  down(e) {
+    if (game.locked || !this.active || this.complete) return;
+    e.preventDefault();
+    this.el.classList.remove("bad");
+    const p = this.toUnit(e), P = this.paths[this.k];
+    if (dist(p, P[0]) > this.tol().start) {
+      this.mistake(this.guide === "faint" ? "起點唔啱，再試一次" : "由紅點開始寫"); return;
+    }
+    this.i.setPointerCapture(e.pointerId);
+    this.cur = [P[0]]; this.j = 0;
+    this.redrawInk();
+  }
+  move(e) {
+    if (!this.cur) return;
+    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+    for (const ev of evs) {
+      const p = this.toUnit(ev), last = this.cur[this.cur.length - 1];
+      const n = Math.max(1, Math.ceil(dist(last, p) / 2));
+      for (let t = 1; t <= n; t++) {
+        const q = [last[0] + (p[0] - last[0]) * t / n, last[1] + (p[1] - last[1]) * t / n];
+        if (!this.track(q)) { this.cur = null; this.redrawInk(); this.mistake("跟住路線寫"); return; }
+        this.cur.push(q);
+      }
+    }
+    this.redrawInk();
+  }
+  track(q) {
+    const P = this.paths[this.k], tol = this.tol();
+    const end = Math.min(P.length - 1, this.j + Math.ceil(tol.look / 2));
+    const ds = [];
+    let best = Infinity;
+    for (let i = this.j; i <= end; i++) { ds.push(dist(q, P[i])); best = Math.min(best, ds[ds.length - 1]); }
+    if (best > tol.off) return false;
+    // 路線重疊時（例如 8、9）優先取較前的位置，避免跳筆
+    const bi = this.j + ds.findIndex(d => d <= best + 3);
+    if (bi > this.j) this.j = bi;
+    return true;
+  }
+  finished() {
+    const last = this.paths[this.k].length - 1;
+    return this.j >= last - Math.max(4, last * (1 - this.tol().end));
+  }
+  up() {
+    if (!this.cur) return;
+    if (this.finished()) {
+      this.done.push(this.cur); this.cur = null; this.k++;
+      if (this.k >= this.paths.length) {
+        this.complete = true; this.el.classList.add("ok");
+        this.drawGuide(); this.redrawInk(); game.onComplete(this);
+      } else { this.drawGuide(); this.redrawInk(); }
+    } else {
+      this.cur = null; this.redrawInk(); this.mistake("要一筆寫完先好放手");
+    }
+  }
+  mistake(msg) {
+    this.el.classList.remove("bad"); void this.el.offsetWidth; this.el.classList.add("bad");
+    game.onMistake(msg);
+  }
+  reset() {
+    this.k = 0; this.done = []; this.cur = null; this.complete = false;
+    this.el.classList.remove("ok", "bad"); this.drawGuide(); this.redrawInk();
+  }
+  async demo() {
+    const c = this.d.getContext("2d"), lw = 9 * this.s;
+    for (let si = 0; si < this.paths.length; si++) {
+      const P = this.paths[si];
+      for (let pi = 0; pi < P.length; pi += 2) {
+        if (this.dead) return c.clearRect(0, 0, this.w, this.h);
+        c.clearRect(0, 0, this.w, this.h);
+        for (let a = 0; a < si; a++) this.line(c, this.paths[a], lw, DEMO_INK);
+        this.line(c, P.slice(0, pi + 1), lw, DEMO_INK);
+        this.circle(c, P[pi], 7 * this.s, "#e5484d");
+        await frame();
+      }
+      await sleep(350);
+    }
+    await sleep(400);
+    c.clearRect(0, 0, this.w, this.h);
+  }
 }
 
 /* =========================================================
-  進度紀錄（只存在此裝置）
-  ========================================================= */
+   進度紀錄（只存在此裝置）
+   ========================================================= */
 const STORE_KEY = "rcgs-stroke-0-20";
 function loadDone() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { return {}; } }
 function saveDone(d) { try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch (e) {} }
 
 /* =========================================================
-  遊戲流程
-  ========================================================= */
+   遊戲流程
+   ========================================================= */
 const $ = id => document.getElementById(id);
 const game = {
- num: 0, seqEnd: null, round: 0, results: [], mistakes: 0,
- pads: [], locked: false, token: 0,
- onComplete(pad) {
-   const i = this.pads.indexOf(pad), nextPad = this.pads[i + 1];
-   if (nextPad) { pad.setActive(false); nextPad.setActive(true); }   // 先寫十位，再寫個位
-   else roundDone();
- },
- onMistake(msg) {
-   this.mistakes++;
-   hint(msg);
-   if (ROUNDS[this.round].guide === "faint" && this.mistakes === REVEAL_AFTER) {
-     this.pads.forEach(p => { p.guide = "start"; p.drawGuide(); });
-   }
- },
+  num: 0, seqEnd: null, round: 0, results: [], mistakes: 0,
+  pads: [], locked: false, token: 0,
+  onComplete(pad) {
+    const i = this.pads.indexOf(pad), nextPad = this.pads[i + 1];
+    if (nextPad) { pad.setActive(false); nextPad.setActive(true); }   // 先寫十位，再寫個位
+    else roundDone();
+  },
+  onMistake(msg) {
+    this.mistakes++;
+    hint(msg);
+    if (ROUNDS[this.round].guide === "faint" && this.mistakes === REVEAL_AFTER) {
+      this.pads.forEach(p => { p.guide = "start"; p.drawGuide(); });
+    }
+  },
 };
 
 function show(id) { document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id)); }
 
 function buildMenu() {
- const done = loadDone();
- const colors = ["--orange", "--blue", "--green", "--purple", "--red"];
- $("digitsA").innerHTML = ""; $("digitsB").innerHTML = "";
- for (let n = 0; n <= 20; n++) {
-   const b = document.createElement("button");
-   b.className = "digit-btn" + (done[n] ? " done" : "");
-   b.style.setProperty("--c", `var(${colors[n % 5]})`);
-   b.innerHTML = `${n}<span class="star">⭐</span>`;
-   b.addEventListener("click", () => startNumber(n, null));
-   $(n < 10 ? "digitsA" : "digitsB").appendChild(b);
- }
+  const done = loadDone();
+  const colors = ["--orange", "--blue", "--green", "--purple", "--red"];
+  ["digitsA", "digitsB", "digitsC"].forEach(id => $(id).innerHTML = "");
+  for (let n = 0; n <= MAX_NUM; n++) {
+    const b = document.createElement("button");
+    b.className = "digit-btn" + (done[n] ? " done" : "");
+    b.style.setProperty("--c", `var(${colors[n % 5]})`);
+    b.innerHTML = `${n}<span class="star">⭐</span>`;
+    b.addEventListener("click", () => startNumber(n, null));
+    $(n < 10 ? "digitsA" : n < 20 ? "digitsB" : "digitsC").appendChild(b);
+  }
 }
 buildMenu();
 
 function unlockAudio() { if (actx && actx.state === "suspended") actx.resume(); }
 
 function startNumber(n, seqEnd) {
- unlockAudio();
- game.num = n; game.seqEnd = seqEnd; game.round = 0; game.results = [];
- $("rounds").innerHTML = ROUNDS.map((r, i) => `<span class="round"><span class="dot"></span>${i + 1}</span>`).join("");
- show("game");
- loadRound(true);
+  unlockAudio();
+  game.num = n; game.seqEnd = seqEnd; game.round = 0; game.results = [];
+  $("rounds").innerHTML = ROUNDS.map((r, i) => `<span class="round"><span class="dot"></span>${i + 1}</span>`).join("");
+  show("game");
+  loadRound(true);
 }
 
 function killPads() { game.pads.forEach(p => p.dead = true); }
 
 function loadRound(first) {
- const n = game.num, r = ROUNDS[game.round];
- game.token++; game.mistakes = 0; game.locked = false;
- killPads();
- [...$("rounds").children].forEach((el, i) => {
-   el.classList.toggle("now", i === game.round);
-   el.classList.toggle("done", game.results[i] === "done");
-   el.classList.toggle("gold", game.results[i] === "gold");
- });
- $("promptNum").textContent = n;
- $("roundLabel").textContent = r.label;
- $("hint").textContent = "";
- const stage = $("stage"); stage.innerHTML = "";
- game.pads = String(n).split("").map(d => new Pad(d, r.guide));
- game.pads.forEach(p => stage.appendChild(p.el));
- sizePads();
- game.pads.forEach((p, i) => p.setActive(i === 0));
- if (first) {
-   say("數字").then(() => playNumber(n)).then(() => runDemo());
- } else {
-   say(r.label);
- }
+  const n = game.num, r = ROUNDS[game.round];
+  game.token++; game.mistakes = 0; game.locked = false;
+  killPads();
+  [...$("rounds").children].forEach((el, i) => {
+    el.classList.toggle("now", i === game.round);
+    el.classList.toggle("done", game.results[i] === "done");
+    el.classList.toggle("gold", game.results[i] === "gold");
+  });
+  $("promptNum").textContent = n;
+  $("roundLabel").textContent = r.label;
+  $("hint").textContent = "";
+  const stage = $("stage"); stage.innerHTML = "";
+  game.pads = String(n).split("").map(d => new Pad(d, r.guide));
+  game.pads.forEach(p => stage.appendChild(p.el));
+  sizePads();
+  game.pads.forEach((p, i) => p.setActive(i === 0));
+  if (first) {
+    say("數字").then(() => playNumber(n)).then(() => runDemo());
+  } else {
+    say(r.label);
+  }
 }
 
 async function runDemo() {
- const token = game.token;
- game.locked = true;
- for (const p of game.pads) {
-   await p.demo();
-   if (token !== game.token) return;
- }
- game.locked = false;
+  const token = game.token;
+  game.locked = true;
+  for (const p of game.pads) {
+    await p.demo();
+    if (token !== game.token) return;
+  }
+  game.locked = false;
 }
 
 function sizePads() {
- const stage = $("stage"), count = game.pads.length; if (!count) return;
- const gap = 18;
- const availH = Math.max(180, stage.clientHeight - 12), availW = Math.max(160, stage.clientWidth - 8);
- let h = Math.min(availH, 500), w = h / 1.3;
- if (w * count + gap * (count - 1) > availW) { w = (availW - gap * (count - 1)) / count; h = w * 1.3; }
- game.pads.forEach(p => p.resize(Math.floor(w), Math.floor(h)));
+  const stage = $("stage"), count = game.pads.length; if (!count) return;
+  const gap = 18;
+  const availH = Math.max(180, stage.clientHeight - 12), availW = Math.max(160, stage.clientWidth - 8);
+  let h = Math.min(availH, 500), w = h / 1.3;
+  if (w * count + gap * (count - 1) > availW) { w = (availW - gap * (count - 1)) / count; h = w * 1.3; }
+  game.pads.forEach(p => p.resize(Math.floor(w), Math.floor(h)));
 }
 window.addEventListener("resize", () => { if ($("game").classList.contains("active")) sizePads(); });
 
 function popStar(ch) {
- const el = $("pop"); el.textContent = ch;
- el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
+  const el = $("pop"); el.textContent = ch;
+  el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
 }
 
 async function roundDone() {
- game.locked = true;
- const first = game.mistakes === 0;
- game.results[game.round] = first ? "gold" : "done";
- $("rounds").children[game.round].classList.add(first ? "gold" : "done");
- popStar(first ? "⭐" : "👍");
- await say(first ? "好叻" : "做得好");
- setTimeout(() => {
-   game.round++;
-   if (game.round < ROUNDS.length) loadRound(false);
-   else finishNumber();
- }, 400);
+  game.locked = true;
+  const first = game.mistakes === 0;
+  game.results[game.round] = first ? "gold" : "done";
+  $("rounds").children[game.round].classList.add(first ? "gold" : "done");
+  popStar(first ? "⭐" : "👍");
+  await say(first ? "好叻" : "做得好");
+  setTimeout(() => {
+    game.round++;
+    if (game.round < ROUNDS.length) loadRound(false);
+    else finishNumber();
+  }, 400);
 }
 
 function nextNumber() {
- const n = game.num;
- if (game.seqEnd !== null) return n < game.seqEnd ? n + 1 : null;
- return n < 20 ? n + 1 : null;
+  const n = game.num;
+  if (game.seqEnd !== null) return n < game.seqEnd ? n + 1 : null;
+  return n < MAX_NUM ? n + 1 : null;
 }
 
 function finishNumber() {
- const n = game.num;
- const done = loadDone(); done[n] = true; saveDone(done); buildMenu();
- const gold = game.results.filter(r => r === "gold").length;
- $("endNum").textContent = n;
- $("endScore").textContent = `三次中有 ${gold} 次做得好`;
- const nx = nextNumber();
- $("nextBtn").style.display = nx === null ? "none" : "";
- show("end");
- say("學識咗" + cnNum(n) + "嘅筆順");
- if (game.seqEnd !== null && nx !== null) {
-   const seqEnd = game.seqEnd;
-   setTimeout(() => { if ($("end").classList.contains("active")) startNumber(nx, seqEnd); }, 2200);
- }
+  const n = game.num;
+  const done = loadDone(); done[n] = true; saveDone(done); buildMenu();
+  const gold = game.results.filter(r => r === "gold").length;
+  $("endNum").textContent = n;
+  $("endScore").textContent = `三次中有 ${gold} 次做得好``;
+  const nx = nextNumber();
+  $("nextBtn").style.display = nx === null ? "none" : "";
+  show("end");
+  say("學識咗" + cnNum(n) + "嘅筆順");
+  if (game.seqEnd !== null && nx !== null) {
+    const seqEnd = game.seqEnd;
+    setTimeout(() => { if ($("end").classList.contains("active")) startNumber(nx, seqEnd); }, 2200);
+  }
 }
 
 document.querySelectorAll("[data-seq]").forEach(b => b.addEventListener("click", () => {
- const [a, z] = b.dataset.seq.split("-").map(Number);
- startNumber(a, z);
+  const [a, z] = b.dataset.seq.split("-").map(Number);
+  startNumber(a, z);
 }));
 $("demoBtn").addEventListener("click", () => {
- if (game.locked) return;
- game.pads.forEach((p, i) => { p.reset(); p.setActive(i === 0); });
- runDemo();
+  if (game.locked) return;
+  game.pads.forEach((p, i) => { p.reset(); p.setActive(i === 0); });
+  runDemo();
 });
 $("clearBtn").addEventListener("click", () => {
- if (game.locked) return;
- game.pads.forEach((p, i) => { p.reset(); p.setActive(i === 0); });
+  if (game.locked) return;
+  game.pads.forEach((p, i) => { p.reset(); p.setActive(i === 0); });
 });
 $("speakBtn").addEventListener("click", () => { unlockAudio(); playNumber(game.num); });
 $("skipBtn").addEventListener("click", () => {
- game.token++; killPads();
- const nx = nextNumber();
- if (nx !== null) startNumber(nx, game.seqEnd);
- else show("start");
+  game.token++; killPads();
+  const nx = nextNumber();
+  if (nx !== null) startNumber(nx, game.seqEnd);
+  else show("start");
 });
 $("homeBtn").addEventListener("click", () => { game.token++; killPads(); speechSynthesis.cancel(); show("start"); });
 $("nextBtn").addEventListener("click", () => { const nx = nextNumber(); if (nx !== null) startNumber(nx, game.seqEnd); });
