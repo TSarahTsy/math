@@ -158,14 +158,14 @@
  </div>
  <div class="group">
    <div class="group-head">
-     <h2>單位數 <span>0–9</span></h2>
+     <h2>一位數 <span>0–9</span></h2>
      <button class="all-btn" data-seq="0-9">▶ 順序練習</button>
    </div>
    <div class="digits" id="digitsA"></div>
  </div>
  <div class="group">
    <div class="group-head">
-     <h2>雙位數 <span>10–20</span></h2>
+     <h2>兩位數 <span>10–20</span></h2>
      <button class="all-btn" data-seq="10-20">▶ 順序練習</button>
    </div>
    <div class="digits" id="digitsB"></div>
@@ -194,7 +194,7 @@
 
 <!-- 完成畫面 -->
 <section class="screen" id="end">
- <h2>🎉 學識咗！</h2>
+ <h2>🎉 做得好！</h2>
  <div class="big" id="endNum"></div>
  <p class="score" id="endScore"></p>
  <div class="end-btns">
@@ -668,7 +668,7 @@ function finishNumber() {
  const done = loadDone(); done[n] = true; saveDone(done); buildMenu();
  const gold = game.results.filter(r => r === "gold").length;
  $("endNum").textContent = n;
- $("endScore").textContent = `三次中有 ${gold} 次一次寫啱`;
+ $("endScore").textContent = `三次中有 ${gold} 次做得好`;
  const nx = nextNumber();
  $("nextBtn").style.display = nx === null ? "none" : "";
  show("end");
