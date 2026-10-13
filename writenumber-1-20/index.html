@@ -10,7 +10,7 @@
 <link rel="manifest" href="../manifest.webmanifest">
 <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="../icons/favicon-48.png">
-<title>數字筆順 0–9</title>
+<title>數字筆順 0–20</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
@@ -52,12 +52,17 @@
  .hero h1 span { font-family: var(--num-font); color: var(--orange); font-weight: 600; }
  .hero p { margin: 6px 0 0; color: var(--muted); font-size: 19px; }
 
- .digits { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; width: min(640px, 100%); }
+ .group { width: min(760px, 100%); }
+ .group-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 4px 10px; }
+ .group-head h2 { margin: 0; font-size: 22px; font-weight: 900; }
+ .group-head h2 span { font-family: var(--num-font); font-weight: 600; color: var(--orange); }
+ .digits { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+ #digitsB { grid-template-columns: repeat(6, 1fr); }
  .digit-btn {
    --c: var(--orange);
-   position: relative; aspect-ratio: 1 / 1.1; border: 2px solid var(--line); background: var(--card);
-   border-radius: 24px; box-shadow: 0 6px 0 var(--line);
-   font-family: var(--num-font); font-size: clamp(44px, 8vw, 64px); color: var(--c); line-height: 1;
+   position: relative; min-height: 96px; border: 2px solid var(--line); background: var(--card);
+   border-radius: 22px; box-shadow: 0 6px 0 var(--line);
+   font-family: var(--num-font); font-size: clamp(40px, 6vw, 56px); color: var(--c); line-height: 1;
    transition: transform .15s, box-shadow .15s, border-color .15s;
  }
  .digit-btn:hover { border-color: var(--c); box-shadow: 0 8px 0 var(--c); transform: translateY(-3px); }
@@ -67,8 +72,8 @@
 
  .all-btn {
    border: 0; background: var(--ink); color: #fff; border-radius: 999px;
-   min-height: 60px; padding: 0 30px; font-size: 21px; font-weight: 700;
-   box-shadow: 0 5px 0 #000;
+   min-height: 48px; padding: 0 20px; font-size: 17px; font-weight: 700;
+   box-shadow: 0 4px 0 #000;
  }
  .all-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #000; }
 
@@ -97,11 +102,12 @@
  .speak-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #c46c25; }
  .hint { text-align: center; min-height: 30px; font-size: 20px; font-weight: 700; color: var(--red); margin: 0 0 6px; transition: opacity .3s; }
 
- .stage { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; }
+ .stage { flex: 1; display: flex; align-items: center; justify-content: center; gap: 18px; min-height: 0; }
  .pad {
    position: relative; background: #fff; border: 3px solid var(--line); border-radius: 28px;
-   box-shadow: 0 6px 0 var(--line); transition: border-color .25s, box-shadow .25s;
+   box-shadow: 0 6px 0 var(--line); transition: border-color .25s, box-shadow .25s, opacity .25s;
  }
+ .pad.wait { opacity: .4; }
  .pad canvas { position: absolute; inset: 0; border-radius: 25px; }
  .pad canvas.ink { touch-action: none; cursor: crosshair; }
  .pad.ok { border-color: var(--green); box-shadow: 0 6px 0 var(--green); }
@@ -137,7 +143,7 @@
  #end .score { font-size: 22px; color: var(--muted); margin: 0; }
  .end-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
 
- @media (max-width: 480px) { .digits { grid-template-columns: repeat(5, 1fr); gap: 8px; } .digit-btn { border-radius: 16px; } }
+ @media (max-width: 560px) { .digits, #digitsB { grid-template-columns: repeat(4, 1fr); gap: 8px; } .digit-btn { min-height: 72px; border-radius: 16px; } }
  @media (prefers-reduced-motion: reduce) { .pad, .pop { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -147,11 +153,23 @@
 <section class="screen active" id="start">
  <a class="back-link" href="../index.html">← 目錄</a>
  <div class="hero">
-   <h1>數字筆順 <span>0–9</span></h1>
+   <h1>數字筆順 <span>0–20</span></h1>
    <p>揀一個數字，跟住箭嘴學筆順</p>
  </div>
- <div class="digits" id="digits"></div>
- <button class="all-btn" id="allBtn">▶ 由 0 至 9 順序練習</button>
+ <div class="group">
+   <div class="group-head">
+     <h2>單位數 <span>0–9</span></h2>
+     <button class="all-btn" data-seq="0-9">▶ 順序練習</button>
+   </div>
+   <div class="digits" id="digitsA"></div>
+ </div>
+ <div class="group">
+   <div class="group-head">
+     <h2>雙位數 <span>10–20</span></h2>
+     <button class="all-btn" data-seq="10-20">▶ 順序練習</button>
+   </div>
+   <div class="digits" id="digitsB"></div>
+ </div>
 </section>
 
 <!-- 練習畫面 -->
@@ -277,6 +295,8 @@ const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   聲音：數字用錄音，其他字詞用瀏覽器廣東話語音
   ========================================================= */
 const CN = ["零","一","二","三","四","五","六","七","八","九","十"];
+const cnNum = n => n <= 10 ? CN[n] : n < 20 ? "十" + CN[n - 10] : "二十";
+const numberParts = n => n <= 10 ? [n] : n < 20 ? [10, n - 10] : [2, 10];
 
 let zhVoice = null;
 function pickVoice() {
@@ -303,7 +323,7 @@ const AC = window.AudioContext || window.webkitAudioContext;
 const actx = AC ? new AC() : null;
 const buffers = {};
 const audioReady = !actx ? Promise.resolve() : Promise.all(
- Array.from({ length: 9 }, (_, i) => i + 1).map(async k => {
+ Array.from({ length: 10 }, (_, i) => i + 1).map(async k => {
    try {
      const r = await fetch(AUDIO_BASE + k + ".mp3");
      if (!r.ok) return;
@@ -318,12 +338,17 @@ const audioReady = !actx ? Promise.resolve() : Promise.all(
 
 async function playNumber(n) {
  await audioReady;
- if (!actx || !buffers[n]) return say(CN[n]);
+ const parts = numberParts(n);
+ if (!actx || parts.some(p => !buffers[p])) return say(cnNum(n));   // 0 或錄音缺失時用語音
  if (actx.state === "suspended") await actx.resume();
  return new Promise(res => {
-   const s = actx.createBufferSource();
-   s.buffer = buffers[n]; s.connect(actx.destination); s.start();
-   setTimeout(res, buffers[n].duration * 1000 + 60);
+   let t = actx.currentTime + 0.05;
+   parts.forEach(p => {
+     const s = actx.createBufferSource();
+     s.buffer = buffers[p]; s.connect(actx.destination); s.start(t);
+     t += buffers[p].duration;
+   });
+   setTimeout(res, (t - actx.currentTime) * 1000 + 60);
  });
 }
 
@@ -346,7 +371,7 @@ class Pad {
    this.digit = digit; this.paths = PATHS[digit];
    this.guide = guide;
    this.k = 0; this.done = []; this.cur = null; this.j = 0;
-   this.complete = false; this.dead = false;
+   this.active = false; this.complete = false; this.dead = false;
    this.el = document.createElement("div"); this.el.className = "pad";
    this.g = document.createElement("canvas");
    this.d = document.createElement("canvas");
@@ -358,6 +383,7 @@ class Pad {
    this.i.addEventListener("pointercancel", () => { this.cur = null; this.redrawInk(); });
  }
  tol() { return TOL[this.guide]; }
+ setActive(on) { this.active = on; this.el.classList.toggle("wait", !on && !this.complete); this.drawGuide(); }
  resize(w, h) {
    this.w = w; this.h = h;
    this.s = Math.min(h * 0.8 / 140, w * 0.85 / 100);
@@ -417,7 +443,7 @@ class Pad {
      this.arrows(c, P);
      this.circle(c, P[P.length - 1], 4 * s, "#a7b2c4");
    }
-   this.circle(c, P[0], 9.5 * s, "#e5484d", multi ? String(this.k + 1) : "");
+   this.circle(c, P[0], 9.5 * s, this.active ? "#e5484d" : "#d9a0a2", multi ? String(this.k + 1) : "");
  }
  redrawInk() {
    const c = this.i.getContext("2d");
@@ -431,7 +457,7 @@ class Pad {
    return [(px - this.ox) / this.s, (py - this.oy) / this.s];
  }
  down(e) {
-   if (game.locked || this.complete) return;
+   if (game.locked || !this.active || this.complete) return;
    e.preventDefault();
    this.el.classList.remove("bad");
    const p = this.toUnit(e), P = this.paths[this.k];
@@ -478,7 +504,7 @@ class Pad {
      this.done.push(this.cur); this.cur = null; this.k++;
      if (this.k >= this.paths.length) {
        this.complete = true; this.el.classList.add("ok");
-       this.drawGuide(); this.redrawInk(); game.onComplete();
+       this.drawGuide(); this.redrawInk(); game.onComplete(this);
      } else { this.drawGuide(); this.redrawInk(); }
    } else {
      this.cur = null; this.redrawInk(); this.mistake("要一筆寫完先好放手");
@@ -514,7 +540,7 @@ class Pad {
 /* =========================================================
   進度紀錄（只存在此裝置）
   ========================================================= */
-const STORE_KEY = "rcgs-stroke-0-9";
+const STORE_KEY = "rcgs-stroke-0-20";
 function loadDone() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { return {}; } }
 function saveDone(d) { try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch (e) {} }
 
@@ -523,14 +549,18 @@ function saveDone(d) { try { localStorage.setItem(STORE_KEY, JSON.stringify(d));
   ========================================================= */
 const $ = id => document.getElementById(id);
 const game = {
- digit: 0, sequence: false, round: 0, results: [], mistakes: 0,
- pad: null, locked: false, token: 0,
- onComplete() { roundDone(); },
+ num: 0, seqEnd: null, round: 0, results: [], mistakes: 0,
+ pads: [], locked: false, token: 0,
+ onComplete(pad) {
+   const i = this.pads.indexOf(pad), nextPad = this.pads[i + 1];
+   if (nextPad) { pad.setActive(false); nextPad.setActive(true); }   // 先寫十位，再寫個位
+   else roundDone();
+ },
  onMistake(msg) {
    this.mistakes++;
    hint(msg);
    if (ROUNDS[this.round].guide === "faint" && this.mistakes === REVEAL_AFTER) {
-     this.pad.guide = "start"; this.pad.drawGuide();
+     this.pads.forEach(p => { p.guide = "start"; p.drawGuide(); });
    }
  },
 };
@@ -540,32 +570,34 @@ function show(id) { document.querySelectorAll(".screen").forEach(s => s.classLis
 function buildMenu() {
  const done = loadDone();
  const colors = ["--orange", "--blue", "--green", "--purple", "--red"];
- $("digits").innerHTML = "";
- for (let n = 0; n <= 9; n++) {
+ $("digitsA").innerHTML = ""; $("digitsB").innerHTML = "";
+ for (let n = 0; n <= 20; n++) {
    const b = document.createElement("button");
    b.className = "digit-btn" + (done[n] ? " done" : "");
    b.style.setProperty("--c", `var(${colors[n % 5]})`);
    b.innerHTML = `${n}<span class="star">⭐</span>`;
-   b.addEventListener("click", () => startDigit(n, false));
-   $("digits").appendChild(b);
+   b.addEventListener("click", () => startNumber(n, null));
+   $(n < 10 ? "digitsA" : "digitsB").appendChild(b);
  }
 }
 buildMenu();
 
 function unlockAudio() { if (actx && actx.state === "suspended") actx.resume(); }
 
-function startDigit(n, sequence) {
+function startNumber(n, seqEnd) {
  unlockAudio();
- game.digit = n; game.sequence = sequence; game.round = 0; game.results = [];
+ game.num = n; game.seqEnd = seqEnd; game.round = 0; game.results = [];
  $("rounds").innerHTML = ROUNDS.map((r, i) => `<span class="round"><span class="dot"></span>${i + 1}</span>`).join("");
  show("game");
  loadRound(true);
 }
 
+function killPads() { game.pads.forEach(p => p.dead = true); }
+
 function loadRound(first) {
- const n = game.digit, r = ROUNDS[game.round];
+ const n = game.num, r = ROUNDS[game.round];
  game.token++; game.mistakes = 0; game.locked = false;
- if (game.pad) game.pad.dead = true;
+ killPads();
  [...$("rounds").children].forEach((el, i) => {
    el.classList.toggle("now", i === game.round);
    el.classList.toggle("done", game.results[i] === "done");
@@ -575,9 +607,10 @@ function loadRound(first) {
  $("roundLabel").textContent = r.label;
  $("hint").textContent = "";
  const stage = $("stage"); stage.innerHTML = "";
- game.pad = new Pad(String(n), r.guide);
- stage.appendChild(game.pad.el);
- sizePad();
+ game.pads = String(n).split("").map(d => new Pad(d, r.guide));
+ game.pads.forEach(p => stage.appendChild(p.el));
+ sizePads();
+ game.pads.forEach((p, i) => p.setActive(i === 0));
  if (first) {
    say("數字").then(() => playNumber(n)).then(() => runDemo());
  } else {
@@ -588,19 +621,22 @@ function loadRound(first) {
 async function runDemo() {
  const token = game.token;
  game.locked = true;
- await game.pad.demo();
- if (token === game.token) game.locked = false;
+ for (const p of game.pads) {
+   await p.demo();
+   if (token !== game.token) return;
+ }
+ game.locked = false;
 }
 
-function sizePad() {
- if (!game.pad) return;
- const stage = $("stage");
+function sizePads() {
+ const stage = $("stage"), count = game.pads.length; if (!count) return;
+ const gap = 18;
  const availH = Math.max(180, stage.clientHeight - 12), availW = Math.max(160, stage.clientWidth - 8);
  let h = Math.min(availH, 500), w = h / 1.3;
- if (w > availW) { w = availW; h = w * 1.3; }
- game.pad.resize(Math.floor(w), Math.floor(h));
+ if (w * count + gap * (count - 1) > availW) { w = (availW - gap * (count - 1)) / count; h = w * 1.3; }
+ game.pads.forEach(p => p.resize(Math.floor(w), Math.floor(h)));
 }
-window.addEventListener("resize", () => { if ($("game").classList.contains("active")) sizePad(); });
+window.addEventListener("resize", () => { if ($("game").classList.contains("active")) sizePads(); });
 
 function popStar(ch) {
  const el = $("pop"); el.textContent = ch;
@@ -617,37 +653,57 @@ async function roundDone() {
  setTimeout(() => {
    game.round++;
    if (game.round < ROUNDS.length) loadRound(false);
-   else finishDigit();
+   else finishNumber();
  }, 400);
 }
 
-function finishDigit() {
- const n = game.digit;
+function nextNumber() {
+ const n = game.num;
+ if (game.seqEnd !== null) return n < game.seqEnd ? n + 1 : null;
+ return n < 20 ? n + 1 : null;
+}
+
+function finishNumber() {
+ const n = game.num;
  const done = loadDone(); done[n] = true; saveDone(done); buildMenu();
  const gold = game.results.filter(r => r === "gold").length;
  $("endNum").textContent = n;
  $("endScore").textContent = `三次中有 ${gold} 次一次寫啱`;
- $("nextBtn").style.display = n < 9 ? "" : "none";
+ const nx = nextNumber();
+ $("nextBtn").style.display = nx === null ? "none" : "";
  show("end");
- say("學識咗" + CN[n] + "嘅筆順");
- if (game.sequence && n < 9) setTimeout(() => { if ($("end").classList.contains("active")) startDigit(n + 1, true); }, 2200);
+ say("學識咗" + cnNum(n) + "嘅筆順");
+ if (game.seqEnd !== null && nx !== null) {
+   const seqEnd = game.seqEnd;
+   setTimeout(() => { if ($("end").classList.contains("active")) startNumber(nx, seqEnd); }, 2200);
+ }
 }
 
-$("allBtn").addEventListener("click", () => startDigit(0, true));
-$("demoBtn").addEventListener("click", () => { if (!game.locked) { game.pad.reset(); runDemo(); } });
-$("clearBtn").addEventListener("click", () => { if (!game.locked) game.pad.reset(); });
-$("speakBtn").addEventListener("click", () => { unlockAudio(); playNumber(game.digit); });
-$("skipBtn").addEventListener("click", () => {
- game.token++; if (game.pad) game.pad.dead = true;
- if (game.digit < 9) startDigit(game.digit + 1, game.sequence);
- else { show("start"); }
+document.querySelectorAll("[data-seq]").forEach(b => b.addEventListener("click", () => {
+ const [a, z] = b.dataset.seq.split("-").map(Number);
+ startNumber(a, z);
+}));
+$("demoBtn").addEventListener("click", () => {
+ if (game.locked) return;
+ game.pads.forEach((p, i) => { p.reset(); p.setActive(i === 0); });
+ runDemo();
 });
-$("homeBtn").addEventListener("click", () => { game.token++; if (game.pad) game.pad.dead = true; speechSynthesis.cancel(); show("start"); });
-$("nextBtn").addEventListener("click", () => startDigit(game.digit + 1, game.sequence));
-$("againBtn").addEventListener("click", () => startDigit(game.digit, false));
-$("menuBtn").addEventListener("click", () => { game.sequence = false; show("start"); });
+$("clearBtn").addEventListener("click", () => {
+ if (game.locked) return;
+ game.pads.forEach((p, i) => { p.reset(); p.setActive(i === 0); });
+});
+$("speakBtn").addEventListener("click", () => { unlockAudio(); playNumber(game.num); });
+$("skipBtn").addEventListener("click", () => {
+ game.token++; killPads();
+ const nx = nextNumber();
+ if (nx !== null) startNumber(nx, game.seqEnd);
+ else show("start");
+});
+$("homeBtn").addEventListener("click", () => { game.token++; killPads(); speechSynthesis.cancel(); show("start"); });
+$("nextBtn").addEventListener("click", () => { const nx = nextNumber(); if (nx !== null) startNumber(nx, game.seqEnd); });
+$("againBtn").addEventListener("click", () => startNumber(game.num, null));
+$("menuBtn").addEventListener("click", () => { game.seqEnd = null; show("start"); });
 document.addEventListener("dblclick", e => e.preventDefault());
-
 // PWA：使用根目錄的共用 Service Worker
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("../sw.js", { scope: "../" }).catch(() => {});
 </script>
