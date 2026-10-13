@@ -1,0 +1,17 @@
+{
+  "name": "二十格框：放出指定數量",
+  "short_name": "放圓點",
+  "description": "恩慈數字學習生態圈：在二十格框內放出指定數量的圓點",
+  "lang": "zh-HK",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EEF3FA",
+  "theme_color": "#0A9DB8",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
