@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>中國數字配對</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600&family=Noto+Sans+HK:wght@400;700;900&family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#0A9DB8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="數字遊戲">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="../icons/favicon-48.png">
+<style>
+/* ===== 字體 =====
+   阿拉伯數字：上一層的 maths_thin_v2.ttf（找不到時改用 Chakra Petch）
+   中國數字：霞鶩文楷（楷書，由 Google Fonts 載入）；未能載入時改用裝置內的楷書字體 */
+@font-face{ font-family:"MyNumberFont"; src:url("../maths_thin_v2.ttf") format("truetype"); font-display:swap; }
+:root{
+  --num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",system-ui,sans-serif;
+  --cn-font:"LXGW WenKai TC","Kaiti TC","BiauKai","DFKai-SB","標楷體","STKaiti","KaiTi",serif;
+  --bg:#F3F7FB; --panel:#FFFFFF; --ink:#111821; --muted:#5A6B82;
+  --cyan:#0A9DB8; --purple:#6B4EE0; --amber:#D48A00; --mint:#12A574; --red:#D14A4A;
+  --line:rgba(17,24,33,.14);
+  --card-bg:#FFE9A8; --card-ink:#111821;
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
+    --cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0; --red:#FF7A7A;
+    --line:rgba(61,224,245,.2);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#08111F; --panel:#0F1D33; --ink:#E6F3FF; --muted:#8BA3C2;
+  --cyan:#3DE0F5; --purple:#A58BFF; --amber:#FFC14D; --mint:#5CF2B0; --red:#FF7A7A;
+  --line:rgba(61,224,245,.2);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%}
+body{
+  min-height:100%;margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
+.cn{font-family:var(--cn-font);font-weight:700}
+.ar{font-family:var(--num-font);font-weight:400}
+
+.app{max-width:1240px;min-height:100vh;min-height:100svh;margin:0 auto;
+  padding:calc(12px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;gap:12px}
+header{display:flex;align-items:center;gap:12px}
+header .track{display:flex;gap:5px;justify-content:center;flex:1;min-width:0;flex-wrap:wrap}
+.tdot{width:20px;height:20px;display:grid;place-items:center;line-height:1}
+.tdot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line)}
+.tdot.now::before{background:var(--cyan);box-shadow:0 0 0 4px rgba(10,157,184,.2)}
+.tdot.done::before{background:var(--cyan)}
+.tdot.star::before{content:"★";width:auto;height:auto;background:none;color:var(--amber);font-size:19px}
+.gear{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);display:grid;place-items:center;flex-shrink:0}
+.back-link{
+  display:inline-flex;align-items:center;gap:4px;flex-shrink:0;height:44px;padding:0 14px;border-radius:12px;
+  border:1.5px solid var(--line);background:var(--panel);color:var(--ink);
+  text-decoration:none;font-size:16px;font-weight:700;white-space:nowrap;
+}
+.back-link:active{transform:scale(.96)}
+.screen .back-link{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px}
+@media (max-width:480px){ header .back-link{width:44px;padding:0;justify-content:center} header .back-link .bl-text{display:none} }
+
+.prompt{margin:0;font-size:clamp(20px,4.6vw,28px);font-weight:900;text-align:center}
+.hear{width:48px;height:48px;border-radius:50%;border:2px solid var(--cyan);background:var(--panel);color:var(--cyan);display:grid;place-items:center;padding:0;flex-shrink:0}
+.hear svg{width:24px;height:24px}
+.btn{min-height:52px;padding:0 22px;border-radius:999px;border:2px solid var(--line);background:var(--panel);font-size:19px;font-weight:900}
+.btn.primary{background:var(--cyan);border-color:var(--cyan);color:var(--bg)}
+.btn:disabled{opacity:.4}
+@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-3px)}}
+@keyframes pop{from{transform:scale(.6)}70%{transform:scale(1.08)}to{transform:scale(1)}}
+.shake{animation:shake .35s}
+
+.score{font-family:var(--num-font);font-size:64px;color:var(--amber)}
+.screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;z-index:30;
+  padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));overflow:auto}
+.screen[hidden]{display:none}
+.screen h1{margin:0;font-size:clamp(30px,8vw,46px);font-weight:900;letter-spacing:.03em}
+.screen p{margin:0;max-width:32em;color:var(--muted);line-height:1.7}
+.screen .hero-cn{font-family:var(--cn-font);font-weight:700;font-size:clamp(48px,12vw,88px);line-height:1;color:var(--amber);letter-spacing:.08em}
+.note{font-size:14px;color:var(--amber)!important}
+.big-btn{min-width:200px;padding:16px 28px;border-radius:999px;border:none;background:var(--cyan);color:var(--bg);font-size:22px;font-weight:900}
+
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--panel);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;
+  padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;max-width:620px;margin:0 auto;
+  max-height:88svh;overflow:auto}
+.sheet.open{transform:none}
+.sheet h2{margin:0 0 12px;font-size:18px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row > span{flex-shrink:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.seg button{min-width:56px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:transparent;font-weight:700}
+.seg button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}
+.sheet .big-btn{width:100%;margin-top:16px}
+@media (prefers-reduced-motion:reduce){ .sheet{transition:none} .shake{animation:none} }
+
+/* ===== 本遊戲 ===== */
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.sub{margin:0;color:var(--muted);font-size:17px;min-height:1.4em;text-align:center}
+
+/* 翻牌記憶 */
+.memory{display:grid;gap:clamp(8px,1.6vw,16px);grid-template-columns:repeat(var(--cols,4),1fr);
+  width:min(100%, calc((100svh - 230px) / var(--rows,3) * var(--cols,4) * .82))}
+.memory[hidden]{display:none}
+.mcard{position:relative;aspect-ratio:.8;perspective:800px;border:0;padding:0;background:none;container-type:inline-size}
+.mcard .in{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
+.mcard.up .in{transform:rotateY(180deg)}
+.mcard .face{position:absolute;inset:0;border-radius:16px;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:3px solid #111821;box-shadow:0 4px 0 #111821}
+.mcard .back{background:repeating-linear-gradient(45deg,#0A9DB8 0 10px,#12B3CF 10px 20px);color:#fff;font-size:clamp(28px,5vw,44px);font-weight:900}
+.mcard .front{background:#fff;color:#111821;transform:rotateY(180deg);line-height:1}
+.mcard .front{white-space:nowrap}
+.mcard .front.ar{font-size:clamp(36px,7vw,64px);font-size:44cqw;color:#1F5FD8}
+.mcard .front.cn{font-size:clamp(26px,5.4vw,52px);color:#B45309}
+.mcard .front.cn.l1{font-size:56cqw} .mcard .front.cn.l2{font-size:40cqw} .mcard .front.cn.l3{font-size:28cqw}
+.mcard.done .front{background:#DFF8EA;border-color:var(--mint);box-shadow:0 4px 0 var(--mint)}
+.mcard.done{animation:pop .3s ease-out}
+
+/* 連線配對 */
+.link{position:relative;display:flex;justify-content:space-between;gap:clamp(60px,18vw,220px);width:min(100%,760px)}
+.link[hidden]{display:none}
+.col{display:flex;flex-direction:column;gap:clamp(8px,1.4svh,14px);z-index:1}
+.item{min-width:clamp(96px,20vw,170px);height:clamp(48px,calc((100svh - 260px) / var(--rows,6) - 12px),78px);border-radius:16px;padding:0 14px;
+  border:3px solid #111821;box-shadow:0 4px 0 #111821;background:#fff;color:#111821;line-height:1;touch-action:none}
+.item.ar{font-family:var(--num-font);font-size:clamp(30px,5vw,46px);color:#1F5FD8}
+.item.cn{font-family:var(--cn-font);font-weight:700;font-size:clamp(26px,4.4vw,42px);color:#B45309}
+.item.sel{outline:4px solid var(--purple);outline-offset:3px;transform:translateY(-2px)}
+.item.done{background:#DFF8EA;border-color:var(--mint);box-shadow:0 4px 0 var(--mint);cursor:default}
+.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.lines line{stroke-linecap:round;stroke-width:6}
+.lines .ok{stroke:var(--mint)}
+.lines .tmp{stroke:var(--purple);stroke-dasharray:2 12}
+@media (prefers-reduced-motion:reduce){ .mcard .in{transition:none} .mcard.done{animation:none} }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+    <div class="track" id="track" aria-label="進度"></div>
+    <button class="gear" id="gearBtn" aria-label="設定">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+  <main class="stage">
+    <p class="prompt" id="prompt"></p>
+    <div class="memory" id="memory" hidden></div>
+    <div class="link" id="link" hidden>
+      <div class="col" id="colA"></div>
+      <div class="col" id="colB"></div>
+      <svg class="lines" id="lines" aria-hidden="true"></svg>
+    </div>
+    <p class="sub" id="sub"></p>
+  </main>
+</div>
+
+<div class="screen" id="startScreen">
+  <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+  <div class="hero-cn" aria-hidden="true">七 ⇄ 7</div>
+  <h1>中國數字配對</h1>
+  <p>把阿拉伯數字和相同的中國數字配成一對。「翻牌記憶」：每次翻開兩張牌，相同便可取走。「連線配對」：把左邊的數字和右邊的中國數字連起來。</p>
+  <p id="rangeNote"></p>
+  <p class="note" id="voiceNote" hidden></p>
+  <button class="big-btn" id="startBtn">開始</button>
+  <button class="btn" id="startGear">⚙ 設定</button>
+</div>
+
+<div class="screen" id="endScreen" hidden>
+  <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+  <h1 id="endTitle">完成了！</h1>
+  <div class="score" id="score"></div>
+  <p id="endMsg"></p>
+  <button class="big-btn" id="againBtn">再玩一次</button>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-label="設定">
+  <h2>設定</h2>
+  <div class="row"><span>數字範圍</span><div class="seg" data-key="range"><button data-val="1-9">1–9</button><button data-val="10-19">10–19</button><button data-val="20-29">20–29</button><button data-val="30-39">30–39</button><button data-val="40-50">40–50</button><button data-val="1-50">1–50</button></div></div>
+  <div class="row"><span>玩法</span><div class="seg" data-key="mode"><button data-val="memory">翻牌記憶</button><button data-val="link">連線配對</button></div></div>
+  <div class="row"><span>每局對數</span><div class="seg" data-key="pairs"><button data-val="4">4 對</button><button data-val="6">6 對</button><button data-val="8">8 對</button></div></div>
+  <div class="row"><span>讀出數字</span><div class="seg" data-key="voice"><button data-val="on">開</button><button data-val="off">關</button></div></div>
+  <div class="row"><span>聲效</span><div class="seg" data-key="sfx"><button data-val="on">開</button><button data-val="off">關</button></div></div>
+  <button class="big-btn" id="applyBtn">套用並重新開始</button>
+</div>
+
+<script>
+'use strict';
+/* ==========================================================
+   共用部分（七個中國數字遊戲相同）
+   ========================================================== */
+const $ = id => document.getElementById(id);
+const STORE_KEY = 'rcgs-cn-match';
+let settings = Object.assign({ range:'1-9', voice:'on', sfx:'on' }, { "mode":"memory", "pairs":"6" });
+try { Object.assign(settings, JSON.parse(localStorage.getItem(STORE_KEY) || '{}')); } catch(e){}
+
+/* ---------- 中國數字 ---------- */
+const CN = ['零','一','二','三','四','五','六','七','八','九','十'];
+/* 1–99 轉為中國數字：13 = 十三、20 = 二十、35 = 三十五 */
+function toCN(n){
+  if (n <= 10) return CN[n];
+  const t = Math.floor(n / 10), u = n % 10;
+  return (t > 1 ? CN[t] : '') + '十' + (u ? CN[u] : '');
+}
+/* 數字範圍（設定內的選項） */
+const RANGES = {
+  '1-9':   { lo:1,  hi:9,  label:'1–9（一至九）' },
+  '10-19': { lo:10, hi:19, label:'10–19（十至十九）' },
+  '20-29': { lo:20, hi:29, label:'20–29（二十至二十九）' },
+  '30-39': { lo:30, hi:39, label:'30–39（三十至三十九）' },
+  '40-50': { lo:40, hi:50, label:'40–50（四十至五十）' },
+  '1-50':  { lo:1,  hi:50, label:'1–50（全部）' },
+};
+if (!RANGES[settings.range]) settings.range = '1-9';
+const bounds = () => [RANGES[settings.range].lo, RANGES[settings.range].hi];
+const rangeNums = () => { const [lo, hi] = bounds(); return Array.from({ length:hi - lo + 1 }, (_, k) => lo + k); };
+const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pickSome = (arr, n) => shuffle(arr.slice()).slice(0, n);
+/* 干擾選項：優先選容易混淆的數字（相鄰、十位與個位對調、同一個位） */
+function confusers(n, count, lo = 1, hi = 50){
+  const set = new Set();
+  const t = Math.floor(n / 10), u = n % 10;
+  const cands = [n - 1, n + 1, u * 10 + t, (t + 1) * 10 + u, (t - 1) * 10 + u, n - 2, n + 2, n + 10, n - 10];
+  for (const c of shuffle(cands)) if (c !== n && c >= lo && c <= hi && c >= 1) set.add(c);
+  const ordered = [...set];
+  while (ordered.length < count){
+    const c = rand(Math.max(1, lo), hi);
+    if (c !== n && !ordered.includes(c)) ordered.push(c);
+    if (hi - lo < count) break;
+  }
+  return ordered.slice(0, count);
+}
+function shakeEl(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 400); }
+
+/* ---------- 讀音 ----------
+   數字：用上一層 audio 資料夾的 mp3（../audio/1.mp3 至 10.mp3）組合讀出
+         1–10 直接讀；11–19 = 十 + 個位；20 = 二 + 十
+   其他字詞（例如「個和」、「共有」、「做得好」）：用瀏覽器的廣東話語音讀出
+   使用方法：say([10, '個和', 6, '個，共有', 16, '個'], 讀完後的回呼)
+
+   數字 mp3 以 <audio> 元素播放（不用 Web Audio），原因：
+   iPad 上 Web Audio 容易被 <audio> 聲效或瀏覽器語音中斷，恢復時可能無限等待，令遊戲卡住。
+   每一步都設有時限，即使某段聲音播放失敗，遊戲亦會繼續。
+
+   除錯：在網址後加上 ?debug=1，畫面底部會顯示每一步的播放情況。 */
+const AUDIO_DIR = '../audio/';
+const GAP = 100;                               /* 每段之間的停頓（毫秒） */
+const DEBUG = /[?&]debug=1/.test(location.search);
+let debugBox = null;
+function log(msg){
+  if (!DEBUG) return;
+  if (!debugBox){
+    debugBox = document.createElement('div');
+    debugBox.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99;max-height:30vh;overflow:auto;background:rgba(0,0,0,.8);color:#7CFC9A;font:12px/1.4 monospace;padding:6px 10px;pointer-events:none';
+    document.body.appendChild(debugBox);
+  }
+  const t = new Date().toTimeString().slice(0, 8);
+  debugBox.insertAdjacentHTML('afterbegin', '<div>' + t + ' ' + String(msg).replace(/</g, '&lt;') + '</div>');
+}
+function clipsFor(n){
+  if (n <= 10) return [n];
+  const t = Math.floor(n / 10), u = n % 10;
+  return [...(t === 1 ? [] : [t]), 10, ...(u ? [u] : [])];
+}
+/* 先把十個 mp3 整個下載到記憶體（blob），再交給 <audio> 播放：
+   iPad 不會預先載入 <audio>，直接用網址的話每次播放都要等下載，blob 則可即時播放。
+   這亦與答對／答錯聲效的播放方式相同。 */
+const numPlayers = {};
+let audioError = false;
+const audioReady = Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n => {
+  const r = await fetch(AUDIO_DIR + n + '.mp3');
+  if (!r.ok) throw new Error(n + '.mp3');
+  const a = new Audio(URL.createObjectURL(await r.blob()));
+  a.preload = 'auto'; a.load();
+  numPlayers[n] = a;
+})).then(() => log('十個 mp3 已載入'), e => {
+  audioError = true; log('載入失敗：' + e.message); showAudioError(e.message);
+});
+/* 最多等候 ms 毫秒；逾時亦會繼續，避免卡住 */
+const within = (p, ms) => Promise.race([p, new Promise(r => setTimeout(r, ms))]);
+let curPlayer = null, sayToken = 0, sayTimer = 0, sayWatch = 0;
+function playNum(n){
+  return new Promise(resolve => {
+    const a = numPlayers[n];
+    if (!a){ log(n + '.mp3：尚未載入，略過'); return resolve(); }
+    let done = false;
+    const finish = why => {
+      if (done) return; done = true;
+      clearTimeout(guard);
+      a.removeEventListener('ended', onEnd); a.removeEventListener('error', onErr);
+      if (curPlayer === a) curPlayer = null;
+      if (why) log(n + '.mp3：' + why);
+      resolve();
+    };
+    const onEnd = () => finish(); const onErr = () => finish('播放錯誤');
+    a.addEventListener('ended', onEnd); a.addEventListener('error', onErr);
+    const dur = isFinite(a.duration) && a.duration > 0 ? a.duration : 2;
+    const guard = setTimeout(() => finish('逾時，略過'), (dur + 1.5) * 1000);
+    curPlayer = a;
+    try {
+      a.muted = false; a.currentTime = 0;
+      const p = a.play();
+      if (p && p.catch) p.catch(e => finish('未能播放（' + e.name + '）'));
+    } catch(e){ finish('未能播放（' + e.name + '）'); }
+  });
+}
+const wait = ms => new Promise(r => { sayTimer = setTimeout(r, ms); });
+
+/* 瀏覽器語音（只用於非數字的字詞）
+   固定使用的聲音：iPad 用 Sinji，Windows 用 Microsoft Danny；兩者都找不到時，用清單中第一個廣東話聲音。
+   如裝置完全沒有廣東話聲音，非數字的字詞會略過不讀，以免用普通話等其他語言讀出。 */
+const synth = window.speechSynthesis || null;
+const PREFERRED_VOICES = [/^Sinji\b/i, /Microsoft Danny/i];
+let voice = null;
+function cantoneseVoices(){
+  return synth ? synth.getVoices().filter(v =>
+    /^yue(?:[-_]|$)/i.test(v.lang) || /^zh[-_](HK|Hant[-_]HK)/i.test(v.lang) || /cantonese|廣東話|粤语|粵語/i.test(v.name)) : [];
+}
+function refreshVoice(){
+  const vs = cantoneseVoices();
+  voice = null;
+  for (const re of PREFERRED_VOICES){ const v = vs.find(x => re.test(x.name)); if (v){ voice = v; break; } }
+  if (!voice){
+    let saved = ''; try { saved = localStorage.getItem('rcgs-cantonese-voice') || ''; } catch(e){}
+    voice = vs.find(v => v.name === saved) || vs[0] || null;
+  }
+}
+if (synth){ refreshVoice(); synth.addEventListener('voiceschanged', refreshVoice); }
+function ttsSay(text, run){
+  return new Promise(resolve => {
+    if (!synth || !voice || run !== sayToken){ log('略過語音「' + text + '」' + (voice ? '' : '（找不到廣東話聲音）')); return resolve(); }
+    const go = () => {
+      if (run !== sayToken) return resolve();
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = voice; u.lang = voice.lang; u.rate = .85;
+      window._u = u;                           /* 防止部分瀏覽器回收 utterance 導致 onend 不觸發 */
+      let fin = false;
+      const finish = why => { if (fin) return; fin = true; clearTimeout(guard); if (why) log('語音「' + text + '」：' + why); resolve(); };
+      u.onend = () => finish(); u.onerror = e => finish('錯誤 ' + (e && e.error || ''));
+      const guard = setTimeout(() => finish('逾時，略過'), 2500 + text.length * 400);
+      try { if (synth.paused) synth.resume(); synth.speak(u); } catch(e){ finish('未能播放'); }
+    };
+    if (synth.speaking || synth.pending){ synth.cancel(); setTimeout(go, 150); } else go();
+  });
+}
+function unlockTTS(){ /* 在按鍵當下呼叫一次，解鎖 iPad 的瀏覽器語音 */
+  if (!synth) return;
+  refreshVoice();
+  log('廣東話聲音：' + (voice ? voice.name + '（' + voice.lang + '）' : '找不到'));
+  try { synth.speak(new SpeechSynthesisUtterance('')); } catch(e){}
+}
+
+function stopSay(){
+  sayToken++; clearTimeout(sayTimer); clearTimeout(sayWatch);
+  if (curPlayer){ try { curPlayer.pause(); } catch(e){} curPlayer = null; }
+  if (synth && (synth.speaking || synth.pending)) synth.cancel();
+}
+/* 依次讀出一串內容：數字用 mp3，文字用瀏覽器語音。
+   done：讀完後的回呼；無論聲音成功與否，必定會呼叫（最多 20 秒），遊戲不會卡住 */
+async function say(seq, done){
+  stopSay(); const run = sayToken;
+  let called = false;
+  const fin = () => { if (called || run !== sayToken) return; called = true; clearTimeout(sayWatch); done && done(); };
+  sayWatch = setTimeout(() => { log('整段讀音逾時，繼續遊戲'); fin(); }, 20000);
+  if (settings.voice === 'off'){ sayTimer = setTimeout(fin, 650); return; }
+  log('讀出：' + seq.join(' '));
+  if (seq.some(x => typeof x === 'number')){ await within(audioReady, 5000); if (run !== sayToken) return; }
+  for (let i = 0; i < seq.length; i++){
+    const x = seq[i];
+    if (typeof x === 'number'){
+      if (!audioError){
+        const parts = clipsFor(x);
+        for (let j = 0; j < parts.length; j++){
+          await playNum(parts[j]); if (run !== sayToken) return;
+          if (j < parts.length - 1){ await wait(GAP); if (run !== sayToken) return; }
+        }
+      }
+    } else {
+      await ttsSay(x, run); if (run !== sayToken) return;
+    }
+    if (i < seq.length - 1){ await wait(GAP); if (run !== sayToken) return; }
+  }
+  fin();
+}
+const speak = (n, done) => say([n], done);
+function showAudioError(file){
+  const note = $('voiceNote');
+  note.textContent = '未能載入聲音（' + file + '）。請確認上一層 audio 資料夾內有1.mp3至10.mp3。';
+  note.hidden = false;
+}
+
+
+/* ---------- 聲效 ----------
+  以程式合成 WAV，再用 <audio> 播放。
+  iPad／iPhone 的靜音模式會令 Web Audio 無聲，但 <audio> 播放不受影響。 */
+const SR = 22050;
+const SOUNDS = {
+ tap:     { len:.12, notes:[[620,0,.07,'sine',.25]] },
+ correct: { len:.8,  notes:[[523.25,0,.22,'tri',.4],[659.25,.09,.22,'tri',.4],[783.99,.18,.22,'tri',.4],
+                            [1046.5,.27,.45,'tri',.45],[2093,.3,.4,'sine',.12],[1567.98,.36,.35,'sine',.1]] },
+ wrong:   { len:.55, notes:[[330,0,.18,'tri',.45,300],[247,.2,.3,'tri',.45,196]] },
+ finish:  { len:1.4, notes:[[523.25,0,.3,'tri',.38],[659.25,.12,.3,'tri',.38],[783.99,.24,.3,'tri',.38],[1046.5,.36,.5,'tri',.4],
+                            [1046.5,.5,.8,'sine',.1],[1318.5,.5,.8,'sine',.1],[1567.98,.5,.8,'sine',.1]] }
+};
+function renderWav({ len, notes }){
+ const n = Math.ceil(len * SR), buf = new Float32Array(n);
+ for (const [f, at, dur, type, vol, glide] of notes){
+   const s0 = Math.floor(at * SR), sN = Math.floor(dur * SR), atk = .015;
+   let ph = 0;
+   for (let i = 0; i < sN && s0 + i < n; i++){
+     const t = i / SR, fr = glide ? f * Math.pow(glide / f, t / dur) : f;
+     ph += 2 * Math.PI * fr / SR;
+     const w = type === 'sine' ? Math.sin(ph) : (2 / Math.PI) * Math.asin(Math.sin(ph));
+     const env = t < atk ? t / atk : Math.pow(1 - (t - atk) / (dur - atk), 2);
+     buf[s0 + i] += w * env * vol;
+   }
+ }
+ const out = new DataView(new ArrayBuffer(44 + n * 2));
+ const str = (o, x) => [...x].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+ str(0,'RIFF'); out.setUint32(4, 36 + n * 2, true); str(8,'WAVE'); str(12,'fmt ');
+ out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,1,true);
+ out.setUint32(24,SR,true); out.setUint32(28,SR*2,true); out.setUint16(32,2,true); out.setUint16(34,16,true);
+ str(36,'data'); out.setUint32(40, n * 2, true);
+ for (let i = 0; i < n; i++) out.setInt16(44 + i * 2, Math.max(-1, Math.min(1, buf[i])) * 32767, true);
+ return URL.createObjectURL(new Blob([out], { type:'audio/wav' }));
+}
+const players = {};
+for (const k in SOUNDS){ const a = new Audio(renderWav(SOUNDS[k])); a.preload = 'auto'; players[k] = a; }
+try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
+
+/* 解鎖 iOS 的播放限制：每個 <audio> 須在使用者按鍵時播放過一次。
+   每次按鍵都會呼叫，只處理尚未解鎖的元素（包括稍後才載入完成的數字 mp3）。 */
+function ensureAudio(){
+ const list = [...Object.values(players), ...Object.values(numPlayers)].filter(a => !a._ok && !a._busy);
+ if (list.length) log('解鎖聲音（' + list.length + ' 個）');
+ list.forEach(a => {
+   a._busy = true; a.muted = true;
+   let p; try { p = a.play(); } catch(e){ a._busy = false; a.muted = false; return; }
+   const reset = () => { a._busy = false; a._ok = true; if (curPlayer === a){ a.muted = false; return; } a.pause(); a.currentTime = 0; a.muted = false; };
+   p && p.then ? p.then(reset).catch(() => { a._busy = false; a.muted = false; }) : reset();
+ });
+}
+function playSfx(k){
+ if (settings.sfx === 'off') return;
+ const a = players[k]; if (!a) return;
+ try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(() => {}); } catch(e){}
+}
+const sfx = { tap:() => playSfx('tap'), correct:() => playSfx('correct'), wrong:() => playSfx('wrong'), finish:() => playSfx('finish') };
+
+/* ---------- 進度點 ---------- */
+const trackEl = $('track');
+function setTrack(n){
+  trackEl.innerHTML = '';
+  for (let k = 0; k < n; k++){ const s = document.createElement('span'); s.className = 'tdot'; trackEl.appendChild(s); }
+}
+/* results：true = 星（第一次便答對）、false = 完成、undefined = 未做 */
+function updateTrack(results, now){
+  [...trackEl.children].forEach((s, k) => {
+    s.className = 'tdot' + (results[k] === true ? ' star' : results[k] === false ? ' done' : k === now ? ' now' : '');
+  });
+}
+
+/* ---------- 開始／完成畫面及設定 ---------- */
+let started = false;
+function showEnd(title, scoreText, msg){
+  $('endTitle').textContent = title || '完成了！';
+  $('score').textContent = scoreText || '';
+  $('endMsg').textContent = msg || '';
+  $('endScreen').hidden = false;
+  stopSay();
+  sfx.finish();
+  sayTimer = setTimeout(() => say(['做得好']), 900);
+}
+function starMsg(stars, total){
+  const r = stars / total;
+  return r >= .8 ? '表現非常出色！' : r >= .5 ? '做得好，繼續努力！' : '多練習幾次，下一局會更好！';
+}
+function showRange(){
+  $('rangeNote').textContent = USE_RANGE ? '目前範圍：' + RANGES[settings.range].label + '（可按「設定」更改）' : '';
+}
+function syncSeg(){
+  document.querySelectorAll('.seg').forEach(seg => {
+    seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === String(settings[seg.dataset.key]))));
+  });
+}
+document.querySelectorAll('.seg').forEach(seg => {
+  seg.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    settings[seg.dataset.key] = b.dataset.val; syncSeg();
+  });
+});
+$('gearBtn').onclick = $('startGear').onclick = () => { syncSeg(); $('sheet').classList.toggle('open'); };
+$('applyBtn').onclick = () => {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(settings)); } catch(e){}
+  ensureAudio();
+  $('sheet').classList.remove('open');
+  stopSay(); showRange();
+  $('endScreen').hidden = true;
+  if (started) newGame();
+};
+$('startBtn').onclick = () => { ensureAudio(); unlockTTS(); $('startScreen').hidden = true; started = true; newGame(); };
+$('againBtn').onclick = () => { ensureAudio(); unlockTTS(); $('endScreen').hidden = true; newGame(); };
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopSay(); });
+window.addEventListener('pagehide', stopSay);
+document.addEventListener('pointerdown', () => ensureAudio(), { passive:true });
+
+const USE_RANGE = true;
+
+/* ==========================================================
+   本遊戲
+   ========================================================== */
+const memEl = $('memory'), linkEl = $('link'), colA = $('colA'), colB = $('colB'), linesEl = $('lines');
+const st = { mode:'memory', results:[], tok:0 };
+
+function newGame(){
+  stopSay(); st.tok++;
+  st.mode = settings.mode;
+  memEl.hidden = st.mode !== 'memory';
+  linkEl.hidden = st.mode !== 'link';
+  if (st.mode === 'memory') memoryStart(); else linkStart();
+}
+
+/* ---------- 翻牌記憶 ---------- */
+const mem = { cards:[], open:[], found:0, flips:0, busy:false };
+function memoryStart(){
+  const pairs = Math.min(Number(settings.pairs), rangeNums().length);
+  const nums = pickSome(rangeNums(), pairs);
+  const cards = shuffle(nums.flatMap(n => [{ n, kind:'ar' }, { n, kind:'cn' }]));
+  const cols = pairs <= 4 ? 4 : pairs <= 6 ? 4 : 4, rows = Math.ceil(cards.length / cols);
+  memEl.style.setProperty('--cols', cols); memEl.style.setProperty('--rows', rows);
+  memEl.innerHTML = '';
+  Object.assign(mem, { cards:[], open:[], found:0, flips:0, busy:false, pairs });
+  cards.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'mcard';
+    b.setAttribute('aria-label', '蓋著的牌');
+    b.innerHTML = `<span class="in"><span class="face back">?</span><span class="face front ${c.kind}${c.kind === 'cn' ? ' l' + toCN(c.n).length : ''}">${c.kind === 'ar' ? c.n : toCN(c.n)}</span></span>`;
+    b.onclick = () => memFlip(b, c);
+    c.el = b; mem.cards.push(c);
+    memEl.appendChild(b);
+  });
+  st.results = [];
+  setTrack(pairs); updateTrack(st.results, 0);
+  $('prompt').textContent = '翻開兩張牌，找出相同的數字';
+  $('sub').textContent = '';
+}
+function memFlip(b, c){
+  if (mem.busy || c.done || mem.open.includes(c)) return;
+  b.classList.add('up');
+  b.setAttribute('aria-label', c.kind === 'ar' ? '數字 ' + c.n : '中國數字 ' + toCN(c.n));
+  mem.open.push(c); mem.flips++;
+  sfx.tap();
+  speak(c.n);
+  if (mem.open.length < 2) return;
+  const [x, y] = mem.open;
+  mem.busy = true;
+  if (x.n === y.n){
+    setTimeout(() => {
+      x.done = y.done = true;
+      x.el.classList.add('done'); y.el.classList.add('done');
+      sfx.correct();
+      st.results[mem.found] = true; mem.found++;
+      updateTrack(st.results, mem.found);
+      $('sub').innerHTML = `<span class="ar">${x.n}</span> 和 <span class="cn">${toCN(x.n)}</span> 是一對`;
+      mem.open = []; mem.busy = false;
+      if (mem.found === mem.pairs) setTimeout(() => showEnd('全部配對了！', `${mem.pairs} 對`, `共翻了 ${mem.flips} 次牌。`), 900);
+    }, 450);
+  } else {
+    setTimeout(() => {
+      x.el.classList.remove('up'); y.el.classList.remove('up');
+      x.el.setAttribute('aria-label', '蓋著的牌'); y.el.setAttribute('aria-label', '蓋著的牌');
+      mem.open = []; mem.busy = false;
+    }, 1200);
+  }
+}
+
+/* ---------- 連線配對 ---------- */
+const LINK_ROUNDS = 5;
+const lk = { i:0, sel:null, done:0, retried:false, drag:null, pairsDone:[] };
+function linkStart(){
+  lk.i = 0; st.results = [];
+  setTrack(LINK_ROUNDS);
+  linkRound();
+}
+function linkRound(){
+  if (lk.i >= LINK_ROUNDS){
+    const stars = st.results.filter(Boolean).length;
+    return showEnd('完成了！', `★ ${stars} / ${LINK_ROUNDS}`, starMsg(stars, LINK_ROUNDS));
+  }
+  st.tok++;
+  const rows = Math.min(Number(settings.pairs), rangeNums().length);
+  const nums = pickSome(rangeNums(), rows);
+  linkEl.style.setProperty('--rows', rows);
+  Object.assign(lk, { sel:null, done:0, retried:false, rows, pairsDone:[] });
+  colA.innerHTML = ''; colB.innerHTML = ''; linesEl.innerHTML = '';
+  const mk = (n, kind, col) => {
+    const b = document.createElement('button');
+    b.className = 'item ' + kind; b.textContent = kind === 'ar' ? n : toCN(n);
+    b.dataset.n = n; b.dataset.side = kind;
+    b.addEventListener('pointerdown', e => linkDown(e, b));
+    col.appendChild(b);
+  };
+  shuffle(nums.slice()).forEach(n => mk(n, 'ar', colA));
+  shuffle(nums.slice()).forEach(n => mk(n, 'cn', colB));
+  $('prompt').textContent = '把相同的數字連起來';
+  $('sub').textContent = '按一個數字，再按另一邊相同的中國數字；也可以直接拖線。';
+  updateTrack(st.results, lk.i);
+}
+function center(el, side){
+  const r = el.getBoundingClientRect(), c = linkEl.getBoundingClientRect();
+  return [side === 'ar' ? r.right - c.left : r.left - c.left, r.top + r.height / 2 - c.top];
+}
+function drawLines(tmpTo){
+  let html = lk.pairsDone.map(([a, b]) => {
+    const p = center(a, 'ar'), q = center(b, 'cn');
+    return `<line class="ok" x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}"/>`;
+  }).join('');
+  if (lk.sel && tmpTo){
+    const p = center(lk.sel, lk.sel.dataset.side), c = linkEl.getBoundingClientRect();
+    html += `<line class="tmp" x1="${p[0]}" y1="${p[1]}" x2="${tmpTo[0] - c.left}" y2="${tmpTo[1] - c.top}"/>`;
+  }
+  linesEl.innerHTML = html;
+}
+function select(b){
+  if (lk.sel) lk.sel.classList.remove('sel');
+  lk.sel = b; if (b){ b.classList.add('sel'); speak(Number(b.dataset.n)); }
+}
+function linkDown(e, b){
+  if (b.classList.contains('done')) return;
+  e.preventDefault();
+  if (lk.sel && lk.sel !== b && lk.sel.dataset.side !== b.dataset.side){ tryPair(lk.sel, b); return; }
+  if (lk.sel === b){ select(null); drawLines(); return; }
+  select(b);
+  lk.drag = { id:e.pointerId, moved:false, x:e.clientX, y:e.clientY };
+}
+window.addEventListener('pointermove', e => {
+  if (!lk.drag || e.pointerId !== lk.drag.id) return;
+  if (!lk.drag.moved && Math.hypot(e.clientX - lk.drag.x, e.clientY - lk.drag.y) < 8) return;
+  lk.drag.moved = true;
+  drawLines([e.clientX, e.clientY]);
+});
+window.addEventListener('pointerup', e => {
+  if (!lk.drag || e.pointerId !== lk.drag.id) return;
+  const moved = lk.drag.moved; lk.drag = null;
+  if (!moved){ drawLines(); return; }
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const target = el && el.closest && el.closest('.item');
+  if (target && lk.sel && target !== lk.sel && target.dataset.side !== lk.sel.dataset.side && !target.classList.contains('done')) tryPair(lk.sel, target);
+  else { select(null); drawLines(); }
+});
+function tryPair(x, y){
+  const a = x.dataset.side === 'ar' ? x : y, b = a === x ? y : x;
+  if (a.dataset.n !== b.dataset.n){
+    lk.retried = true; sfx.wrong(); shakeEl(a); shakeEl(b);
+    select(null); drawLines(); return;
+  }
+  a.classList.add('done'); b.classList.add('done'); select(null);
+  lk.pairsDone.push([a, b]); drawLines(); sfx.correct();
+  lk.done++;
+  const n = Number(a.dataset.n);
+  $('sub').innerHTML = `<span class="ar">${n}</span> 和 <span class="cn">${toCN(n)}</span> 是一對`;
+  if (lk.done < lk.rows){ speak(n); return; }
+  st.results[lk.i] = !lk.retried; updateTrack(st.results, lk.i + 1);
+  const tok = st.tok;
+  say([n], () => setTimeout(() => { if (tok === st.tok){ lk.i++; linkRound(); } }, 1000));
+}
+window.addEventListener('resize', () => { if (st.mode === 'link') drawLines(); });
+
+syncSeg(); showRange();
+
+/* PWA：使用根目錄的共用 Service Worker */
+if ('serviceWorker' in navigator && location.protocol !== 'file:')
+  window.addEventListener('load', () => navigator.serviceWorker.register('../sw.js', { scope:'../' }).catch(() => {}));
+</script>
+</body>
+</html>
