@@ -130,6 +130,9 @@ footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 4
  <button type="button" data-filter="1-10" aria-pressed="false">1–10</button>
  <button type="button" data-filter="11-20" aria-pressed="true">11–20</button>
  <button type="button" data-filter="1-20" aria-pressed="false">1–20</button>
+ <button type="button" data-filter="back" aria-pressed="false">倒數</button>
+ <button type="button" data-filter="21-30" aria-pressed="false">21–30</button>
+ <button type="button" data-filter="31-40" aria-pressed="false">31–40</button>
  <button type="button" data-filter="0-31" aria-pressed="false">0–31</button>
  <button type="button" data-filter="cn" aria-pressed="false">中國數字</button>
 </nav>
@@ -146,7 +149,7 @@ href   ：資料夾請以 "/" 結尾（自動開啟該資料夾的 index.html）
         開頭不要加 "/"，否則會連到網站最頂層
 range  ：卡片上顯示的數字範圍
 group  ：篩選分類，須與上方篩選按鈕的 data-filter 完全相同
-        （"1-10"、"11-20"、"1-20"、"0-31"、"cn"，中間是普通減號 -）
+        （"1-10"、"11-20"、"1-20"、"21-30"、"31-40"、"back"（倒數）、"0-31"、"cn"，中間是普通減號 -）
         如想一個遊戲同時出現在幾個分類，可寫成 ["11-20", "1-20"]
 ========================================================== */
 const DEFAULT_FILTER = "11-20";   // 開啟目錄時預設顯示的分類（"all" = 全部）
@@ -195,6 +198,41 @@ const GAMES = [
  { href: "comparetwentyframes/",   range: "1–20",  group: "1-20",
    icon: "📊", title: "二十格框：比較數量", desc: "比較兩個二十格框，哪一組較多、較少。",
    accent: "#c26a12", tint: "#fdf0e1" },
+
+ /* ---------- 倒數 20–1 ---------- */
+ { href: "countback-learn-20-1/",  range: "20–1",  group: ["back", "1-20"],
+   icon: "🚀", title: "認識倒數 20 至 1", desc: "聽讀音由大數倒數到小數，看看數量逐個減少。",
+   accent: "#6b4ee0", tint: "#efeaff" },
+
+ { href: "countback-20-1/",        range: "20–1",  group: ["back", "1-20"],
+   icon: "⬅️", title: "倒數接續",     desc: "由一個數字開始倒數，把不見了的數字放回空格。",
+   accent: "#8b5cf6", tint: "#f1ebff" },
+
+ /* ---------- 21–30 ---------- */
+ { href: "rcgs-21-30/",            range: "21–30", group: "21-30",
+   icon: "🌟", title: "認識數字 21 至 30", desc: "按數字聽讀音，看看十位和個位怎樣讀。",
+   accent: "#d4a017", tint: "#fff8dc" },
+
+ { href: "choosenumber-21-30/",    range: "21–30", group: "21-30",
+   icon: "👂", title: "聽數字・揀數字", desc: "聽廣東話讀音，選出正確的數字。",
+   accent: "#e8873a", tint: "#fff3e6" },
+
+ { href: "buildnumber-21-30/",     range: "21–30", group: "21-30",
+   icon: "🧱", title: "砌數字",       desc: "用數字鍵拼出聽到的數字。",
+   accent: "#2f8fd8", tint: "#e6f3ff" },
+
+ /* ---------- 31–40 ---------- */
+ { href: "rcgs-31-40/",            range: "31–40", group: "31-40",
+   icon: "🌟", title: "認識數字 31 至 40", desc: "按數字聽讀音，看看十位和個位怎樣讀。",
+   accent: "#d4a017", tint: "#fff8dc" },
+
+ { href: "choosenumber-31-40/",    range: "31–40", group: "31-40",
+   icon: "👂", title: "聽數字・揀數字", desc: "聽廣東話讀音，選出正確的數字。",
+   accent: "#e8873a", tint: "#fff3e6" },
+
+ { href: "buildnumber-31-40/",     range: "31–40", group: "31-40",
+   icon: "🧱", title: "砌數字",       desc: "用數字鍵拼出聽到的數字。",
+   accent: "#2f8fd8", tint: "#e6f3ff" },
 
  /* ---------- 中國數字（1–50） ---------- */
  { href: "chinese/learn_chinese.html",    range: "一至五十", group: "cn",
