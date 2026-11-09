@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-HK"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>認識倒數・20至1</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#6B4EE0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="認識倒數">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="../maths_thin_v2.ttf" as="font" type="font/ttf" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Noto+Sans+HK:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ===== 自訂數字字體 =====
+ 字體檔放在上一層資料夾；若找不到，會自動改用 Chakra Petch。 */
+@font-face{font-family:"MyNumberFont";src:url("../maths_thin_v2.ttf") format("truetype");font-display:block}
+html:not(.font-ready) .big,html:not(.font-ready) .number{color:transparent}
+:root{--num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",sans-serif;
+ --ink:#1d1840;--purple:#6B4EE0;--soft:#efeaff;--paper:#f6f4fd;--gold:#ffe263;--dot:#ff8a3d;--line:#d9d1f7}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans HK",system-ui,-apple-system,'Microsoft JhengHei',sans-serif;-webkit-tap-highlight-color:transparent}
+main{max-width:1000px;margin:auto;padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(36px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.back-link{display:inline-flex;align-items:center;height:44px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);background:white;color:var(--ink);text-decoration:none;font-weight:700;white-space:nowrap}
+h1{font-size:clamp(24px,4vw,36px);margin:0}
+.intro{margin:6px 0 18px;font-size:19px;line-height:1.6}
+button{font:inherit;cursor:pointer;touch-action:manipulation;color:var(--ink);-webkit-user-select:none;user-select:none}
+button:focus-visible,select:focus-visible{outline:4px solid #ce8c00;outline-offset:3px}
+
+.stage{background:white;border:2px solid var(--line);border-radius:24px;padding:20px;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+.show{text-align:center;min-width:200px}
+.big{font-family:var(--num-font);font-size:clamp(110px,18vw,170px);line-height:1;color:var(--purple);transition:transform .15s}
+.big.bump{transform:scale(1.1)}
+.word{font-size:32px;font-weight:900;min-height:44px;margin-top:14px}
+.status{min-height:28px;color:#5d5683;font-size:17px;margin:6px 0 0}
+/* 二十格框：上面一格是 1–10，下面一格是 11–20 */
+.frames{display:flex;flex-direction:column;gap:12px;align-items:center}
+.frame{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:3px solid var(--ink);border-radius:10px;overflow:hidden;width:min(100%,420px)}
+.cell{aspect-ratio:1;border:1.5px solid #b9b1dc;display:grid;place-items:center;background:white}
+.cell i{width:72%;aspect-ratio:1;border-radius:50%;background:var(--dot);transform:scale(0);transition:transform .25s ease,opacity .25s}
+.cell.on i{transform:scale(1)}
+.cell.leaving i{transform:scale(1);opacity:.25;background:#bbb}
+
+.controls{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.controls button{border:0;border-radius:12px;background:var(--purple);color:white;padding:12px 18px;font-size:19px;font-weight:700}
+.controls button.stop{background:#6b6880}
+.controls button.alt{background:#0a9db8}
+
+.rows{margin:22px 0 10px;display:flex;flex-direction:column;gap:12px}
+.row-label{font-size:16px;color:#5d5683;margin:0 0 -4px}
+.numbers{display:grid;grid-template-columns:repeat(10,1fr);gap:10px}
+.number{border:2px solid var(--line);background:white;border-radius:14px;padding:12px 2px;font-family:var(--num-font);font-size:clamp(26px,4.6vw,46px);line-height:1.1}
+.number.passed{opacity:.35}
+.number.chosen{border-color:var(--purple);background:var(--gold);box-shadow:0 0 0 3px var(--purple)}
+.arrow{font-size:15px;color:#5d5683;text-align:right}
+.settings{display:flex;flex-wrap:wrap;gap:16px;align-items:center;font-size:17px;margin-top:10px}
+select{font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:white}
+.help{font-size:17px;color:#4b4570;line-height:1.7}
+.error{color:#a23320;font-weight:700}
+.rocket{position:fixed;left:50%;bottom:-120px;font-size:96px;transform:translateX(-50%);pointer-events:none;z-index:9}
+.rocket.go{animation:launch 1.8s ease-in forwards}
+@keyframes launch{0%{bottom:-120px}100%{bottom:110vh}}
+@media(max-width:720px){.stage{grid-template-columns:1fr}.numbers{grid-template-columns:repeat(5,1fr)}}
+@media(display-mode:standalone){.install-tip{display:none}}
+@media(prefers-reduced-motion:reduce){.cell i,.big{transition:none}.rocket.go{animation:none}}
+</style></head><body><main>
+<div class="top"><a class="back-link" href="../index.html" aria-label="返回目錄">← 目錄</a><h1>認識倒數：20 至 1</h1></div>
+<p class="intro">倒數即是由大數到小數地數。每倒數一個數，數量便少了 1 個。</p>
+
+<section class="stage" aria-label="倒數示範">
+ <div class="show">
+  <div class="big" id="big">20</div>
+  <div class="word" id="word">二十</div>
+  <p class="status" id="status" role="status" aria-live="polite">正在載入聲音…</p>
+ </div>
+ <div class="frames" id="frames" aria-label="二十格框"></div>
+</section>
+
+<div class="controls">
+ <button id="countBtn" type="button">由 20 倒數到 1</button>
+ <button id="fromBtn" type="button" class="alt">由這個數倒數</button>
+ <button id="repeat" type="button" class="alt">再聽一次</button>
+ <button id="stop" type="button" class="stop">停止</button>
+</div>
+
+<div class="rows">
+ <p class="row-label">按一個數字聽讀音（由左至右是倒數的次序）</p>
+ <div class="numbers" id="numbers" aria-label="20至1數字選擇"></div>
+</div>
+
+<div class="settings"><label>讀音速度 <select id="speed"><option value="slow">慢</option><option value="normal" selected>普通</option><option value="fast">快</option></select></label>
+<label><input type="checkbox" id="rocketOn" checked> 數到 1 後火箭升空</label></div>
+<p class="help">例如由 15 倒數：十五、十四、十三、十二、十一、十……一。<br>倒數時，下一個數總是比現在的數少 1。</p>
+<p class="help install-tip">在iPad用Safari開啟本頁，按「分享」→「加入主畫面」，即可像應用程式一樣使用，離線亦可播放。</p>
+</main>
+<div class="rocket" id="rocket" aria-hidden="true">🚀</div>
+<script>
+'use strict';
+/* 聲音檔位置：上一層的 audio 資料夾（../audio/1.mp3 至 10.mp3）
+  組合規則：1–10 直接讀；11–19 = 十 + 個位；20 = 二 + 十 */
+const AUDIO_DIR='../audio/';
+const AUDIO_HINT='請確認上一層 audio 資料夾內有1.mp3至10.mp3。';
+const SPEED={slow:{gap:350,next:1300},normal:{gap:120,next:750},fast:{gap:50,next:400}};
+const MAX=20;
+const $=id=>document.getElementById(id);
+const CN=['零','一','二','三','四','五','六','七','八','九','十'];
+const toCN=n=>{if(n<=10)return CN[n];const t=Math.floor(n/10),u=n%10;return(t===1?'':CN[t])+'十'+(u?CN[u]:'');};
+const clipsFor=n=>{if(n<=10)return[n];const t=Math.floor(n/10),u=n%10;return[...(t===1?[]:[t]),10,...(u?[u]:[])];};
+let current=MAX,token=0,timer=0;
+
+/* ---------- 讀音 ----------
+  先把十個 mp3 下載到記憶體（blob），再用 <audio> 播放（與「認識數字」相同做法，iPad 上較穩定）。 */
+const players={};let curPlayer=null,audioFailed=false;
+const audioReady=Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n=>{
+ const r=await fetch(AUDIO_DIR+n+'.mp3');if(!r.ok)throw new Error('找不到 '+n+'.mp3');
+ const a=new Audio(URL.createObjectURL(await r.blob()));a.preload='auto';a.load();players[n]=a;
+})).then(()=>{if(!curPlayer&&!$('status').classList.contains('error'))status('聲音已準備好。');},
+ e=>{audioFailed=true;error('未能載入聲音（'+e.message+'）。'+AUDIO_HINT);});
+const within=(p,ms)=>Promise.race([p,new Promise(r=>setTimeout(r,ms))]);
+function unlock(){
+ Object.values(players).filter(a=>!a._ok&&!a._busy).forEach(a=>{
+  a._busy=true;a.muted=true;let p;try{p=a.play();}catch(e){a._busy=false;a.muted=false;return;}
+  const reset=()=>{a._busy=false;a._ok=true;if(curPlayer===a){a.muted=false;return;}a.pause();a.currentTime=0;a.muted=false;};
+  p&&p.then?p.then(reset).catch(()=>{a._busy=false;a.muted=false;}):reset();
+ });
+}
+function playClip(n){return new Promise(resolve=>{
+ const a=players[n];if(!a)return resolve();
+ let done=false;
+ const finish=()=>{if(done)return;done=true;clearTimeout(guard);a.removeEventListener('ended',finish);a.removeEventListener('error',finish);if(curPlayer===a)curPlayer=null;resolve();};
+ a.addEventListener('ended',finish);a.addEventListener('error',finish);
+ const dur=isFinite(a.duration)&&a.duration>0?a.duration:2;
+ const guard=setTimeout(finish,(dur+1.5)*1000);
+ curPlayer=a;
+ try{a.muted=false;a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(finish);}catch(e){finish();}
+});}
+const wait=ms=>new Promise(r=>{timer=setTimeout(r,ms);});
+async function say(n,run){
+ const sp=SPEED[$('speed').value]||SPEED.normal,parts=clipsFor(n);
+ for(let i=0;i<parts.length;i++){await playClip(parts[i]);if(run!==token)return;if(i<parts.length-1){await wait(sp.gap);if(run!==token)return;}}
+}
+
+/* ---------- 畫面 ---------- */
+function buildFrames(){
+ for(let f=0;f<2;f++){const fr=document.createElement('div');fr.className='frame';
+  for(let k=0;k<10;k++){const c=document.createElement('div');c.className='cell';c.dataset.i=f*10+k+1;c.innerHTML='<i></i>';fr.append(c);}
+  $('frames').append(fr);}
+}
+function setFrame(n,leaving){
+ document.querySelectorAll('.cell').forEach(c=>{const i=Number(c.dataset.i);c.classList.toggle('on',i<=n);c.classList.toggle('leaving',leaving&&i===n+1);});
+}
+function show(n,{leaving=false,passedFrom=null}={}){
+ current=n;$('big').textContent=n;$('word').textContent=toCN(n);
+ const b=$('big');b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');
+ setFrame(n,leaving);
+ document.querySelectorAll('.number').forEach(e=>{const v=Number(e.dataset.number);
+  e.classList.toggle('chosen',v===n);e.setAttribute('aria-pressed',String(v===n));
+  e.classList.toggle('passed',passedFrom!==null&&v>n&&v<=passedFrom);});
+ $('fromBtn').textContent='由 '+n+' 倒數到 1';
+}
+function status(m){$('status').classList.remove('error');$('status').textContent=m;}
+function error(m){$('status').textContent=m;$('status').classList.add('error');}
+function halt(){token++;clearTimeout(timer);if(curPlayer){try{curPlayer.pause();}catch(e){}curPlayer=null;}
+ document.querySelectorAll('.cell.leaving').forEach(c=>c.classList.remove('leaving'));}
+
+async function prepare(run){
+ unlock();status('準備播放…');
+ await within(audioReady,5000);if(run!==token)return false;
+ if(audioFailed){error('未能載入聲音。'+AUDIO_HINT);return false;}
+ return true;
+}
+async function readOne(n){
+ halt();const run=token;show(n);
+ if(!await prepare(run))return;
+ status('讀「'+toCN(n)+'」');await say(n,run);if(run!==token)return;
+ status(n>1?'倒數時，下一個數是 '+(n-1)+'。':'1 是倒數的最後一個數。');
+}
+async function countDown(from){
+ halt();const run=token;show(from,{passedFrom:from});
+ if(!await prepare(run))return;
+ const sp=SPEED[$('speed').value]||SPEED.normal;
+ for(let n=from;n>=1;n--){
+  if(n!==from)show(n,{leaving:true,passedFrom:from});
+  status('倒數：'+toCN(n));
+  await say(n,run);if(run!==token)return;
+  if(n>1){await wait(sp.next);if(run!==token)return;}
+ }
+ status('數完了！由 '+from+' 倒數到 1。');
+ if($('rocketOn').checked){const r=$('rocket');r.classList.remove('go');void r.offsetWidth;r.classList.add('go');}
+}
+
+for(let n=MAX;n>=1;n--){const b=document.createElement('button');b.type='button';b.className='number';b.dataset.number=n;b.textContent=n;
+ b.setAttribute('aria-label','播放'+toCN(n)+'的廣東話讀音');b.addEventListener('click',()=>readOne(n));$('numbers').append(b);}
+buildFrames();show(MAX);
+$('countBtn').addEventListener('click',()=>countDown(MAX));
+$('fromBtn').addEventListener('click',()=>countDown(current));
+$('repeat').addEventListener('click',()=>readOne(current));
+$('stop').addEventListener('click',()=>{halt();status('已停止。');});
+$('speed').addEventListener('change',()=>halt());
+document.addEventListener('visibilitychange',()=>{if(document.hidden)halt();});
+window.addEventListener('pagehide',halt);
+(()=>{const done=()=>document.documentElement.classList.add('font-ready');
+ if(document.fonts&&document.fonts.load){within(document.fonts.load('400 1em "MyNumberFont"','0123456789'),3000).then(done,done);}else done();})();
+
+/* PWA：離線快取 */
+if('serviceWorker' in navigator&&location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script></body></html>
