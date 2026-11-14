@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>坐升降機</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#3559c7">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="坐升降機">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<style>
+/* ===== 共用樣式（三個生活應用遊戲相同） ===== */
+@font-face{font-family:"MyNumberFont";src:url("../maths_thin_v2.ttf") format("truetype");font-display:swap}
+:root{
+ --num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",system-ui,sans-serif;
+ --ink:#1b2333;--muted:#5d6779;--line:rgba(27,35,51,.14);--panel:#fff;
+ --mint:#12A574;--red:#D14A4A;--amber:#D48A00;
+ box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+ -webkit-tap-highlight-color:transparent;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.app{height:100%;max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:10px;
+ padding:calc(10px + env(safe-area-inset-top,0px)) 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.topbar{display:flex;align-items:center;gap:10px}
+.back-link{display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 14px;border-radius:12px;flex-shrink:0;
+ border:1.5px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-size:16px;font-weight:700;white-space:nowrap}
+.gear{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);display:grid;place-items:center;flex-shrink:0}
+.track{flex:1;display:flex;gap:5px;justify-content:center;min-width:0}
+.dot{width:20px;height:20px;display:grid;place-items:center;line-height:1}
+.dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dot.now::before{background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.dot.done::before{background:var(--accent)}
+.dot.star::before{content:"★";width:auto;height:auto;background:none;color:var(--amber);font-size:19px}
+.screen{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;
+ padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.screen[hidden]{display:none}
+.screen .back-link{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px}
+.screen h1{margin:0;font-size:clamp(30px,8vw,46px);font-weight:900;letter-spacing:.03em}
+.screen p{margin:0;max-width:32em;color:var(--muted);line-height:1.7;font-size:18px}
+.screen .emoji{font-size:84px;line-height:1}
+.note{font-size:14px!important;color:var(--amber)!important}
+.big-btn{min-width:200px;padding:16px 28px;border-radius:999px;border:none;background:var(--accent);color:#fff;font-size:22px;font-weight:900}
+.score{font-family:var(--num-font);font-size:64px;color:var(--amber)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--panel);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;
+ padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;max-width:600px;margin:0 auto}
+.sheet.open{transform:none}
+.sheet h2{margin:0 0 10px;font-size:18px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row>span{white-space:nowrap}
+.seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.seg button{min-width:56px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:transparent;font-weight:700}
+.seg button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.sheet .big-btn{width:100%;margin-top:14px}
+@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-3px)}}
+@keyframes pop{from{transform:scale(.6)}70%{transform:scale(1.1)}to{transform:scale(1)}}
+@media (max-width:480px){.topbar .back-link .bl-text{display:none}.topbar .back-link{width:44px;padding:0;justify-content:center}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+:root{--bg:#eef2fb;--accent:#3559c7;--steel:#c9d1de;--steel-dark:#8f9bb0}
+
+.main{flex:1;min-height:0;display:grid;grid-template-columns:1.1fr 1fr;gap:18px;align-items:stretch}
+@media (max-width:640px){.main{grid-template-columns:1fr;grid-template-rows:auto 1fr}}
+
+/* ---- 升降機大堂 ---- */
+.scene{display:flex;flex-direction:column;align-items:center;gap:12px;min-height:0}
+.display{display:flex;align-items:center;gap:14px;background:#141a26;color:#ffb648;border-radius:14px;padding:8px 22px;
+ box-shadow:inset 0 0 0 3px #2a3346;min-width:170px;justify-content:center}
+.display .arrow{font-size:30px;width:30px;text-align:center;opacity:.25}
+.display .arrow.on{opacity:1}
+.display .floor{font-family:"Chakra Petch",var(--num-font);font-weight:700;font-size:54px;line-height:1;min-width:2ch;text-align:center;
+ text-shadow:0 0 12px rgba(255,182,72,.55)}
+.shaft{position:relative;width:min(100%,360px);flex:1;min-height:250px;max-height:680px;border-radius:18px 18px 6px 6px;
+ background:linear-gradient(#dfe5ef,#cdd5e2);border:6px solid var(--steel-dark);overflow:hidden}
+.car{position:absolute;inset:0;background:linear-gradient(#f9f3e3,#eadfc4);display:flex;align-items:flex-end;justify-content:center}
+.car::before{content:"";position:absolute;left:12%;right:12%;top:8%;height:6px;border-radius:3px;background:#fff8;box-shadow:0 0 18px #fff}
+.person{font-size:min(30vw,150px);line-height:1;margin-bottom:6%;transition:transform .55s ease,opacity .55s}
+.person.out-left{transform:translateX(-140%);opacity:0}
+.person.out-right{transform:translateX(140%);opacity:0}
+.door{position:absolute;top:0;bottom:0;width:50%;background:linear-gradient(90deg,#b8c2d3,#dde3ec 45%,#b8c2d3);
+ transition:transform .7s ease;z-index:2}
+.door.l{left:0;border-right:2px solid var(--steel-dark)}
+.door.r{right:0;border-left:2px solid var(--steel-dark)}
+.shaft.open .door.l{transform:translateX(-100%)}
+.shaft.open .door.r{transform:translateX(100%)}
+.bubble{position:relative;background:#fff;border:2.5px solid var(--ink);border-radius:20px;padding:10px 18px;font-size:clamp(20px,4.5vw,28px);font-weight:900;
+ display:flex;align-items:center;gap:10px;min-height:62px}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-13px;width:20px;height:20px;background:#fff;border-right:2.5px solid var(--ink);border-bottom:2.5px solid var(--ink);transform:translateX(-50%) rotate(45deg)}
+.bubble .n{font-family:var(--num-font);font-weight:400;font-size:1.5em;line-height:1;color:var(--accent)}
+.bubble .say{width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);background:#fff;color:var(--accent);display:grid;place-items:center;flex-shrink:0}
+.bubble.speaking .say{background:var(--accent);color:#fff}
+
+/* ---- 上／落 ---- */
+.dir{display:flex;gap:14px;justify-content:center}
+.dir[hidden]{display:none}
+.dir button{width:96px;height:72px;border-radius:16px;border:3px solid var(--steel-dark);background:#fff;font-size:20px;font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.dir button b{font-size:30px}
+.dir button.bad{border-color:var(--red);color:var(--red);animation:shake .35s}
+.dir button.good{border-color:var(--mint);color:var(--mint)}
+
+/* ---- 按鈕板 ---- */
+.panel{background:linear-gradient(#d6dce7,#bcc6d6);border:5px solid var(--steel-dark);border-radius:18px;padding:14px;display:flex;flex-direction:column;justify-content:center;gap:10px;min-height:0;overflow:auto}
+.panel h2{margin:0;font-size:16px;color:#3c4659;text-align:center}
+.keys{display:grid;gap:clamp(6px,1.4vw,12px);grid-template-columns:repeat(4,1fr);direction:ltr}
+.panel.locked .key{pointer-events:none}
+.key{aspect-ratio:1;border-radius:50%;border:3px solid #7d889c;background:radial-gradient(circle at 40% 35%,#fff,#e4e8ef);
+ font-family:var(--num-font);font-size:clamp(22px,4.6vw,38px);line-height:1;display:grid;place-items:center;box-shadow:0 3px 0 #7d889c;max-width:84px;justify-self:center;width:100%}
+.key:active{transform:translateY(2px);box-shadow:0 1px 0 #7d889c}
+.key.lit{border-color:#ff9f1a;color:#c25e00;box-shadow:0 0 0 4px #ffcf7a,0 0 18px #ffb648}
+.key.wrong{border-color:var(--red);color:var(--red)}
+.hint{margin:0;text-align:center;color:var(--muted);font-size:15px;min-height:1.4em}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="topbar">
+  <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+  <div class="track" id="track" aria-label="進度"></div>
+  <button class="gear" id="gearBtn" aria-label="設定"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+ </div>
+
+ <div class="main">
+  <section class="scene">
+   <div class="display" aria-label="現在樓層"><span class="arrow" id="arUp">▲</span><span class="floor" id="floor">1</span><span class="arrow" id="arDown">▼</span></div>
+   <div class="bubble" id="bubble" aria-live="polite"></div>
+   <div class="shaft" id="shaft">
+    <div class="car"><div class="person" id="person"></div></div>
+    <div class="door l"></div><div class="door r"></div>
+   </div>
+   <div class="dir" id="dir" hidden>
+    <button id="upBtn" aria-label="向上"><b>▲</b>上</button>
+    <button id="downBtn" aria-label="向下"><b>▼</b>落</button>
+   </div>
+  </section>
+  <section class="panel locked" id="panel">
+   <h2 id="panelTitle">按樓層</h2>
+   <div class="keys" id="keys"></div>
+   <p class="hint" id="hint"></p>
+  </section>
+ </div>
+</div>
+
+<div class="screen" id="startScreen">
+ <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+ <div class="emoji">🛗</div>
+ <h1>坐升降機</h1>
+ <p>乘客會告訴你要去哪一層，請按升降機的樓層按鈕，送乘客到正確的樓層。每局送十位乘客，第一次便送對可得一粒星。</p>
+ <p class="note" id="voiceNote" hidden></p>
+ <button class="big-btn" id="startBtn">開始</button>
+</div>
+<div class="screen" id="endScreen" hidden>
+ <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+ <h1>全部送到了！</h1>
+ <div class="score" id="score"></div>
+ <p id="endMsg"></p>
+ <button class="big-btn" id="againBtn">再玩一次</button>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-label="設定">
+ <h2>設定</h2>
+ <div class="row"><span>樓層範圍</span><div class="seg" data-key="range"><button data-val="1-20">1–20</button><button data-val="21-40">21–40</button><button data-val="1-40">1–40</button></div></div>
+ <div class="row"><span>乘客怎樣說</span><div class="seg" data-key="show"><button data-val="hear">只聽讀音</button><button data-val="cn">中國數字</button><button data-val="digit">阿拉伯數字</button></div></div>
+ <div class="row"><span>先判斷上或落</span><div class="seg" data-key="dir"><button data-val="on">開</button><button data-val="off">關</button></div></div>
+ <div class="row"><span>聲效</span><div class="seg" data-key="sfx"><button data-val="on">開</button><button data-val="off">關</button></div></div>
+ <button class="big-btn" id="applyBtn">套用並重新開始</button>
+</div>
+
+<script>
+'use strict';
+/* ===== 共用程式（三個生活應用遊戲相同） ===== */
+const $ = id => document.getElementById(id);
+const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const CN = ['零','一','二','三','四','五','六','七','八','九','十'];
+function toCN(n){
+ if (n <= 10) return CN[n];
+ const t = Math.floor(n / 10), u = n % 10;
+ return (t === 1 ? '' : CN[t]) + '十' + (u ? CN[u] : '');
+}
+
+/* ---------- 設定（自動儲存於本機） ---------- */
+function useSettings(key, defaults){
+ const s = Object.assign({}, defaults);
+ try { Object.assign(s, JSON.parse(localStorage.getItem(key) || '{}')); } catch(e){}
+ for (const k in defaults){
+   const seg = document.querySelector(`.seg[data-key="${k}"]`);
+   if (seg && ![...seg.querySelectorAll('button')].some(b => b.dataset.val === String(s[k]))) s[k] = defaults[k];
+ }
+ const sync = () => document.querySelectorAll('.seg').forEach(seg =>
+   seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === String(s[seg.dataset.key])))));
+ document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e => {
+   const b = e.target.closest('button'); if (!b) return; s[seg.dataset.key] = b.dataset.val; sync();
+ }));
+ s.save = () => { try { const o = {}; for (const k in defaults) o[k] = s[k]; localStorage.setItem(key, JSON.stringify(o)); } catch(e){} };
+ s.sync = sync; sync();
+ return s;
+}
+
+/* ---------- 讀音 ----------
+  數字：組合上一層 audio 資料夾的 1.mp3 至 10.mp3
+        （1–10 直接讀；11–19 = 十 + 個位；20、30… = 幾 + 十；21–99 = 幾 + 十 + 個位）
+  其他字詞（例如「樓」「蚊」）：用裝置的廣東話語音（iPad：Sinji；Windows：Danny）；
+        如裝置沒有廣東話語音，字詞會略過，只讀數字。
+  做法與「認識數字」相同：mp3 先下載到記憶體，再用 <audio> 播放，iPad 上較穩定。 */
+const AUDIO_DIR = '../audio/';
+const Voice = (() => {
+ const players = {}; let cur = null, failed = false, token = 0, ttsVoice = null;
+ const ready = Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n => {
+   const r = await fetch(AUDIO_DIR + n + '.mp3');
+   if (!r.ok) throw new Error('找不到 ' + n + '.mp3');
+   const a = new Audio(URL.createObjectURL(await r.blob())); a.preload = 'auto'; a.load(); players[n] = a;
+ })).catch(e => {
+   failed = true;
+   const note = $('voiceNote');
+   if (note){ note.textContent = '未能載入聲音（' + e.message + '）。請確認上一層 audio 資料夾內有1.mp3至10.mp3。'; note.hidden = false; }
+ });
+ const within = (p, ms) => Promise.race([p, wait(ms)]);
+ const clipsFor = n => {
+   if (n <= 10) return [n];
+   const t = Math.floor(n / 10), u = n % 10;
+   return [...(t === 1 ? [] : [t]), 10, ...(u ? [u] : [])];
+ };
+ function pickVoice(){
+   if (!('speechSynthesis' in window)) return;
+   const vs = speechSynthesis.getVoices();
+   ttsVoice = vs.find(v => /^(zh[-_]HK|yue)/i.test(v.lang)) || vs.find(v => /Sinji|Danny|Cantonese|粵/i.test(v.name)) || null;
+ }
+ if ('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+ let unlocked = false;
+ function unlock(){ /* 必須在按鍵當下呼叫，iPad 才會允許發聲 */
+   Object.values(players).filter(a => !a._ok && !a._busy).forEach(a => {
+     a._busy = true; a.muted = true; let p;
+     try { p = a.play(); } catch(e){ a._busy = false; a.muted = false; return; }
+     const reset = () => { a._busy = false; a._ok = true; if (cur === a){ a.muted = false; return; } a.pause(); a.currentTime = 0; a.muted = false; };
+     p && p.then ? p.then(reset).catch(() => { a._busy = false; a.muted = false; }) : reset();
+   });
+   if (!unlocked && 'speechSynthesis' in window){
+     unlocked = true;
+     try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch(e){}
+   }
+ }
+ function playClip(n){ return new Promise(resolve => {
+   const a = players[n]; if (!a) return resolve();
+   let done = false;
+   const fin = () => { if (done) return; done = true; clearTimeout(g); a.removeEventListener('ended', fin); a.removeEventListener('error', fin); if (cur === a) cur = null; resolve(); };
+   a.addEventListener('ended', fin); a.addEventListener('error', fin);
+   const g = setTimeout(fin, ((isFinite(a.duration) && a.duration > 0 ? a.duration : 2) + 1.5) * 1000);
+   cur = a;
+   try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(fin); } catch(e){ fin(); }
+ }); }
+ function sayText(t){ return new Promise(resolve => {
+   if (!ttsVoice) return resolve();
+   const u = new SpeechSynthesisUtterance(t); u.voice = ttsVoice; u.lang = ttsVoice.lang; u.rate = .95;
+   let done = false;
+   const fin = () => { if (done) return; done = true; clearTimeout(g); resolve(); };
+   u.onend = fin; u.onerror = fin;
+   const g = setTimeout(fin, 900 + t.length * 450);
+   speechSynthesis.speak(u);
+ }); }
+ /* say([ '去', 23, '樓' ])：數字用錄音，文字用裝置語音；讀完才 resolve。被 stop() 中斷時回傳 false */
+ async function say(parts, gap = 110){
+   stop(); const run = token;
+   unlock();
+   await within(ready, 5000); if (run !== token) return false;
+   for (const p of [].concat(parts)){
+     if (typeof p === 'number'){
+       if (failed) continue;
+       const cl = clipsFor(p);
+       for (let i = 0; i < cl.length; i++){
+         await playClip(cl[i]); if (run !== token) return false;
+         if (i < cl.length - 1){ await wait(gap); if (run !== token) return false; }
+       }
+     } else {
+       await sayText(p); if (run !== token) return false;
+     }
+     await wait(80); if (run !== token) return false;
+   }
+   return true;
+ }
+ function stop(){
+   token++;
+   if (cur){ try { cur.pause(); } catch(e){} cur = null; }
+   if ('speechSynthesis' in window) try { speechSynthesis.cancel(); } catch(e){}
+ }
+ document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+ window.addEventListener('pagehide', stop);
+ return { say, stop, unlock, ready };
+})();
+
+/* ---------- 聲效 ----------
+  以程式合成 WAV，再用 <audio> 播放（iPad 靜音模式下仍可發聲）。 */
+const Sfx = (() => {
+ const SR = 22050;
+ const SOUNDS = {
+   tap:     { len:.12, notes:[[620,0,.07,'sine',.25]] },
+   coin:    { len:.3,  notes:[[1320,0,.08,'sine',.3],[1760,.06,.22,'sine',.3]] },
+   ding:    { len:1.1, notes:[[880,0,.9,'sine',.35],[1108.73,.35,.75,'sine',.3]] },
+   correct: { len:.8,  notes:[[523.25,0,.22,'tri',.4],[659.25,.09,.22,'tri',.4],[783.99,.18,.22,'tri',.4],[1046.5,.27,.45,'tri',.45],[2093,.3,.4,'sine',.12]] },
+   wrong:   { len:.55, notes:[[330,0,.18,'tri',.45,300],[247,.2,.3,'tri',.45,196]] },
+   up:      { len:.7,  notes:[[392,0,.2,'tri',.35],[523.25,.15,.2,'tri',.35],[659.25,.3,.2,'tri',.35],[783.99,.45,.25,'tri',.35]] },
+   down:    { len:.8,  notes:[[700,0,.75,'tri',.35,180]] },
+   finish:  { len:1.4, notes:[[523.25,0,.3,'tri',.38],[659.25,.12,.3,'tri',.38],[783.99,.24,.3,'tri',.38],[1046.5,.36,.5,'tri',.4],[1318.5,.5,.8,'sine',.1],[1567.98,.5,.8,'sine',.1]] }
+ };
+ function renderWav({ len, notes }){
+   const n = Math.ceil(len * SR), buf = new Float32Array(n);
+   for (const [f, at, dur, type, vol, glide] of notes){
+     const s0 = Math.floor(at * SR), sN = Math.floor(dur * SR), atk = .015; let ph = 0;
+     for (let i = 0; i < sN && s0 + i < n; i++){
+       const t = i / SR, fr = glide ? f * Math.pow(glide / f, t / dur) : f;
+       ph += 2 * Math.PI * fr / SR;
+       const w = type === 'sine' ? Math.sin(ph) : (2 / Math.PI) * Math.asin(Math.sin(ph));
+       buf[s0 + i] += w * (t < atk ? t / atk : Math.pow(1 - (t - atk) / (dur - atk), 2)) * vol;
+     }
+   }
+   const out = new DataView(new ArrayBuffer(44 + n * 2));
+   const str = (o, x) => [...x].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+   str(0,'RIFF'); out.setUint32(4, 36 + n * 2, true); str(8,'WAVE'); str(12,'fmt ');
+   out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,1,true);
+   out.setUint32(24,SR,true); out.setUint32(28,SR*2,true); out.setUint16(32,2,true); out.setUint16(34,16,true);
+   str(36,'data'); out.setUint32(40, n * 2, true);
+   for (let i = 0; i < n; i++) out.setInt16(44 + i * 2, Math.max(-1, Math.min(1, buf[i])) * 32767, true);
+   return URL.createObjectURL(new Blob([out], { type:'audio/wav' }));
+ }
+ const players = {};
+ for (const k in SOUNDS){ const a = new Audio(renderWav(SOUNDS[k])); a.preload = 'auto'; players[k] = a; }
+ let unlocked = false, enabled = () => true;
+ function unlock(){
+   Voice.unlock();
+   if (unlocked) return; unlocked = true;
+   Object.values(players).forEach(a => {
+     a.muted = true; const p = a.play();
+     const reset = () => { a.pause(); a.currentTime = 0; a.muted = false; };
+     p && p.then ? p.then(reset).catch(() => { a.muted = false; unlocked = false; }) : reset();
+   });
+ }
+ function play(k){
+   if (!enabled()) return; const a = players[k]; if (!a) return;
+   try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(() => {}); } catch(e){}
+ }
+ return { play, unlock, setEnabled: fn => { enabled = fn; } };
+})();
+
+/* ---------- 進度點 ---------- */
+function Track(el, rounds){
+ const res = [];
+ el.innerHTML = '';
+ for (let k = 0; k < rounds; k++){ const s = document.createElement('span'); s.className = 'dot'; el.appendChild(s); }
+ return {
+   results: res,
+   update(i){ [...el.children].forEach((s, k) => { s.className = 'dot' + (res[k] === true ? ' star' : res[k] === false ? ' done' : k === i ? ' now' : ''); }); },
+   stars(){ return res.filter(Boolean).length; }
+ };
+}
+
+/* PWA：離線快取 */
+if ('serviceWorker' in navigator && location.protocol !== 'file:')
+ window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+
+
+const ROUNDS = 10;
+const PEOPLE = ['🧑‍🎓','👩‍⚕️','👨‍🍳','👵','👷','🧑‍💼','👮','🧒','👩‍🏫','🧑‍🔧','👴','👧'];
+const settings = useSettings('rcgs-lift', { range:'1-40', show:'hear', dir:'off', sfx:'on' });
+Sfx.setEnabled(() => settings.sfx === 'on');
+
+const els = { floor:$('floor'), up:$('arUp'), down:$('arDown'), shaft:$('shaft'), person:$('person'), bubble:$('bubble'),
+ panel:$('panel'), keys:$('keys'), hint:$('hint'), dir:$('dir') };
+const state = { cur:1, target:0, i:0, retried:false, wrongs:0, busy:true, needDir:false, prevPerson:'', token:0 };
+let track = null;
+
+const bounds = () => settings.range.split('-').map(Number);
+const topFloor = () => bounds()[1] <= 20 ? 20 : 40;
+
+function buildKeys(){
+ const top = topFloor();
+ els.keys.innerHTML = '';
+ /* 由下而上排列，最底一行是 1–4，與真實升降機相同 */
+ for (let r = top / 4 - 1; r >= 0; r--){
+   for (let c = 1; c <= 4; c++){
+     const n = r * 4 + c;
+     const b = document.createElement('button');
+     b.className = 'key'; b.textContent = n; b.dataset.n = n; b.setAttribute('aria-label', n + ' 樓');
+     b.onclick = () => { Sfx.unlock(); press(n, b); };
+     els.keys.appendChild(b);
+   }
+ }
+}
+function keyEl(n){ return els.keys.querySelector(`.key[data-n="${n}"]`); }
+
+/* ---------- 乘客說話 ---------- */
+function bubbleHTML(reveal){
+ const t = state.target;
+ const shown = reveal || settings.show === 'digit' ? `<span class="n">${t}</span> 樓`
+             : settings.show === 'cn' ? `${toCN(t)}樓` : '<span class="n">?</span> 樓';
+ return `<button class="say" id="sayBtn" aria-label="再聽一次"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg></button><span>我要去 ${shown}</span>`;
+}
+function setBubble(html){
+ els.bubble.innerHTML = html;
+ const b = $('sayBtn'); if (b) b.onclick = () => { Sfx.unlock(); askAgain(); };
+}
+async function speakTarget(prefix = '我要去'){
+ els.bubble.classList.add('speaking');
+ await Voice.say([prefix, state.target, '樓']);
+ els.bubble.classList.remove('speaking');
+}
+function askAgain(){ if (state.target && !state.moving) speakTarget(); }
+
+/* ---------- 升降機動作 ---------- */
+function openDoors(on){ els.shaft.classList.toggle('open', on); return wait(720); }
+function showFloor(n, dir){
+ els.floor.textContent = n;
+ els.up.classList.toggle('on', dir > 0); els.down.classList.toggle('on', dir < 0);
+}
+async function travel(to, tok){
+ const from = state.cur, dir = Math.sign(to - from);
+ if (!dir) return;
+ const step = Math.max(110, Math.min(320, 3200 / Math.abs(to - from)));
+ for (let f = from + dir; dir > 0 ? f <= to : f >= to; f += dir){ await wait(step); if (tok !== state.token) return; showFloor(f, dir); state.cur = f; }
+ await wait(250); showFloor(to, 0);
+}
+function newPerson(){
+ let p; do { p = PEOPLE[rand(0, PEOPLE.length - 1)]; } while (p === state.prevPerson);
+ state.prevPerson = p; return p;
+}
+async function personEnters(){
+ const p = els.person;
+ p.style.transition = 'none'; p.className = 'person out-right'; p.textContent = newPerson();
+ void p.offsetWidth; p.style.transition = '';
+ p.className = 'person';
+ await wait(600);
+}
+async function personLeaves(){ els.person.className = 'person out-left'; await wait(600); }
+
+/* ---------- 遊戲流程 ---------- */
+function pickTarget(){
+ const [lo, hi] = bounds(); let t;
+ do { t = rand(lo, hi); } while (t === state.cur);
+ return t;
+}
+async function nextRound(){
+ const tok = ++state.token;
+ if (state.i >= ROUNDS) return endGame();
+ state.target = pickTarget(); state.retried = false; state.wrongs = 0;
+ track.update(state.i);
+ els.panel.classList.add('locked'); state.busy = true;
+ setBubble('…'); els.hint.textContent = '';
+ await openDoors(true); if (tok !== state.token) return;
+ await personEnters(); if (tok !== state.token) return;
+ setBubble(bubbleHTML(false));
+ await speakTarget(); if (tok !== state.token) return;
+ state.needDir = settings.dir === 'on';
+ if (state.needDir){
+   els.dir.hidden = false; els.hint.textContent = '先想想：升降機要向上還是向下？';
+   [$('upBtn'), $('downBtn')].forEach(b => b.className = '');
+ } else unlockPanel();
+}
+function unlockPanel(){
+ els.dir.hidden = true; state.busy = false;
+ els.panel.classList.remove('locked');
+ els.hint.textContent = '按乘客要去的樓層';
+}
+function chooseDir(up, btn){
+ if (!state.needDir) return;
+ const right = up === (state.target > state.cur);
+ if (right){
+   btn.className = 'good'; Sfx.play('tap'); state.needDir = false;
+   Voice.say([up ? '向上' : '向下']);
+   setTimeout(unlockPanel, 500);
+ } else {
+   state.retried = true; btn.className = 'bad'; Sfx.play('wrong');
+   els.hint.textContent = `現在在 ${state.cur} 樓，再想想。`;
+   setTimeout(() => { btn.className = ''; }, 600);
+ }
+}
+async function press(n, btn){
+ if (state.busy) return;
+ const tok = state.token;
+ state.busy = true; els.panel.classList.add('locked');
+ els.keys.querySelectorAll('.key').forEach(k => k.classList.remove('lit', 'wrong'));
+ btn.classList.add('lit'); Sfx.play('tap');
+ Voice.say([n]);
+ if (n === state.cur){
+   await wait(500); btn.classList.remove('lit');
+   els.hint.textContent = `你已經在 ${n} 樓了。`;
+   state.busy = false; els.panel.classList.remove('locked'); return;
+ }
+ await wait(700); if (tok !== state.token) return;
+ await openDoors(false); if (tok !== state.token) return;
+ state.moving = true;
+ await travel(n, tok); state.moving = false; if (tok !== state.token) return;
+ Sfx.play('ding');
+ await openDoors(true); if (tok !== state.token) return;
+ btn.classList.remove('lit');
+ if (n === state.target){
+   track.results[state.i] = !state.retried; track.update(state.i);
+   Sfx.play('correct');
+   setBubble(`<span>${n} 樓到了，謝謝！</span>`);
+   await Voice.say([n, '樓到咗，唔該晒！']); if (tok !== state.token) return;
+   await personLeaves(); if (tok !== state.token) return;
+   state.i++; nextRound();
+ } else {
+   state.retried = true; state.wrongs++;
+   btn.classList.add('wrong'); Sfx.play('wrong');
+   setBubble(bubbleHTML(state.wrongs >= 2));
+   els.hint.textContent = `這裏是 ${n} 樓，不是乘客要去的樓層。`;
+   await speakTarget('唔係呢層呀，我要去'); if (tok !== state.token) return;
+   btn.classList.remove('wrong');
+   unlockPanel();
+   els.hint.textContent = state.wrongs >= 2 ? '看看乘客說的數字，再按一次。' : '再聽清楚，再按一次。';
+ }
+}
+function endGame(){
+ Voice.stop();
+ const stars = track.stars();
+ $('score').textContent = `★ ${stars} / ${ROUNDS}`;
+ $('endMsg').textContent = stars >= 8 ? '你是出色的升降機操作員！' : stars >= 5 ? '做得好，繼續努力！' : '多聽幾次，下一局會更好！';
+ $('endScreen').hidden = false; Sfx.play('finish');
+}
+async function newGame(){
+ Voice.stop(); state.token++;
+ state.i = 0; state.cur = 1; showFloor(1, 0);
+ track = Track($('track'), ROUNDS);
+ buildKeys(); els.dir.hidden = true;
+ await openDoors(false);
+ nextRound();
+}
+
+$('upBtn').onclick = e => { Sfx.unlock(); chooseDir(true, e.currentTarget); };
+$('downBtn').onclick = e => { Sfx.unlock(); chooseDir(false, e.currentTarget); };
+$('startBtn').onclick = () => { Sfx.unlock(); $('startScreen').hidden = true; newGame(); };
+$('againBtn').onclick = () => { Sfx.unlock(); $('endScreen').hidden = true; newGame(); };
+$('gearBtn').onclick = () => { settings.sync(); $('sheet').classList.toggle('open'); };
+$('applyBtn').onclick = () => {
+ Sfx.unlock(); settings.save(); $('sheet').classList.remove('open');
+ $('endScreen').hidden = true;
+ if ($('startScreen').hidden) newGame(); else buildKeys();
+};
+buildKeys();
+</script>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小賣部買零食</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#d9480f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="小賣部">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<style>
+/* ===== 共用樣式（三個生活應用遊戲相同） ===== */
+@font-face{font-family:"MyNumberFont";src:url("../maths_thin_v2.ttf") format("truetype");font-display:swap}
+:root{
+ --num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",system-ui,sans-serif;
+ --ink:#1b2333;--muted:#5d6779;--line:rgba(27,35,51,.14);--panel:#fff;
+ --mint:#12A574;--red:#D14A4A;--amber:#D48A00;
+ box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+ -webkit-tap-highlight-color:transparent;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.app{height:100%;max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:10px;
+ padding:calc(10px + env(safe-area-inset-top,0px)) 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.topbar{display:flex;align-items:center;gap:10px}
+.back-link{display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 14px;border-radius:12px;flex-shrink:0;
+ border:1.5px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-size:16px;font-weight:700;white-space:nowrap}
+.gear{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);display:grid;place-items:center;flex-shrink:0}
+.track{flex:1;display:flex;gap:5px;justify-content:center;min-width:0}
+.dot{width:20px;height:20px;display:grid;place-items:center;line-height:1}
+.dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dot.now::before{background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.dot.done::before{background:var(--accent)}
+.dot.star::before{content:"★";width:auto;height:auto;background:none;color:var(--amber);font-size:19px}
+.screen{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;
+ padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.screen[hidden]{display:none}
+.screen .back-link{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px}
+.screen h1{margin:0;font-size:clamp(30px,8vw,46px);font-weight:900;letter-spacing:.03em}
+.screen p{margin:0;max-width:32em;color:var(--muted);line-height:1.7;font-size:18px}
+.screen .emoji{font-size:84px;line-height:1}
+.note{font-size:14px!important;color:var(--amber)!important}
+.big-btn{min-width:200px;padding:16px 28px;border-radius:999px;border:none;background:var(--accent);color:#fff;font-size:22px;font-weight:900}
+.score{font-family:var(--num-font);font-size:64px;color:var(--amber)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--panel);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;
+ padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;max-width:600px;margin:0 auto}
+.sheet.open{transform:none}
+.sheet h2{margin:0 0 10px;font-size:18px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row>span{white-space:nowrap}
+.seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.seg button{min-width:56px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:transparent;font-weight:700}
+.seg button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.sheet .big-btn{width:100%;margin-top:14px}
+@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-3px)}}
+@keyframes pop{from{transform:scale(.6)}70%{transform:scale(1.1)}to{transform:scale(1)}}
+@media (max-width:480px){.topbar .back-link .bl-text{display:none}.topbar .back-link{width:44px;padding:0;justify-content:center}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+:root{--bg:#fff6ec;--accent:#d9480f;--wood:#c9884a}
+
+.main{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+
+/* ---- 貨架與貨品 ---- */
+.counter{position:relative;display:flex;align-items:center;justify-content:center;gap:clamp(14px,4vw,40px);padding:16px;border-radius:22px;
+ background:repeating-linear-gradient(90deg,#fff 0 34px,#ffe8d2 34px 68px);border:3px solid var(--wood);border-bottom-width:12px}
+.counter::before{content:"小賣部";position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-weight:900;
+ padding:2px 16px;border-radius:999px;font-size:15px;letter-spacing:.2em}
+.item{font-size:clamp(84px,17vw,130px);line-height:1;animation:pop .35s ease-out}
+.info{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.name{font-size:clamp(22px,4.6vw,30px);font-weight:900}
+.tag{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--ink);border-radius:12px 22px 22px 12px;padding:6px 16px 6px 12px;position:relative}
+.tag::before{content:"";width:12px;height:12px;border-radius:50%;border:3px solid var(--ink);margin-right:2px}
+.tag .price{font-family:var(--num-font);font-size:clamp(46px,9vw,68px);line-height:1;color:var(--accent)}
+.tag .price.hidden-price{color:#c8b8a8}
+.say{width:48px;height:48px;border-radius:50%;border:2px solid var(--accent);background:#fff;color:var(--accent);display:grid;place-items:center}
+.say.speaking{background:var(--accent);color:#fff}
+.shopkeeper{position:absolute;right:14px;bottom:6px;font-size:44px}
+
+/* ---- 付款盤 ---- */
+.tray{flex:1;min-height:150px;max-height:420px;display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#fff;border:2.5px dashed #e0b48a;border-radius:20px;padding:12px}
+.tray.bad{border-color:var(--red);border-style:solid;animation:shake .35s}
+.tray.good{border-color:var(--mint);border-style:solid}
+.zone{display:flex;flex-direction:column;gap:6px;min-height:0}
+.zone h3{margin:0;font-size:16px;color:var(--muted);display:flex;justify-content:space-between}
+.zone h3 b{font-family:var(--num-font);font-weight:400;font-size:26px;color:var(--ink);line-height:1}
+.pile{flex:1;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;overflow:auto}
+.total{text-align:center;font-size:20px;font-weight:700;min-height:1.6em}
+.total b{font-family:var(--num-font);font-weight:400;font-size:34px;color:var(--accent)}
+
+/* ---- 硬幣（簡化圖案） ---- */
+.coin{--s:clamp(54px,10vw,84px);width:var(--s);height:var(--s);border-radius:50%;padding:0;display:grid;place-items:center;
+ font-family:"Chakra Petch",sans-serif;font-weight:700;line-height:1;border:none;flex-shrink:0}
+.coin.c10{background:radial-gradient(circle,#f2c94c 0 52%,#c9a227 53% 56%,#d9dde3 57% 100%);box-shadow:inset 0 0 0 3px #9aa3ae,0 3px 0 #8b939d;color:#5c4300;font-size:calc(var(--s) * .3)}
+.coin.c1{--s:clamp(46px,8.4vw,70px);background:radial-gradient(circle at 40% 35%,#fafbfc,#c6ccd4);box-shadow:inset 0 0 0 3px #9aa3ae,0 3px 0 #8b939d;color:#3c4450;font-size:calc(var(--s) * .34)}
+.pile .coin{animation:pop .2s ease-out}
+
+/* ---- 銀包 ---- */
+.wallet{display:flex;align-items:center;gap:14px;justify-content:center;background:#7a4a24;border-radius:20px;padding:12px 16px;box-shadow:inset 0 -6px 0 #5e3818}
+.wallet .coin{--s:clamp(70px,13vw,92px)}
+.wallet .coin.c1{--s:clamp(60px,11vw,78px)}
+.wallet .coin:active{transform:scale(.94)}
+.wallet .lab{color:#ffe1bf;font-size:14px;text-align:center;margin-top:4px}
+.wallet .slot{display:flex;flex-direction:column;align-items:center}
+.pay{margin-left:auto;padding:14px 26px;border-radius:16px;border:none;background:var(--mint);color:#fff;font-size:22px;font-weight:900}
+.clear{padding:12px 16px;border-radius:14px;border:2px solid #ffe1bf;background:transparent;color:#ffe1bf;font-size:17px;font-weight:700}
+.locked .wallet button,.locked .pile .coin{pointer-events:none;opacity:.7}
+.msg{text-align:center;font-size:18px;font-weight:700;min-height:1.5em;margin:0;color:var(--muted)}
+@media (max-height:760px){.counter{padding:10px}.item{font-size:72px}}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="topbar">
+  <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+  <div class="track" id="track" aria-label="進度"></div>
+  <button class="gear" id="gearBtn" aria-label="設定"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+ </div>
+
+ <div class="main" id="main">
+  <section class="counter">
+   <div class="item" id="item"></div>
+   <div class="info">
+    <div class="name" id="name"></div>
+    <div class="tag"><span class="price" id="price"></span><button class="say" id="sayBtn" aria-label="再聽價錢"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg></button></div>
+   </div>
+   <div class="shopkeeper" aria-hidden="true">🧑‍🍳</div>
+  </section>
+
+  <section class="tray" id="tray" aria-label="付款盤">
+   <div class="zone"><h3><span>十元</span><b id="n10">0</b></h3><div class="pile" id="pile10"></div></div>
+   <div class="zone"><h3><span>一元</span><b id="n1">0</b></h3><div class="pile" id="pile1"></div></div>
+  </section>
+  <div class="total" id="total"></div>
+  <p class="msg" id="msg" aria-live="polite"></p>
+
+  <section class="wallet" aria-label="銀包">
+   <div class="slot"><button class="coin c10" id="add10" aria-label="放一個十元">$10</button><span class="lab">十元</span></div>
+   <div class="slot"><button class="coin c1" id="add1" aria-label="放一個一元">$1</button><span class="lab">一元</span></div>
+   <button class="clear" id="clearBtn">全部收回</button>
+   <button class="pay" id="payBtn">付錢</button>
+  </section>
+ </div>
+</div>
+
+<div class="screen" id="startScreen">
+ <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+ <div class="emoji">🏪</div>
+ <h1>小賣部買零食</h1>
+ <p>聽清楚貨品的價錢，再從銀包拿出十元和一元，剛好付錢。按付款盤上的硬幣可以收回。每局買十件貨品，第一次便付對可得一粒星。</p>
+ <p class="note" id="voiceNote" hidden></p>
+ <button class="big-btn" id="startBtn">開始</button>
+</div>
+<div class="screen" id="endScreen" hidden>
+ <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+ <h1>買完了！</h1>
+ <div class="emoji" id="bag"></div>
+ <div class="score" id="score"></div>
+ <p id="endMsg"></p>
+ <button class="big-btn" id="againBtn">再玩一次</button>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-label="設定">
+ <h2>設定</h2>
+ <div class="row"><span>價錢範圍</span><div class="seg" data-key="range"><button data-val="1-20">$1–20</button><button data-val="21-40">$21–40</button><button data-val="1-40">$1–40</button></div></div>
+ <div class="row"><span>價錢牌</span><div class="seg" data-key="show"><button data-val="show">顯示價錢</button><button data-val="hear">只聽讀音</button></div></div>
+ <div class="row"><span>顯示已付總數</span><div class="seg" data-key="total"><button data-val="on">開</button><button data-val="off">關</button></div></div>
+ <div class="row"><span>要用最少硬幣</span><div class="seg" data-key="fewest"><button data-val="on">開</button><button data-val="off">關</button></div></div>
+ <div class="row"><span>聲效</span><div class="seg" data-key="sfx"><button data-val="on">開</button><button data-val="off">關</button></div></div>
+ <button class="big-btn" id="applyBtn">套用並重新開始</button>
+</div>
+
+<script>
+'use strict';
+/* ===== 共用程式（三個生活應用遊戲相同） ===== */
+const $ = id => document.getElementById(id);
+const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const CN = ['零','一','二','三','四','五','六','七','八','九','十'];
+function toCN(n){
+ if (n <= 10) return CN[n];
+ const t = Math.floor(n / 10), u = n % 10;
+ return (t === 1 ? '' : CN[t]) + '十' + (u ? CN[u] : '');
+}
+
+/* ---------- 設定（自動儲存於本機） ---------- */
+function useSettings(key, defaults){
+ const s = Object.assign({}, defaults);
+ try { Object.assign(s, JSON.parse(localStorage.getItem(key) || '{}')); } catch(e){}
+ for (const k in defaults){
+   const seg = document.querySelector(`.seg[data-key="${k}"]`);
+   if (seg && ![...seg.querySelectorAll('button')].some(b => b.dataset.val === String(s[k]))) s[k] = defaults[k];
+ }
+ const sync = () => document.querySelectorAll('.seg').forEach(seg =>
+   seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === String(s[seg.dataset.key])))));
+ document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e => {
+   const b = e.target.closest('button'); if (!b) return; s[seg.dataset.key] = b.dataset.val; sync();
+ }));
+ s.save = () => { try { const o = {}; for (const k in defaults) o[k] = s[k]; localStorage.setItem(key, JSON.stringify(o)); } catch(e){} };
+ s.sync = sync; sync();
+ return s;
+}
+
+/* ---------- 讀音 ----------
+  數字：組合上一層 audio 資料夾的 1.mp3 至 10.mp3
+        （1–10 直接讀；11–19 = 十 + 個位；20、30… = 幾 + 十；21–99 = 幾 + 十 + 個位）
+  其他字詞（例如「樓」「蚊」）：用裝置的廣東話語音（iPad：Sinji；Windows：Danny）；
+        如裝置沒有廣東話語音，字詞會略過，只讀數字。
+  做法與「認識數字」相同：mp3 先下載到記憶體，再用 <audio> 播放，iPad 上較穩定。 */
+const AUDIO_DIR = '../audio/';
+const Voice = (() => {
+ const players = {}; let cur = null, failed = false, token = 0, ttsVoice = null;
+ const ready = Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n => {
+   const r = await fetch(AUDIO_DIR + n + '.mp3');
+   if (!r.ok) throw new Error('找不到 ' + n + '.mp3');
+   const a = new Audio(URL.createObjectURL(await r.blob())); a.preload = 'auto'; a.load(); players[n] = a;
+ })).catch(e => {
+   failed = true;
+   const note = $('voiceNote');
+   if (note){ note.textContent = '未能載入聲音（' + e.message + '）。請確認上一層 audio 資料夾內有1.mp3至10.mp3。'; note.hidden = false; }
+ });
+ const within = (p, ms) => Promise.race([p, wait(ms)]);
+ const clipsFor = n => {
+   if (n <= 10) return [n];
+   const t = Math.floor(n / 10), u = n % 10;
+   return [...(t === 1 ? [] : [t]), 10, ...(u ? [u] : [])];
+ };
+ function pickVoice(){
+   if (!('speechSynthesis' in window)) return;
+   const vs = speechSynthesis.getVoices();
+   ttsVoice = vs.find(v => /^(zh[-_]HK|yue)/i.test(v.lang)) || vs.find(v => /Sinji|Danny|Cantonese|粵/i.test(v.name)) || null;
+ }
+ if ('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+ let unlocked = false;
+ function unlock(){ /* 必須在按鍵當下呼叫，iPad 才會允許發聲 */
+   Object.values(players).filter(a => !a._ok && !a._busy).forEach(a => {
+     a._busy = true; a.muted = true; let p;
+     try { p = a.play(); } catch(e){ a._busy = false; a.muted = false; return; }
+     const reset = () => { a._busy = false; a._ok = true; if (cur === a){ a.muted = false; return; } a.pause(); a.currentTime = 0; a.muted = false; };
+     p && p.then ? p.then(reset).catch(() => { a._busy = false; a.muted = false; }) : reset();
+   });
+   if (!unlocked && 'speechSynthesis' in window){
+     unlocked = true;
+     try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch(e){}
+   }
+ }
+ function playClip(n){ return new Promise(resolve => {
+   const a = players[n]; if (!a) return resolve();
+   let done = false;
+   const fin = () => { if (done) return; done = true; clearTimeout(g); a.removeEventListener('ended', fin); a.removeEventListener('error', fin); if (cur === a) cur = null; resolve(); };
+   a.addEventListener('ended', fin); a.addEventListener('error', fin);
+   const g = setTimeout(fin, ((isFinite(a.duration) && a.duration > 0 ? a.duration : 2) + 1.5) * 1000);
+   cur = a;
+   try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(fin); } catch(e){ fin(); }
+ }); }
+ function sayText(t){ return new Promise(resolve => {
+   if (!ttsVoice) return resolve();
+   const u = new SpeechSynthesisUtterance(t); u.voice = ttsVoice; u.lang = ttsVoice.lang; u.rate = .95;
+   let done = false;
+   const fin = () => { if (done) return; done = true; clearTimeout(g); resolve(); };
+   u.onend = fin; u.onerror = fin;
+   const g = setTimeout(fin, 900 + t.length * 450);
+   speechSynthesis.speak(u);
+ }); }
+ /* say([ '去', 23, '樓' ])：數字用錄音，文字用裝置語音；讀完才 resolve。被 stop() 中斷時回傳 false */
+ async function say(parts, gap = 110){
+   stop(); const run = token;
+   unlock();
+   await within(ready, 5000); if (run !== token) return false;
+   for (const p of [].concat(parts)){
+     if (typeof p === 'number'){
+       if (failed) continue;
+       const cl = clipsFor(p);
+       for (let i = 0; i < cl.length; i++){
+         await playClip(cl[i]); if (run !== token) return false;
+         if (i < cl.length - 1){ await wait(gap); if (run !== token) return false; }
+       }
+     } else {
+       await sayText(p); if (run !== token) return false;
+     }
+     await wait(80); if (run !== token) return false;
+   }
+   return true;
+ }
+ function stop(){
+   token++;
+   if (cur){ try { cur.pause(); } catch(e){} cur = null; }
+   if ('speechSynthesis' in window) try { speechSynthesis.cancel(); } catch(e){}
+ }
+ document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+ window.addEventListener('pagehide', stop);
+ return { say, stop, unlock, ready };
+})();
+
+/* ---------- 聲效 ----------
+  以程式合成 WAV，再用 <audio> 播放（iPad 靜音模式下仍可發聲）。 */
+const Sfx = (() => {
+ const SR = 22050;
+ const SOUNDS = {
+   tap:     { len:.12, notes:[[620,0,.07,'sine',.25]] },
+   coin:    { len:.3,  notes:[[1320,0,.08,'sine',.3],[1760,.06,.22,'sine',.3]] },
+   ding:    { len:1.1, notes:[[880,0,.9,'sine',.35],[1108.73,.35,.75,'sine',.3]] },
+   correct: { len:.8,  notes:[[523.25,0,.22,'tri',.4],[659.25,.09,.22,'tri',.4],[783.99,.18,.22,'tri',.4],[1046.5,.27,.45,'tri',.45],[2093,.3,.4,'sine',.12]] },
+   wrong:   { len:.55, notes:[[330,0,.18,'tri',.45,300],[247,.2,.3,'tri',.45,196]] },
+   up:      { len:.7,  notes:[[392,0,.2,'tri',.35],[523.25,.15,.2,'tri',.35],[659.25,.3,.2,'tri',.35],[783.99,.45,.25,'tri',.35]] },
+   down:    { len:.8,  notes:[[700,0,.75,'tri',.35,180]] },
+   finish:  { len:1.4, notes:[[523.25,0,.3,'tri',.38],[659.25,.12,.3,'tri',.38],[783.99,.24,.3,'tri',.38],[1046.5,.36,.5,'tri',.4],[1318.5,.5,.8,'sine',.1],[1567.98,.5,.8,'sine',.1]] }
+ };
+ function renderWav({ len, notes }){
+   const n = Math.ceil(len * SR), buf = new Float32Array(n);
+   for (const [f, at, dur, type, vol, glide] of notes){
+     const s0 = Math.floor(at * SR), sN = Math.floor(dur * SR), atk = .015; let ph = 0;
+     for (let i = 0; i < sN && s0 + i < n; i++){
+       const t = i / SR, fr = glide ? f * Math.pow(glide / f, t / dur) : f;
+       ph += 2 * Math.PI * fr / SR;
+       const w = type === 'sine' ? Math.sin(ph) : (2 / Math.PI) * Math.asin(Math.sin(ph));
+       buf[s0 + i] += w * (t < atk ? t / atk : Math.pow(1 - (t - atk) / (dur - atk), 2)) * vol;
+     }
+   }
+   const out = new DataView(new ArrayBuffer(44 + n * 2));
+   const str = (o, x) => [...x].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+   str(0,'RIFF'); out.setUint32(4, 36 + n * 2, true); str(8,'WAVE'); str(12,'fmt ');
+   out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,1,true);
+   out.setUint32(24,SR,true); out.setUint32(28,SR*2,true); out.setUint16(32,2,true); out.setUint16(34,16,true);
+   str(36,'data'); out.setUint32(40, n * 2, true);
+   for (let i = 0; i < n; i++) out.setInt16(44 + i * 2, Math.max(-1, Math.min(1, buf[i])) * 32767, true);
+   return URL.createObjectURL(new Blob([out], { type:'audio/wav' }));
+ }
+ const players = {};
+ for (const k in SOUNDS){ const a = new Audio(renderWav(SOUNDS[k])); a.preload = 'auto'; players[k] = a; }
+ let unlocked = false, enabled = () => true;
+ function unlock(){
+   Voice.unlock();
+   if (unlocked) return; unlocked = true;
+   Object.values(players).forEach(a => {
+     a.muted = true; const p = a.play();
+     const reset = () => { a.pause(); a.currentTime = 0; a.muted = false; };
+     p && p.then ? p.then(reset).catch(() => { a.muted = false; unlocked = false; }) : reset();
+   });
+ }
+ function play(k){
+   if (!enabled()) return; const a = players[k]; if (!a) return;
+   try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(() => {}); } catch(e){}
+ }
+ return { play, unlock, setEnabled: fn => { enabled = fn; } };
+})();
+
+/* ---------- 進度點 ---------- */
+function Track(el, rounds){
+ const res = [];
+ el.innerHTML = '';
+ for (let k = 0; k < rounds; k++){ const s = document.createElement('span'); s.className = 'dot'; el.appendChild(s); }
+ return {
+   results: res,
+   update(i){ [...el.children].forEach((s, k) => { s.className = 'dot' + (res[k] === true ? ' star' : res[k] === false ? ' done' : k === i ? ' now' : ''); }); },
+   stars(){ return res.filter(Boolean).length; }
+ };
+}
+
+/* PWA：離線快取 */
+if ('serviceWorker' in navigator && location.protocol !== 'file:')
+ window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+
+
+const ROUNDS = 10;
+const ITEMS = [['🧃','紙包飲品'],['🍪','曲奇餅'],['🍫','朱古力'],['🍙','飯糰'],['🥪','三文治'],['🍭','棒棒糖'],
+ ['✏️','鉛筆'],['📒','筆記簿'],['🍌','香蕉'],['🥛','牛奶'],['🍞','麪包'],['🧁','杯子蛋糕'],['🍎','蘋果'],['🖍️','蠟筆']];
+const settings = useSettings('rcgs-shop', { range:'1-40', show:'show', total:'on', fewest:'off', sfx:'on' });
+Sfx.setEnabled(() => settings.sfx === 'on');
+
+const state = { i:0, price:0, item:null, tens:0, ones:0, retried:false, busy:true, bought:[], order:[], token:0 };
+let track = null;
+
+function renderTray(){
+ const pile = (el, n, cls, label, val) => {
+   el.innerHTML = '';
+   for (let k = 0; k < n; k++){
+     const c = document.createElement('button');
+     c.className = 'coin ' + cls; c.textContent = label; c.setAttribute('aria-label', '收回一個' + (val === 10 ? '十元' : '一元'));
+     c.onclick = () => { Sfx.unlock(); remove(val); };
+     el.appendChild(c);
+   }
+ };
+ pile($('pile10'), state.tens, 'c10', '$10', 10);
+ pile($('pile1'), state.ones, 'c1', '$1', 1);
+ $('n10').textContent = state.tens; $('n1').textContent = state.ones;
+ const sum = state.tens * 10 + state.ones;
+ $('total').innerHTML = settings.total === 'on' ? `已放：<b>$${sum}</b>` : '';
+ $('tray').classList.remove('bad', 'good');
+}
+function add(v){
+ if (state.busy) return;
+ if (state.tens * 10 + state.ones + v > 99){ Sfx.play('wrong'); return; }
+ v === 10 ? state.tens++ : state.ones++;
+ Sfx.play('coin'); renderTray(); $('msg').textContent = '';
+}
+function remove(v){
+ if (state.busy) return;
+ if (v === 10 && state.tens) state.tens--; else if (v === 1 && state.ones) state.ones--;
+ Sfx.play('tap'); renderTray();
+}
+async function sayPrice(){
+ $('sayBtn').classList.add('speaking');
+ await Voice.say([state.item[1], state.price, '蚊']);
+ $('sayBtn').classList.remove('speaking');
+}
+
+function nextRound(){
+ const tok = ++state.token;
+ if (state.i >= ROUNDS) return endGame();
+ const [lo, hi] = settings.range.split('-').map(Number);
+ let p; do { p = rand(lo, hi); } while (p === state.price);
+ state.price = p; state.item = state.order[state.i % state.order.length];
+ state.tens = 0; state.ones = 0; state.retried = false; state.busy = false;
+ $('main').classList.remove('locked');
+ const it = $('item'); it.textContent = state.item[0]; it.style.animation = 'none'; void it.offsetWidth; it.style.animation = '';
+ $('name').textContent = state.item[1];
+ const pr = $('price');
+ pr.textContent = settings.show === 'show' ? '$' + p : '$?';
+ pr.classList.toggle('hidden-price', settings.show !== 'show');
+ $('msg').textContent = '';
+ renderTray(); track.update(state.i);
+ setTimeout(() => { if (tok === state.token) sayPrice(); }, 400);
+}
+async function pay(){
+ if (state.busy) return;
+ const tok = state.token, sum = state.tens * 10 + state.ones, p = state.price;
+ if (!sum){ $('msg').textContent = '先從銀包拿錢出來。'; return; }
+ let problem = '';
+ if (sum < p) problem = '錢不夠，再放多一些。';
+ else if (sum > p) problem = '放多了，收回一些。';
+ else if (settings.fewest === 'on' && state.ones >= 10) problem = '錢數對了，但可以用十元代替十個一元。';
+ if (problem){
+   state.retried = true;
+   const tr = $('tray'); tr.classList.remove('bad'); void tr.offsetWidth; tr.classList.add('bad');
+   Sfx.play('wrong'); $('msg').textContent = problem;
+   const spoken = sum < p ? '唔夠錢' : sum > p ? '多咗' : '可以用少啲硬幣';
+   await Voice.say([spoken]);
+   return;
+ }
+ state.busy = true; $('main').classList.add('locked');
+ $('tray').classList.add('good'); Sfx.play('correct');
+ track.results[state.i] = !state.retried; track.update(state.i);
+ $('price').textContent = '$' + p; $('price').classList.remove('hidden-price');
+ $('msg').textContent = `${state.tens} 個十元和 ${state.ones} 個一元，剛好 ${p} 元。謝謝！`;
+ state.bought.push(state.item[0]);
+ await Voice.say([p, '蚊，啱啱好，唔該晒！']); if (tok !== state.token) return;
+ await wait(500); if (tok !== state.token) return;
+ state.i++; nextRound();
+}
+function endGame(){
+ Voice.stop();
+ const stars = track.stars();
+ $('bag').textContent = '🛍️ ' + state.bought.join('');
+ $('score').textContent = `★ ${stars} / ${ROUNDS}`;
+ $('endMsg').textContent = stars >= 8 ? '你是精明的小顧客！' : stars >= 5 ? '做得好，繼續努力！' : '多練習數錢，下一局會更好！';
+ $('endScreen').hidden = false; Sfx.play('finish');
+}
+function newGame(){
+ Voice.stop(); state.token++;
+ state.i = 0; state.bought = []; state.price = 0; state.order = shuffle(ITEMS.slice());
+ track = Track($('track'), ROUNDS);
+ nextRound();
+}
+
+$('add10').onclick = () => { Sfx.unlock(); add(10); };
+$('add1').onclick = () => { Sfx.unlock(); add(1); };
+$('clearBtn').onclick = () => { Sfx.unlock(); if (state.busy) return; state.tens = state.ones = 0; Sfx.play('tap'); renderTray(); };
+$('payBtn').onclick = () => { Sfx.unlock(); pay(); };
+$('sayBtn').onclick = () => { Sfx.unlock(); if (state.item) sayPrice(); };
+$('startBtn').onclick = () => { Sfx.unlock(); $('startScreen').hidden = true; newGame(); };
+$('againBtn').onclick = () => { Sfx.unlock(); $('endScreen').hidden = true; newGame(); };
+$('gearBtn').onclick = () => { settings.sync(); $('sheet').classList.toggle('open'); };
+$('applyBtn').onclick = () => {
+ Sfx.unlock(); settings.save(); $('sheet').classList.remove('open');
+ $('endScreen').hidden = true;
+ if ($('startScreen').hidden) newGame();
+};
+</script>
+</body>
+</html>
