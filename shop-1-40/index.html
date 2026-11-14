@@ -6,7 +6,7 @@
 <title>小賣部買零食</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+HK:wght@400;700;900&family=LXGW+WenKai+TC&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#d9480f">
 <meta name="mobile-web-app-capable" content="yes">
@@ -67,6 +67,8 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 :root{--bg:#fff6ec;--accent:#d9480f;--wood:#c9884a}
+/* 「$」用楷書：Windows 用標楷體，Mac 用標楷體／楷體，其他裝置用網上字體「霞鶩文楷」 */
+.cur{font-family:"DFKai-SB","BiauKai","標楷體","Kaiti TC","STKaiti","LXGW WenKai TC",serif;font-weight:400;font-size:.82em;margin-right:.04em}
 
 .main{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
 
@@ -98,7 +100,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .total b{font-family:var(--num-font);font-weight:400;font-size:34px;color:var(--accent)}
 
 /* ---- 硬幣（簡化圖案） ---- */
-.coin{--s:clamp(54px,10vw,84px);width:var(--s);height:var(--s);border-radius:50%;padding:0;display:grid;place-items:center;
+.coin{--s:clamp(54px,10vw,84px);width:var(--s);height:var(--s);border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;
  font-family:"Chakra Petch",sans-serif;font-weight:700;line-height:1;border:none;flex-shrink:0}
 .coin.c10{background:radial-gradient(circle,#f2c94c 0 52%,#c9a227 53% 56%,#d9dde3 57% 100%);box-shadow:inset 0 0 0 3px #9aa3ae,0 3px 0 #8b939d;color:#5c4300;font-size:calc(var(--s) * .3)}
 .coin.c1{--s:clamp(46px,8.4vw,70px);background:radial-gradient(circle at 40% 35%,#fafbfc,#c6ccd4);box-shadow:inset 0 0 0 3px #9aa3ae,0 3px 0 #8b939d;color:#3c4450;font-size:calc(var(--s) * .34)}
@@ -137,15 +139,15 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
   </section>
 
   <section class="tray" id="tray" aria-label="付款盤">
-   <div class="zone"><h3><span>十元</span><b id="n10">0</b></h3><div class="pile" id="pile10"></div></div>
-   <div class="zone"><h3><span>一元</span><b id="n1">0</b></h3><div class="pile" id="pile1"></div></div>
+   <div class="zone"><h3><span>10元</span><b id="n10">0</b></h3><div class="pile" id="pile10"></div></div>
+   <div class="zone"><h3><span>1元</span><b id="n1">0</b></h3><div class="pile" id="pile1"></div></div>
   </section>
   <div class="total" id="total"></div>
   <p class="msg" id="msg" aria-live="polite"></p>
 
   <section class="wallet" aria-label="銀包">
-   <div class="slot"><button class="coin c10" id="add10" aria-label="放一個十元">$10</button><span class="lab">十元</span></div>
-   <div class="slot"><button class="coin c1" id="add1" aria-label="放一個一元">$1</button><span class="lab">一元</span></div>
+   <div class="slot"><button class="coin c10" id="add10" aria-label="放一個10元"><span class="cur">$</span>10</button><span class="lab">10元</span></div>
+   <div class="slot"><button class="coin c1" id="add1" aria-label="放一個1元"><span class="cur">$</span>1</button><span class="lab">1元</span></div>
    <button class="clear" id="clearBtn">全部收回</button>
    <button class="pay" id="payBtn">付錢</button>
   </section>
@@ -156,7 +158,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
  <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
  <div class="emoji">🏪</div>
  <h1>小賣部買零食</h1>
- <p>聽清楚貨品的價錢，再從銀包拿出十元和一元，剛好付錢。按付款盤上的硬幣可以收回。每局買十件貨品，第一次便付對可得一粒星。</p>
+ <p>聽清楚貨品的價錢，再從銀包拿出10元和1元，剛好付錢。按付款盤上的硬幣可以收回。每局買十件貨品，第一次便付對可得一粒星。</p>
  <p class="note" id="voiceNote" hidden></p>
  <button class="big-btn" id="startBtn">開始</button>
 </div>
@@ -171,7 +173,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 
 <div class="sheet" id="sheet" role="dialog" aria-label="設定">
  <h2>設定</h2>
- <div class="row"><span>價錢範圍</span><div class="seg" data-key="range"><button data-val="1-20">$1–20</button><button data-val="21-40">$21–40</button><button data-val="1-40">$1–40</button></div></div>
+ <div class="row"><span>價錢範圍</span><div class="seg" data-key="range"><button data-val="1-20"><span class="cur">$</span>1–20</button><button data-val="21-40"><span class="cur">$</span>21–40</button><button data-val="1-40"><span class="cur">$</span>1–40</button></div></div>
  <div class="row"><span>價錢牌</span><div class="seg" data-key="show"><button data-val="show">顯示價錢</button><button data-val="hear">只聽讀音</button></div></div>
  <div class="row"><span>顯示已付總數</span><div class="seg" data-key="total"><button data-val="on">開</button><button data-val="off">關</button></div></div>
  <div class="row"><span>要用最少硬幣</span><div class="seg" data-key="fewest"><button data-val="on">開</button><button data-val="off">關</button></div></div>
@@ -373,6 +375,7 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:')
 
 
 const ROUNDS = 10;
+const CUR = '<span class="cur">$</span>';   /* 楷書「$」 */
 const ITEMS = [['🧃','紙包飲品'],['🍪','曲奇餅'],['🍫','朱古力'],['🍙','飯糰'],['🥪','三文治'],['🍭','棒棒糖'],
  ['✏️','鉛筆'],['📒','筆記簿'],['🍌','香蕉'],['🥛','牛奶'],['🍞','麪包'],['🧁','杯子蛋糕'],['🍎','蘋果'],['🖍️','蠟筆']];
 const settings = useSettings('rcgs-shop', { range:'1-40', show:'show', total:'on', fewest:'off', sfx:'on' });
@@ -386,16 +389,16 @@ function renderTray(){
    el.innerHTML = '';
    for (let k = 0; k < n; k++){
      const c = document.createElement('button');
-     c.className = 'coin ' + cls; c.textContent = label; c.setAttribute('aria-label', '收回一個' + (val === 10 ? '十元' : '一元'));
+     c.className = 'coin ' + cls; c.innerHTML = label; c.setAttribute('aria-label', '收回一個' + val + '元');
      c.onclick = () => { Sfx.unlock(); remove(val); };
      el.appendChild(c);
    }
  };
- pile($('pile10'), state.tens, 'c10', '$10', 10);
- pile($('pile1'), state.ones, 'c1', '$1', 1);
+ pile($('pile10'), state.tens, 'c10', CUR + '10', 10);
+ pile($('pile1'), state.ones, 'c1', CUR + '1', 1);
  $('n10').textContent = state.tens; $('n1').textContent = state.ones;
  const sum = state.tens * 10 + state.ones;
- $('total').innerHTML = settings.total === 'on' ? `已放：<b>$${sum}</b>` : '';
+ $('total').innerHTML = settings.total === 'on' ? `已放：<b>${CUR}${sum}</b>` : '';
  $('tray').classList.remove('bad', 'good');
 }
 function add(v){
@@ -426,7 +429,7 @@ function nextRound(){
  const it = $('item'); it.textContent = state.item[0]; it.style.animation = 'none'; void it.offsetWidth; it.style.animation = '';
  $('name').textContent = state.item[1];
  const pr = $('price');
- pr.textContent = settings.show === 'show' ? '$' + p : '$?';
+ pr.innerHTML = CUR + (settings.show === 'show' ? p : '?');
  pr.classList.toggle('hidden-price', settings.show !== 'show');
  $('msg').textContent = '';
  renderTray(); track.update(state.i);
@@ -439,7 +442,7 @@ async function pay(){
  let problem = '';
  if (sum < p) problem = '錢不夠，再放多一些。';
  else if (sum > p) problem = '放多了，收回一些。';
- else if (settings.fewest === 'on' && state.ones >= 10) problem = '錢數對了，但可以用十元代替十個一元。';
+ else if (settings.fewest === 'on' && state.ones >= 10) problem = '錢數對了，但可以用一個10元代替十個1元。';
  if (problem){
    state.retried = true;
    const tr = $('tray'); tr.classList.remove('bad'); void tr.offsetWidth; tr.classList.add('bad');
@@ -451,8 +454,8 @@ async function pay(){
  state.busy = true; $('main').classList.add('locked');
  $('tray').classList.add('good'); Sfx.play('correct');
  track.results[state.i] = !state.retried; track.update(state.i);
- $('price').textContent = '$' + p; $('price').classList.remove('hidden-price');
- $('msg').textContent = `${state.tens} 個十元和 ${state.ones} 個一元，剛好 ${p} 元。謝謝！`;
+ $('price').innerHTML = CUR + p; $('price').classList.remove('hidden-price');
+ $('msg').textContent = `${state.tens} 個10元和 ${state.ones} 個1元，剛好 ${p} 元。謝謝！`;
  state.bought.push(state.item[0]);
  await Voice.say([p, '蚊，啱啱好，唔該晒！']); if (tok !== state.token) return;
  await wait(500); if (tok !== state.token) return;
