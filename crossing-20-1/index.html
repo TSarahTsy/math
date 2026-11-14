@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>過馬路倒數</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1971c2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="過馬路">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<style>
+/* ===== 共用樣式（三個生活應用遊戲相同） ===== */
+@font-face{font-family:"MyNumberFont";src:url("../maths_thin_v2.ttf") format("truetype");font-display:swap}
+:root{
+ --num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",system-ui,sans-serif;
+ --ink:#1b2333;--muted:#5d6779;--line:rgba(27,35,51,.14);--panel:#fff;
+ --mint:#12A574;--red:#D14A4A;--amber:#D48A00;
+ box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+ -webkit-tap-highlight-color:transparent;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.app{height:100%;max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:10px;
+ padding:calc(10px + env(safe-area-inset-top,0px)) 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.topbar{display:flex;align-items:center;gap:10px}
+.back-link{display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 14px;border-radius:12px;flex-shrink:0;
+ border:1.5px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-size:16px;font-weight:700;white-space:nowrap}
+.gear{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);display:grid;place-items:center;flex-shrink:0}
+.track{flex:1;display:flex;gap:5px;justify-content:center;min-width:0}
+.dot{width:20px;height:20px;display:grid;place-items:center;line-height:1}
+.dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dot.now::before{background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.dot.done::before{background:var(--accent)}
+.dot.star::before{content:"★";width:auto;height:auto;background:none;color:var(--amber);font-size:19px}
+.screen{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;
+ padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.screen[hidden]{display:none}
+.screen .back-link{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px}
+.screen h1{margin:0;font-size:clamp(30px,8vw,46px);font-weight:900;letter-spacing:.03em}
+.screen p{margin:0;max-width:32em;color:var(--muted);line-height:1.7;font-size:18px}
+.screen .emoji{font-size:84px;line-height:1}
+.note{font-size:14px!important;color:var(--amber)!important}
+.big-btn{min-width:200px;padding:16px 28px;border-radius:999px;border:none;background:var(--accent);color:#fff;font-size:22px;font-weight:900}
+.score{font-family:var(--num-font);font-size:64px;color:var(--amber)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--panel);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;
+ padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;max-width:600px;margin:0 auto}
+.sheet.open{transform:none}
+.sheet h2{margin:0 0 10px;font-size:18px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row>span{white-space:nowrap}
+.seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.seg button{min-width:56px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:transparent;font-weight:700}
+.seg button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.sheet .big-btn{width:100%;margin-top:14px}
+@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-3px)}}
+@keyframes pop{from{transform:scale(.6)}70%{transform:scale(1.1)}to{transform:scale(1)}}
+@media (max-width:480px){.topbar .back-link .bl-text{display:none}.topbar .back-link{width:44px;padding:0;justify-content:center}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+:root{--bg:#e7f5ff;--accent:#1971c2;--road:#495057}
+.main{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+
+/* ---- 街道 ---- */
+.street{position:relative;flex:1;min-height:300px;border-radius:20px;overflow:hidden;display:grid;grid-template-rows:16% 1fr 16%;border:3px solid #343a40}
+.pave{background:repeating-linear-gradient(90deg,#ced4da 0 46px,#c3c9cf 46px 48px);position:relative}
+.pave.top::after{content:"🏫";position:absolute;left:12%;bottom:4px;font-size:clamp(30px,6vw,46px)}
+.road{position:relative;background:var(--road)}
+.zebra{position:absolute;left:34%;width:22%;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-evenly}
+.zebra i{display:block;height:9%;background:#f8f9fa;border-radius:2px}
+.lane{position:absolute;left:0;right:0;top:50%;border-top:4px dashed #ffd43b;opacity:.7}
+.car{position:absolute;font-size:clamp(36px,7vw,56px);line-height:1;left:-15%;transition:none}
+.car.c1{top:12%}.car.c2{top:58%;transform:scaleX(-1)}
+.car.drive1{animation:drive1 2.6s linear infinite}
+.car.drive2{animation:drive2 3.1s linear infinite}
+.car.wait1{left:6%}.car.wait2{left:auto;right:6%}
+@keyframes drive1{from{left:-15%}to{left:110%}}
+@keyframes drive2{from{left:110%}to{left:-15%}}
+.kid{position:absolute;left:40%;width:10%;font-size:clamp(40px,8vw,62px);line-height:1;text-align:center;transition:top .6s ease;z-index:3;transform:translateY(-50%)}
+.kid.bump{animation:shake .35s}
+/* 行人燈 */
+.signal{position:absolute;right:4%;top:20%;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:4}
+.lamp{width:clamp(70px,13vw,96px);background:#212529;border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 4px 0 #000}
+.lamp div{aspect-ratio:1;border-radius:10px;display:grid;place-items:center;font-size:clamp(30px,6vw,44px);background:#343a40;filter:grayscale(1) brightness(.4)}
+.lamp .red.on{background:#3b0d0d;filter:none;box-shadow:0 0 18px #fa5252}
+.lamp .green.on{background:#0b3b1a;filter:none;box-shadow:0 0 18px #40c057}
+.lamp .green.on.blink{animation:blink .8s steps(2) infinite}
+@keyframes blink{50%{opacity:.35}}
+.count{background:#000;color:#40c057;border-radius:10px;font-family:"Chakra Petch",var(--num-font);font-weight:700;font-size:clamp(40px,8vw,60px);line-height:1;
+ min-width:clamp(70px,13vw,96px);text-align:center;padding:6px 4px;text-shadow:0 0 10px rgba(64,192,87,.7);min-height:1.2em}
+.count.red{color:#fa5252;text-shadow:0 0 10px rgba(250,82,82,.7)}
+
+/* ---- 操作區 ---- */
+.panel{display:flex;flex-direction:column;align-items:center;gap:10px}
+.msg{text-align:center;font-size:clamp(18px,4vw,23px);font-weight:900;min-height:1.5em;margin:0}
+.msg b{font-family:var(--num-font);font-weight:400;font-size:1.35em;color:var(--accent)}
+.choices{display:flex;gap:clamp(10px,3vw,22px);justify-content:center;min-height:96px}
+.choice{width:clamp(84px,18vw,120px);height:clamp(84px,18vw,110px);border-radius:20px;border:3px solid var(--line);background:#fff;font-family:var(--num-font);font-size:clamp(44px,9vw,64px);line-height:1;box-shadow:0 4px 0 #adb5bd}
+.choice.bad{border-color:var(--red);color:var(--red);animation:shake .35s}
+.choice.good{border-color:var(--mint);color:var(--mint)}
+.go{padding:16px 34px;border-radius:999px;border:none;background:var(--accent);color:#fff;font-size:24px;font-weight:900;box-shadow:0 5px 0 #0b4f8a}
+.go[hidden],.choices[hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="topbar">
+  <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+  <div class="track" id="track" aria-label="進度"></div>
+  <button class="gear" id="gearBtn" aria-label="設定"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+ </div>
+ <div class="main">
+  <section class="street" aria-label="馬路">
+   <div class="pave top"></div>
+   <div class="road">
+    <div class="zebra" id="zebra"></div><div class="lane"></div>
+    <div class="car c1" id="car1">🚗</div><div class="car c2" id="car2">🚌</div>
+   </div>
+   <div class="pave"></div>
+   <div class="kid" id="kid">🧒</div>
+   <div class="signal" aria-label="行人燈">
+    <div class="lamp"><div class="red" id="redLamp">🧍</div><div class="green" id="greenLamp">🚶</div></div>
+    <div class="count" id="count"></div>
+   </div>
+  </section>
+  <section class="panel">
+   <p class="msg" id="msg" aria-live="polite"></p>
+   <button class="go" id="goBtn">🚶 過馬路</button>
+   <div class="choices" id="choices" hidden></div>
+  </section>
+ </div>
+</div>
+
+<div class="screen" id="startScreen">
+ <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+ <div class="emoji">🚦</div>
+ <h1>過馬路倒數</h1>
+ <p>紅色公仔亮著要等一等，綠色公仔亮了才可以過馬路。過馬路時，行人燈會倒數，請選出倒數的下一個數，幫小朋友一步一步安全走到對面。每局過六次馬路。</p>
+ <p class="note" id="voiceNote" hidden></p>
+ <button class="big-btn" id="startBtn">開始</button>
+</div>
+<div class="screen" id="endScreen" hidden>
+ <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+ <div class="emoji">🏫</div>
+ <h1>安全到達！</h1>
+ <div class="score" id="score"></div>
+ <p id="endMsg"></p>
+ <button class="big-btn" id="againBtn">再玩一次</button>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-label="設定">
+ <h2>設定</h2>
+ <div class="row"><span>倒數範圍</span><div class="seg" data-key="range"><button data-val="10">10 至 1</button><button data-val="20">20 至 1</button></div></div>
+ <div class="row"><span>每次過馬路</span><div class="seg" data-key="steps"><button data-val="4">4 步</button><button data-val="6">6 步</button></div></div>
+ <div class="row"><span>聲效</span><div class="seg" data-key="sfx"><button data-val="on">開</button><button data-val="off">關</button></div></div>
+ <button class="big-btn" id="applyBtn">套用並重新開始</button>
+</div>
+
+<script>
+'use strict';
+/* ===== 共用程式（三個生活應用遊戲相同） ===== */
+const $ = id => document.getElementById(id);
+const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const CN = ['零','一','二','三','四','五','六','七','八','九','十'];
+function toCN(n){
+ if (n <= 10) return CN[n];
+ const t = Math.floor(n / 10), u = n % 10;
+ return (t === 1 ? '' : CN[t]) + '十' + (u ? CN[u] : '');
+}
+
+/* ---------- 設定（自動儲存於本機） ---------- */
+function useSettings(key, defaults){
+ const s = Object.assign({}, defaults);
+ try { Object.assign(s, JSON.parse(localStorage.getItem(key) || '{}')); } catch(e){}
+ for (const k in defaults){
+   const seg = document.querySelector(`.seg[data-key="${k}"]`);
+   if (seg && ![...seg.querySelectorAll('button')].some(b => b.dataset.val === String(s[k]))) s[k] = defaults[k];
+ }
+ const sync = () => document.querySelectorAll('.seg').forEach(seg =>
+   seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === String(s[seg.dataset.key])))));
+ document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e => {
+   const b = e.target.closest('button'); if (!b) return; s[seg.dataset.key] = b.dataset.val; sync();
+ }));
+ s.save = () => { try { const o = {}; for (const k in defaults) o[k] = s[k]; localStorage.setItem(key, JSON.stringify(o)); } catch(e){} };
+ s.sync = sync; sync();
+ return s;
+}
+
+/* ---------- 讀音 ----------
+  數字：組合上一層 audio 資料夾的 1.mp3 至 10.mp3
+        （1–10 直接讀；11–19 = 十 + 個位；20、30… = 幾 + 十；21–99 = 幾 + 十 + 個位）
+  其他字詞（例如「樓」「蚊」）：用裝置的廣東話語音（iPad：Sinji；Windows：Danny）；
+        如裝置沒有廣東話語音，字詞會略過，只讀數字。
+  做法與「認識數字」相同：mp3 先下載到記憶體，再用 <audio> 播放，iPad 上較穩定。 */
+const AUDIO_DIR = '../audio/';
+const Voice = (() => {
+ const players = {}; let cur = null, failed = false, token = 0, ttsVoice = null;
+ const ready = Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n => {
+   const r = await fetch(AUDIO_DIR + n + '.mp3');
+   if (!r.ok) throw new Error('找不到 ' + n + '.mp3');
+   const a = new Audio(URL.createObjectURL(await r.blob())); a.preload = 'auto'; a.load(); players[n] = a;
+ })).catch(e => {
+   failed = true;
+   const note = $('voiceNote');
+   if (note){ note.textContent = '未能載入聲音（' + e.message + '）。請確認上一層 audio 資料夾內有1.mp3至10.mp3。'; note.hidden = false; }
+ });
+ const within = (p, ms) => Promise.race([p, wait(ms)]);
+ const clipsFor = n => {
+   if (n <= 10) return [n];
+   const t = Math.floor(n / 10), u = n % 10;
+   return [...(t === 1 ? [] : [t]), 10, ...(u ? [u] : [])];
+ };
+ function pickVoice(){
+   if (!('speechSynthesis' in window)) return;
+   const vs = speechSynthesis.getVoices();
+   ttsVoice = vs.find(v => /^(zh[-_]HK|yue)/i.test(v.lang)) || vs.find(v => /Sinji|Danny|Cantonese|粵/i.test(v.name)) || null;
+ }
+ if ('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+ let unlocked = false;
+ function unlock(){ /* 必須在按鍵當下呼叫，iPad 才會允許發聲 */
+   Object.values(players).filter(a => !a._ok && !a._busy).forEach(a => {
+     a._busy = true; a.muted = true; let p;
+     try { p = a.play(); } catch(e){ a._busy = false; a.muted = false; return; }
+     const reset = () => { a._busy = false; a._ok = true; if (cur === a){ a.muted = false; return; } a.pause(); a.currentTime = 0; a.muted = false; };
+     p && p.then ? p.then(reset).catch(() => { a._busy = false; a.muted = false; }) : reset();
+   });
+   if (!unlocked && 'speechSynthesis' in window){
+     unlocked = true;
+     try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch(e){}
+   }
+ }
+ function playClip(n){ return new Promise(resolve => {
+   const a = players[n]; if (!a) return resolve();
+   let done = false;
+   const fin = () => { if (done) return; done = true; clearTimeout(g); a.removeEventListener('ended', fin); a.removeEventListener('error', fin); if (cur === a) cur = null; resolve(); };
+   a.addEventListener('ended', fin); a.addEventListener('error', fin);
+   const g = setTimeout(fin, ((isFinite(a.duration) && a.duration > 0 ? a.duration : 2) + 1.5) * 1000);
+   cur = a;
+   try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(fin); } catch(e){ fin(); }
+ }); }
+ function sayText(t){ return new Promise(resolve => {
+   if (!ttsVoice) return resolve();
+   const u = new SpeechSynthesisUtterance(t); u.voice = ttsVoice; u.lang = ttsVoice.lang; u.rate = .95;
+   let done = false;
+   const fin = () => { if (done) return; done = true; clearTimeout(g); resolve(); };
+   u.onend = fin; u.onerror = fin;
+   const g = setTimeout(fin, 900 + t.length * 450);
+   speechSynthesis.speak(u);
+ }); }
+ /* say([ '去', 23, '樓' ])：數字用錄音，文字用裝置語音；讀完才 resolve。被 stop() 中斷時回傳 false */
+ async function say(parts, gap = 110){
+   stop(); const run = token;
+   unlock();
+   await within(ready, 5000); if (run !== token) return false;
+   for (const p of [].concat(parts)){
+     if (typeof p === 'number'){
+       if (failed) continue;
+       const cl = clipsFor(p);
+       for (let i = 0; i < cl.length; i++){
+         await playClip(cl[i]); if (run !== token) return false;
+         if (i < cl.length - 1){ await wait(gap); if (run !== token) return false; }
+       }
+     } else {
+       await sayText(p); if (run !== token) return false;
+     }
+     await wait(80); if (run !== token) return false;
+   }
+   return true;
+ }
+ function stop(){
+   token++;
+   if (cur){ try { cur.pause(); } catch(e){} cur = null; }
+   if ('speechSynthesis' in window) try { speechSynthesis.cancel(); } catch(e){}
+ }
+ document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+ window.addEventListener('pagehide', stop);
+ return { say, stop, unlock, ready };
+})();
+
+/* ---------- 聲效 ----------
+  以程式合成 WAV，再用 <audio> 播放（iPad 靜音模式下仍可發聲）。 */
+const Sfx = (() => {
+ const SR = 22050;
+ const SOUNDS = {
+   tap:     { len:.12, notes:[[620,0,.07,'sine',.25]] },
+   coin:    { len:.3,  notes:[[1320,0,.08,'sine',.3],[1760,.06,.22,'sine',.3]] },
+   ding:    { len:1.1, notes:[[880,0,.9,'sine',.35],[1108.73,.35,.75,'sine',.3]] },
+   correct: { len:.8,  notes:[[523.25,0,.22,'tri',.4],[659.25,.09,.22,'tri',.4],[783.99,.18,.22,'tri',.4],[1046.5,.27,.45,'tri',.45],[2093,.3,.4,'sine',.12]] },
+   wrong:   { len:.55, notes:[[330,0,.18,'tri',.45,300],[247,.2,.3,'tri',.45,196]] },
+   up:      { len:.7,  notes:[[392,0,.2,'tri',.35],[523.25,.15,.2,'tri',.35],[659.25,.3,.2,'tri',.35],[783.99,.45,.25,'tri',.35]] },
+   down:    { len:.8,  notes:[[700,0,.75,'tri',.35,180]] },
+   finish:  { len:1.4, notes:[[523.25,0,.3,'tri',.38],[659.25,.12,.3,'tri',.38],[783.99,.24,.3,'tri',.38],[1046.5,.36,.5,'tri',.4],[1318.5,.5,.8,'sine',.1],[1567.98,.5,.8,'sine',.1]] }
+ };
+ function renderWav({ len, notes }){
+   const n = Math.ceil(len * SR), buf = new Float32Array(n);
+   for (const [f, at, dur, type, vol, glide] of notes){
+     const s0 = Math.floor(at * SR), sN = Math.floor(dur * SR), atk = .015; let ph = 0;
+     for (let i = 0; i < sN && s0 + i < n; i++){
+       const t = i / SR, fr = glide ? f * Math.pow(glide / f, t / dur) : f;
+       ph += 2 * Math.PI * fr / SR;
+       const w = type === 'sine' ? Math.sin(ph) : (2 / Math.PI) * Math.asin(Math.sin(ph));
+       buf[s0 + i] += w * (t < atk ? t / atk : Math.pow(1 - (t - atk) / (dur - atk), 2)) * vol;
+     }
+   }
+   const out = new DataView(new ArrayBuffer(44 + n * 2));
+   const str = (o, x) => [...x].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+   str(0,'RIFF'); out.setUint32(4, 36 + n * 2, true); str(8,'WAVE'); str(12,'fmt ');
+   out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,1,true);
+   out.setUint32(24,SR,true); out.setUint32(28,SR*2,true); out.setUint16(32,2,true); out.setUint16(34,16,true);
+   str(36,'data'); out.setUint32(40, n * 2, true);
+   for (let i = 0; i < n; i++) out.setInt16(44 + i * 2, Math.max(-1, Math.min(1, buf[i])) * 32767, true);
+   return URL.createObjectURL(new Blob([out], { type:'audio/wav' }));
+ }
+ const players = {};
+ for (const k in SOUNDS){ const a = new Audio(renderWav(SOUNDS[k])); a.preload = 'auto'; players[k] = a; }
+ let unlocked = false, enabled = () => true;
+ function unlock(){
+   Voice.unlock();
+   if (unlocked) return; unlocked = true;
+   Object.values(players).forEach(a => {
+     a.muted = true; const p = a.play();
+     const reset = () => { a.pause(); a.currentTime = 0; a.muted = false; };
+     p && p.then ? p.then(reset).catch(() => { a.muted = false; unlocked = false; }) : reset();
+   });
+ }
+ function play(k){
+   if (!enabled()) return; const a = players[k]; if (!a) return;
+   try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(() => {}); } catch(e){}
+ }
+ return { play, unlock, setEnabled: fn => { enabled = fn; } };
+})();
+
+/* ---------- 進度點 ---------- */
+function Track(el, rounds){
+ const res = [];
+ el.innerHTML = '';
+ for (let k = 0; k < rounds; k++){ const s = document.createElement('span'); s.className = 'dot'; el.appendChild(s); }
+ return {
+   results: res,
+   update(i){ [...el.children].forEach((s, k) => { s.className = 'dot' + (res[k] === true ? ' star' : res[k] === false ? ' done' : k === i ? ' now' : ''); }); },
+   stars(){ return res.filter(Boolean).length; }
+ };
+}
+
+/* PWA：離線快取 */
+if ('serviceWorker' in navigator && location.protocol !== 'file:')
+ window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+
+
+const ROUNDS = 6;
+const KIDS = ['🧒','👧','👦','🧑‍🦯','👩‍🦽','🧓'];
+const settings = useSettings('rcgs-crossing', { range:'20', steps:'4', sfx:'on' });
+Sfx.setEnabled(() => settings.sfx === 'on');
+const state = { i:0, phase:'idle', cur:0, step:0, steps:4, retried:false, token:0, greenTimer:0 };
+let track = null;
+
+function setLight(green){
+ $('redLamp').classList.toggle('on', !green);
+ $('greenLamp').classList.toggle('on', green);
+ const c1 = $('car1'), c2 = $('car2');
+ c1.className = 'car c1 ' + (green ? 'wait1' : 'drive1');
+ c2.className = 'car c2 ' + (green ? 'wait2' : 'drive2');
+}
+function placeKid(){
+ /* 起點在下面行人路（step 0），終點在上面行人路 */
+ const top = 92 - (84 * state.step / state.steps);
+ $('kid').style.top = top + '%';
+}
+function buildZebra(){ $('zebra').innerHTML = '<i></i>'.repeat(7); }
+
+function nextRound(){
+ const tok = ++state.token; clearTimeout(state.greenTimer);
+ if (state.i >= ROUNDS) return endGame();
+ state.steps = Number(settings.steps); state.step = 0; state.retried = false;
+ const max = Number(settings.range);
+ state.cur = rand(state.steps + 1, max);
+ $('kid').textContent = KIDS[state.i % KIDS.length]; placeKid();
+ $('count').textContent = ''; $('count').classList.add('red');
+ setLight(false); $('greenLamp').classList.remove('blink');
+ $('choices').hidden = true; $('goBtn').hidden = false;
+ state.phase = 'red'; track.update(state.i);
+ $('msg').textContent = '紅色公仔亮著，要等一等。';
+ Voice.say(['紅色公仔，等一等']);
+ state.greenTimer = setTimeout(() => { if (tok === state.token) turnGreen(); }, rand(2500, 4000));
+}
+function turnGreen(){
+ state.phase = 'green'; setLight(true);
+ $('count').classList.remove('red'); $('count').textContent = state.cur;
+ $('msg').textContent = '綠色公仔亮了，可以過馬路！';
+ Sfx.play('ding');
+ Voice.say(['綠色公仔，可以過馬路']);
+}
+function go(){
+ if (state.phase === 'red'){
+   state.retried = true;
+   $('kid').classList.remove('bump'); void $('kid').offsetWidth; $('kid').classList.add('bump');
+   Sfx.play('wrong'); $('msg').textContent = '危險！紅色公仔亮著，不可以過馬路。';
+   Voice.say(['危險！紅色公仔，唔可以過馬路']);
+   return;
+ }
+ if (state.phase !== 'green') return;
+ state.phase = 'cross'; $('goBtn').hidden = true;
+ $('greenLamp').classList.add('blink');
+ Voice.say([state.cur]);
+ ask();
+}
+function ask(){
+ const n = state.cur, right = n - 1;
+ const opts = new Set([right]);
+ for (const x of shuffle([n + 1, n - 2, n, n + 2])){ if (opts.size >= 3) break; if (x >= 0 && x <= 21 && x !== right) opts.add(x); }
+ const box = $('choices'); box.innerHTML = ''; box.hidden = false;
+ shuffle([...opts]).forEach(v => {
+   const b = document.createElement('button'); b.className = 'choice'; b.textContent = v;
+   b.setAttribute('aria-label', String(v));
+   b.onclick = () => { Sfx.unlock(); choose(v, b); };
+   box.appendChild(b);
+ });
+ $('msg').innerHTML = `行人燈現在是 <b>${n}</b>，倒數下一個數是甚麼？`;
+}
+async function choose(v, btn){
+ if (state.phase !== 'cross') return;
+ const tok = state.token;
+ if (v !== state.cur - 1){
+   state.retried = true; btn.classList.remove('bad'); void btn.offsetWidth; btn.classList.add('bad');
+   Sfx.play('wrong');
+   $('msg').innerHTML = v > state.cur ? `倒數是越數越小的，<b>${v}</b> 比 ${state.cur} 大。` : `${state.cur} 之後，倒數下一個數只少 1。`;
+   return;
+ }
+ state.phase = 'moving';
+ btn.classList.add('good'); Sfx.play('tap');
+ state.cur = v; state.step++;
+ $('count').textContent = v; placeKid();
+ await Voice.say([v]); if (tok !== state.token) return;
+ if (state.step >= state.steps){
+   state.phase = 'done'; $('choices').hidden = true;
+   track.results[state.i] = !state.retried; track.update(state.i);
+   Sfx.play('correct'); $('greenLamp').classList.remove('blink');
+   $('msg').textContent = '安全過了馬路！';
+   await Voice.say(['安全過咗馬路！']); if (tok !== state.token) return;
+   await wait(600); if (tok !== state.token) return;
+   state.i++; nextRound();
+ } else {
+   state.phase = 'cross'; ask();
+ }
+}
+function endGame(){
+ Voice.stop(); clearTimeout(state.greenTimer);
+ const stars = track.stars();
+ $('score').textContent = `★ ${stars} / ${ROUNDS}`;
+ $('endMsg').textContent = stars >= 5 ? '你懂得安全過馬路，又會倒數，真棒！' : '記得：紅色公仔要等，綠色公仔才過馬路。再玩一次吧！';
+ $('endScreen').hidden = false; Sfx.play('finish');
+}
+function newGame(){
+ Voice.stop(); state.i = 0;
+ track = Track($('track'), ROUNDS); nextRound();
+}
+$('goBtn').onclick = () => { Sfx.unlock(); go(); };
+$('startBtn').onclick = () => { Sfx.unlock(); $('startScreen').hidden = true; newGame(); };
+$('againBtn').onclick = () => { Sfx.unlock(); $('endScreen').hidden = true; newGame(); };
+$('gearBtn').onclick = () => { settings.sync(); $('sheet').classList.toggle('open'); };
+$('applyBtn').onclick = () => {
+ Sfx.unlock(); settings.save(); $('sheet').classList.remove('open');
+ $('endScreen').hidden = true;
+ if ($('startScreen').hidden) newGame();
+};
+buildZebra(); setLight(false); placeKid();
+</script>
+</body>
+</html>

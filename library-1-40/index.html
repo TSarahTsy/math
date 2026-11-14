@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>圖書館放書</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#7b4f2c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="圖書館">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<style>
+/* ===== 共用樣式（三個生活應用遊戲相同） ===== */
+@font-face{font-family:"MyNumberFont";src:url("../maths_thin_v2.ttf") format("truetype");font-display:swap}
+:root{
+ --num-font:"MyNumberFont","Chakra Petch","Noto Sans HK",system-ui,sans-serif;
+ --ink:#1b2333;--muted:#5d6779;--line:rgba(27,35,51,.14);--panel:#fff;
+ --mint:#12A574;--red:#D14A4A;--amber:#D48A00;
+ box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+ -webkit-tap-highlight-color:transparent;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.app{height:100%;max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:10px;
+ padding:calc(10px + env(safe-area-inset-top,0px)) 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.topbar{display:flex;align-items:center;gap:10px}
+.back-link{display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 14px;border-radius:12px;flex-shrink:0;
+ border:1.5px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-size:16px;font-weight:700;white-space:nowrap}
+.gear{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);display:grid;place-items:center;flex-shrink:0}
+.track{flex:1;display:flex;gap:5px;justify-content:center;min-width:0}
+.dot{width:20px;height:20px;display:grid;place-items:center;line-height:1}
+.dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dot.now::before{background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.dot.done::before{background:var(--accent)}
+.dot.star::before{content:"★";width:auto;height:auto;background:none;color:var(--amber);font-size:19px}
+.screen{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;
+ padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.screen[hidden]{display:none}
+.screen .back-link{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px}
+.screen h1{margin:0;font-size:clamp(30px,8vw,46px);font-weight:900;letter-spacing:.03em}
+.screen p{margin:0;max-width:32em;color:var(--muted);line-height:1.7;font-size:18px}
+.screen .emoji{font-size:84px;line-height:1}
+.note{font-size:14px!important;color:var(--amber)!important}
+.big-btn{min-width:200px;padding:16px 28px;border-radius:999px;border:none;background:var(--accent);color:#fff;font-size:22px;font-weight:900}
+.score{font-family:var(--num-font);font-size:64px;color:var(--amber)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--panel);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;
+ padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;max-width:600px;margin:0 auto}
+.sheet.open{transform:none}
+.sheet h2{margin:0 0 10px;font-size:18px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row>span{white-space:nowrap}
+.seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.seg button{min-width:56px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:transparent;font-weight:700}
+.seg button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.sheet .big-btn{width:100%;margin-top:14px}
+@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-3px)}}
+@keyframes pop{from{transform:scale(.6)}70%{transform:scale(1.1)}to{transform:scale(1)}}
+@media (max-width:480px){.topbar .back-link .bl-text{display:none}.topbar .back-link{width:44px;padding:0;justify-content:center}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+:root{--bg:#f8f1e7;--accent:#7b4f2c;--wood:#a0703f;--wood-dark:#6e4a26}
+.main{flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.sign{align-self:center;background:#2b8a3e;color:#fff;border-radius:10px;padding:4px 18px;font-weight:900;font-size:clamp(16px,3.4vw,20px);box-shadow:0 3px 0 #1b5e29}
+
+/* ---- 書架 ---- */
+.shelf{position:relative;background:linear-gradient(#f3e3cc,#e8d2b2);border:clamp(8px,1.8vw,14px) solid var(--wood);border-bottom-width:clamp(16px,3vw,24px);border-radius:8px;
+ padding:clamp(10px,2vw,18px) clamp(6px,1.4vw,12px) 0;display:flex;align-items:flex-end;justify-content:center;gap:clamp(4px,1vw,8px);min-height:clamp(200px,40vw,320px);
+ box-shadow:inset 0 10px 18px rgba(0,0,0,.12),0 6px 0 var(--wood-dark)}
+.book,.gap{flex:1;max-width:84px;height:clamp(170px,34vw,280px)}
+.book{border:none;border-radius:6px 6px 2px 2px;background:var(--c);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 0 10px;
+ box-shadow:inset -6px 0 0 rgba(0,0,0,.15),inset 6px 0 0 rgba(255,255,255,.18)}
+.book::before,.book::after{content:"";position:absolute;left:10%;right:10%;height:4px;background:rgba(255,255,255,.55);border-radius:2px}
+.book::before{top:12%}.book::after{top:16%}
+.book .label{background:#fff;border-radius:6px;width:84%;font-family:var(--num-font);font-size:clamp(22px,4.8vw,40px);line-height:1.2;text-align:center;color:var(--ink);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.book.tall{height:clamp(180px,36vw,295px)}
+.book.short{height:clamp(150px,30vw,250px)}
+.book.placed{animation:pop .3s ease-out}
+.gap{border:3px dashed rgba(123,79,44,.5);border-radius:6px;background:rgba(255,255,255,.35);display:grid;place-items:center;color:rgba(123,79,44,.6);font-size:28px;font-weight:900;padding:0}
+.gap.ready{border-color:var(--accent);background:rgba(255,236,153,.55);color:var(--accent)}
+.gap.bad{border-color:var(--red);animation:shake .35s}
+
+/* ---- 還書車 ---- */
+.cart{align-self:center;display:flex;gap:clamp(10px,2.4vw,18px);justify-content:center;background:#dee2e6;border:4px solid #868e96;border-radius:14px;padding:12px 18px;min-height:clamp(150px,28vw,210px);
+ position:relative;min-width:min(100%,420px);align-items:flex-end}
+.cart::after{content:"還書車";position:absolute;top:-14px;left:16px;background:#868e96;color:#fff;font-size:14px;font-weight:700;padding:0 10px;border-radius:6px}
+.cart .book{flex:none;width:clamp(56px,11vw,80px);height:clamp(130px,25vw,185px);transition:transform .2s}
+.cart .book.sel{transform:translateY(-18px) rotate(-4deg);outline:4px solid #ffd43b;outline-offset:2px}
+.msg{text-align:center;font-size:clamp(17px,3.8vw,21px);font-weight:700;min-height:1.5em;margin:0;color:var(--muted)}
+.msg b{font-family:var(--num-font);font-weight:400;font-size:1.35em;color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="topbar">
+  <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+  <div class="track" id="track" aria-label="進度"></div>
+  <button class="gear" id="gearBtn" aria-label="設定"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+ </div>
+ <div class="main">
+  <div class="sign">📚 圖書由小到大排列</div>
+  <section class="shelf" id="shelf" aria-label="書架"></section>
+  <p class="msg" id="msg" aria-live="polite"></p>
+  <section class="cart" id="cart" aria-label="還書車"></section>
+ </div>
+</div>
+
+<div class="screen" id="startScreen">
+ <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+ <div class="emoji">📚</div>
+ <h1>圖書館放書</h1>
+ <p>圖書館的書按號碼由小到大排列。先按還書車上的一本書，再按書架上的空位，把書放回正確的位置。每局整理八個書架，第一次便全部放對可得一粒星。</p>
+ <p class="note" id="voiceNote" hidden></p>
+ <button class="big-btn" id="startBtn">開始</button>
+</div>
+<div class="screen" id="endScreen" hidden>
+ <a class="back-link" href="../index.html" aria-label="返回目錄">←<span class="bl-text"> 目錄</span></a>
+ <div class="emoji">📚✨</div>
+ <h1>書架整理好了！</h1>
+ <div class="score" id="score"></div>
+ <p id="endMsg"></p>
+ <button class="big-btn" id="againBtn">再玩一次</button>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-label="設定">
+ <h2>設定</h2>
+ <div class="row"><span>書號範圍</span><div class="seg" data-key="range"><button data-val="1-20">1–20</button><button data-val="21-40">21–40</button><button data-val="1-40">1–40</button></div></div>
+ <div class="row"><span>書號排列</span><div class="seg" data-key="mode"><button data-val="seq">連續（如 24、25、26）</button><button data-val="jump">跳號（如 21、24、29）</button></div></div>
+ <div class="row"><span>要放的書</span><div class="seg" data-key="gaps"><button data-val="2">2 本</button><button data-val="3">3 本</button></div></div>
+ <div class="row"><span>聲效</span><div class="seg" data-key="sfx"><button data-val="on">開</button><button data-val="off">關</button></div></div>
+ <button class="big-btn" id="applyBtn">套用並重新開始</button>
+</div>
+
+<script>
+'use strict';
+/* ===== 共用程式（三個生活應用遊戲相同） ===== */
+const $ = id => document.getElementById(id);
+const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const CN = ['零','一','二','三','四','五','六','七','八','九','十'];
+function toCN(n){
+ if (n <= 10) return CN[n];
+ const t = Math.floor(n / 10), u = n % 10;
+ return (t === 1 ? '' : CN[t]) + '十' + (u ? CN[u] : '');
+}
+
+/* ---------- 設定（自動儲存於本機） ---------- */
+function useSettings(key, defaults){
+ const s = Object.assign({}, defaults);
+ try { Object.assign(s, JSON.parse(localStorage.getItem(key) || '{}')); } catch(e){}
+ for (const k in defaults){
+   const seg = document.querySelector(`.seg[data-key="${k}"]`);
+   if (seg && ![...seg.querySelectorAll('button')].some(b => b.dataset.val === String(s[k]))) s[k] = defaults[k];
+ }
+ const sync = () => document.querySelectorAll('.seg').forEach(seg =>
+   seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === String(s[seg.dataset.key])))));
+ document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e => {
+   const b = e.target.closest('button'); if (!b) return; s[seg.dataset.key] = b.dataset.val; sync();
+ }));
+ s.save = () => { try { const o = {}; for (const k in defaults) o[k] = s[k]; localStorage.setItem(key, JSON.stringify(o)); } catch(e){} };
+ s.sync = sync; sync();
+ return s;
+}
+
+/* ---------- 讀音 ----------
+  數字：組合上一層 audio 資料夾的 1.mp3 至 10.mp3
+        （1–10 直接讀；11–19 = 十 + 個位；20、30… = 幾 + 十；21–99 = 幾 + 十 + 個位）
+  其他字詞（例如「樓」「蚊」）：用裝置的廣東話語音（iPad：Sinji；Windows：Danny）；
+        如裝置沒有廣東話語音，字詞會略過，只讀數字。
+  做法與「認識數字」相同：mp3 先下載到記憶體，再用 <audio> 播放，iPad 上較穩定。 */
+const AUDIO_DIR = '../audio/';
+const Voice = (() => {
+ const players = {}; let cur = null, failed = false, token = 0, ttsVoice = null;
+ const ready = Promise.all([1,2,3,4,5,6,7,8,9,10].map(async n => {
+   const r = await fetch(AUDIO_DIR + n + '.mp3');
+   if (!r.ok) throw new Error('找不到 ' + n + '.mp3');
+   const a = new Audio(URL.createObjectURL(await r.blob())); a.preload = 'auto'; a.load(); players[n] = a;
+ })).catch(e => {
+   failed = true;
+   const note = $('voiceNote');
+   if (note){ note.textContent = '未能載入聲音（' + e.message + '）。請確認上一層 audio 資料夾內有1.mp3至10.mp3。'; note.hidden = false; }
+ });
+ const within = (p, ms) => Promise.race([p, wait(ms)]);
+ const clipsFor = n => {
+   if (n <= 10) return [n];
+   const t = Math.floor(n / 10), u = n % 10;
+   return [...(t === 1 ? [] : [t]), 10, ...(u ? [u] : [])];
+ };
+ function pickVoice(){
+   if (!('speechSynthesis' in window)) return;
+   const vs = speechSynthesis.getVoices();
+   ttsVoice = vs.find(v => /^(zh[-_]HK|yue)/i.test(v.lang)) || vs.find(v => /Sinji|Danny|Cantonese|粵/i.test(v.name)) || null;
+ }
+ if ('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+ let unlocked = false;
+ function unlock(){ /* 必須在按鍵當下呼叫，iPad 才會允許發聲 */
+   Object.values(players).filter(a => !a._ok && !a._busy).forEach(a => {
+     a._busy = true; a.muted = true; let p;
+     try { p = a.play(); } catch(e){ a._busy = false; a.muted = false; return; }
+     const reset = () => { a._busy = false; a._ok = true; if (cur === a){ a.muted = false; return; } a.pause(); a.currentTime = 0; a.muted = false; };
+     p && p.then ? p.then(reset).catch(() => { a._busy = false; a.muted = false; }) : reset();
+   });
+   if (!unlocked && 'speechSynthesis' in window){
+     unlocked = true;
+     try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch(e){}
+   }
+ }
+ function playClip(n){ return new Promise(resolve => {
+   const a = players[n]; if (!a) return resolve();
+   let done = false;
+   const fin = () => { if (done) return; done = true; clearTimeout(g); a.removeEventListener('ended', fin); a.removeEventListener('error', fin); if (cur === a) cur = null; resolve(); };
+   a.addEventListener('ended', fin); a.addEventListener('error', fin);
+   const g = setTimeout(fin, ((isFinite(a.duration) && a.duration > 0 ? a.duration : 2) + 1.5) * 1000);
+   cur = a;
+   try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(fin); } catch(e){ fin(); }
+ }); }
+ function sayText(t){ return new Promise(resolve => {
+   if (!ttsVoice) return resolve();
+   const u = new SpeechSynthesisUtterance(t); u.voice = ttsVoice; u.lang = ttsVoice.lang; u.rate = .95;
+   let done = false;
+   const fin = () => { if (done) return; done = true; clearTimeout(g); resolve(); };
+   u.onend = fin; u.onerror = fin;
+   const g = setTimeout(fin, 900 + t.length * 450);
+   speechSynthesis.speak(u);
+ }); }
+ /* say([ '去', 23, '樓' ])：數字用錄音，文字用裝置語音；讀完才 resolve。被 stop() 中斷時回傳 false */
+ async function say(parts, gap = 110){
+   stop(); const run = token;
+   unlock();
+   await within(ready, 5000); if (run !== token) return false;
+   for (const p of [].concat(parts)){
+     if (typeof p === 'number'){
+       if (failed) continue;
+       const cl = clipsFor(p);
+       for (let i = 0; i < cl.length; i++){
+         await playClip(cl[i]); if (run !== token) return false;
+         if (i < cl.length - 1){ await wait(gap); if (run !== token) return false; }
+       }
+     } else {
+       await sayText(p); if (run !== token) return false;
+     }
+     await wait(80); if (run !== token) return false;
+   }
+   return true;
+ }
+ function stop(){
+   token++;
+   if (cur){ try { cur.pause(); } catch(e){} cur = null; }
+   if ('speechSynthesis' in window) try { speechSynthesis.cancel(); } catch(e){}
+ }
+ document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+ window.addEventListener('pagehide', stop);
+ return { say, stop, unlock, ready };
+})();
+
+/* ---------- 聲效 ----------
+  以程式合成 WAV，再用 <audio> 播放（iPad 靜音模式下仍可發聲）。 */
+const Sfx = (() => {
+ const SR = 22050;
+ const SOUNDS = {
+   tap:     { len:.12, notes:[[620,0,.07,'sine',.25]] },
+   coin:    { len:.3,  notes:[[1320,0,.08,'sine',.3],[1760,.06,.22,'sine',.3]] },
+   ding:    { len:1.1, notes:[[880,0,.9,'sine',.35],[1108.73,.35,.75,'sine',.3]] },
+   correct: { len:.8,  notes:[[523.25,0,.22,'tri',.4],[659.25,.09,.22,'tri',.4],[783.99,.18,.22,'tri',.4],[1046.5,.27,.45,'tri',.45],[2093,.3,.4,'sine',.12]] },
+   wrong:   { len:.55, notes:[[330,0,.18,'tri',.45,300],[247,.2,.3,'tri',.45,196]] },
+   up:      { len:.7,  notes:[[392,0,.2,'tri',.35],[523.25,.15,.2,'tri',.35],[659.25,.3,.2,'tri',.35],[783.99,.45,.25,'tri',.35]] },
+   down:    { len:.8,  notes:[[700,0,.75,'tri',.35,180]] },
+   finish:  { len:1.4, notes:[[523.25,0,.3,'tri',.38],[659.25,.12,.3,'tri',.38],[783.99,.24,.3,'tri',.38],[1046.5,.36,.5,'tri',.4],[1318.5,.5,.8,'sine',.1],[1567.98,.5,.8,'sine',.1]] }
+ };
+ function renderWav({ len, notes }){
+   const n = Math.ceil(len * SR), buf = new Float32Array(n);
+   for (const [f, at, dur, type, vol, glide] of notes){
+     const s0 = Math.floor(at * SR), sN = Math.floor(dur * SR), atk = .015; let ph = 0;
+     for (let i = 0; i < sN && s0 + i < n; i++){
+       const t = i / SR, fr = glide ? f * Math.pow(glide / f, t / dur) : f;
+       ph += 2 * Math.PI * fr / SR;
+       const w = type === 'sine' ? Math.sin(ph) : (2 / Math.PI) * Math.asin(Math.sin(ph));
+       buf[s0 + i] += w * (t < atk ? t / atk : Math.pow(1 - (t - atk) / (dur - atk), 2)) * vol;
+     }
+   }
+   const out = new DataView(new ArrayBuffer(44 + n * 2));
+   const str = (o, x) => [...x].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+   str(0,'RIFF'); out.setUint32(4, 36 + n * 2, true); str(8,'WAVE'); str(12,'fmt ');
+   out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,1,true);
+   out.setUint32(24,SR,true); out.setUint32(28,SR*2,true); out.setUint16(32,2,true); out.setUint16(34,16,true);
+   str(36,'data'); out.setUint32(40, n * 2, true);
+   for (let i = 0; i < n; i++) out.setInt16(44 + i * 2, Math.max(-1, Math.min(1, buf[i])) * 32767, true);
+   return URL.createObjectURL(new Blob([out], { type:'audio/wav' }));
+ }
+ const players = {};
+ for (const k in SOUNDS){ const a = new Audio(renderWav(SOUNDS[k])); a.preload = 'auto'; players[k] = a; }
+ let unlocked = false, enabled = () => true;
+ function unlock(){
+   Voice.unlock();
+   if (unlocked) return; unlocked = true;
+   Object.values(players).forEach(a => {
+     a.muted = true; const p = a.play();
+     const reset = () => { a.pause(); a.currentTime = 0; a.muted = false; };
+     p && p.then ? p.then(reset).catch(() => { a.muted = false; unlocked = false; }) : reset();
+   });
+ }
+ function play(k){
+   if (!enabled()) return; const a = players[k]; if (!a) return;
+   try { a.muted = false; a.currentTime = 0; const p = a.play(); p && p.catch && p.catch(() => {}); } catch(e){}
+ }
+ return { play, unlock, setEnabled: fn => { enabled = fn; } };
+})();
+
+/* ---------- 進度點 ---------- */
+function Track(el, rounds){
+ const res = [];
+ el.innerHTML = '';
+ for (let k = 0; k < rounds; k++){ const s = document.createElement('span'); s.className = 'dot'; el.appendChild(s); }
+ return {
+   results: res,
+   update(i){ [...el.children].forEach((s, k) => { s.className = 'dot' + (res[k] === true ? ' star' : res[k] === false ? ' done' : k === i ? ' now' : ''); }); },
+   stars(){ return res.filter(Boolean).length; }
+ };
+}
+
+/* PWA：離線快取 */
+if ('serviceWorker' in navigator && location.protocol !== 'file:')
+ window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+
+
+const ROUNDS = 8, SLOTS = 7;
+const COLORS = ['#e8590c','#1c7ed6','#2f9e44','#c2255c','#7048e8','#f08c00','#0c8599','#d6336c','#5c940d','#495057'];
+const settings = useSettings('rcgs-library', { range:'1-40', mode:'seq', gaps:'2', sfx:'on' });
+Sfx.setEnabled(() => settings.sfx === 'on');
+const state = { i:0, nums:[], missing:new Set(), sel:null, retried:false, busy:true, token:0 };
+let track = null;
+
+function makeBook(n, extra = ''){
+ const b = document.createElement('button');
+ b.className = 'book ' + extra; b.dataset.n = n;
+ b.style.setProperty('--c', COLORS[n % COLORS.length]);
+ b.innerHTML = `<span class="label">${n}</span>`;
+ b.setAttribute('aria-label', n + ' 號書');
+ return b;
+}
+function pickNumbers(){
+ const [lo, hi] = settings.range.split('-').map(Number);
+ if (settings.mode === 'seq'){ const s = rand(lo, hi - SLOTS + 1); return Array.from({ length:SLOTS }, (_, k) => s + k); }
+ const pool = shuffle(Array.from({ length:hi - lo + 1 }, (_, k) => lo + k)).slice(0, SLOTS);
+ return pool.sort((a, b) => a - b);
+}
+function render(){
+ const shelf = $('shelf'); shelf.innerHTML = '';
+ state.nums.forEach((n, k) => {
+   if (state.missing.has(n)){
+     const g = document.createElement('button'); g.className = 'gap'; g.dataset.k = k; g.textContent = '?';
+     g.setAttribute('aria-label', '空位');
+     g.onclick = () => { Sfx.unlock(); place(k, g); };
+     shelf.appendChild(g);
+   } else {
+     const b = makeBook(n, ['', 'tall', 'short'][(n * 7) % 3]);
+     b.onclick = () => { Sfx.unlock(); Voice.say([n]); };
+     shelf.appendChild(b);
+   }
+ });
+ const cart = $('cart'); cart.innerHTML = '';
+ shuffle([...state.missing]).forEach(n => {
+   const b = makeBook(n);
+   if (state.sel === n) b.classList.add('sel');
+   b.onclick = () => { Sfx.unlock(); select(n); };
+   cart.appendChild(b);
+ });
+ shelf.querySelectorAll('.gap').forEach(g => g.classList.toggle('ready', state.sel !== null));
+}
+function select(n){
+ if (state.busy) return;
+ state.sel = state.sel === n ? null : n;
+ Sfx.play('tap');
+ $('cart').querySelectorAll('.book').forEach(b => b.classList.toggle('sel', Number(b.dataset.n) === state.sel));
+ $('shelf').querySelectorAll('.gap').forEach(g => g.classList.toggle('ready', state.sel !== null));
+ if (state.sel !== null){ $('msg').innerHTML = `把 <b>${n}</b> 號書放到哪個空位？`; Voice.say([n]); }
+ else $('msg').textContent = '先按還書車上的一本書。';
+}
+/* 找出空位左右兩邊最近的書號，用來提示 */
+function neighbours(k){
+ let a = null, b = null;
+ for (let j = k - 1; j >= 0; j--) if (!state.missing.has(state.nums[j])){ a = state.nums[j]; break; }
+ for (let j = k + 1; j < SLOTS; j++) if (!state.missing.has(state.nums[j])){ b = state.nums[j]; break; }
+ return [a, b];
+}
+async function place(k, gap){
+ if (state.busy) return;
+ if (state.sel === null){ $('msg').textContent = '先按還書車上的一本書，再按空位。'; Sfx.play('wrong'); return; }
+ const n = state.sel, want = state.nums[k];
+ if (n !== want){
+   state.retried = true;
+   gap.classList.remove('bad'); void gap.offsetWidth; gap.classList.add('bad'); Sfx.play('wrong');
+   const [a, b] = neighbours(k);
+   const where = a !== null && b !== null ? `${a} 和 ${b} 之間` : a !== null ? `${a} 之後` : `${b} 之前`;
+   $('msg').innerHTML = `這個空位在 ${where}，<b>${n}</b> 號書放在這裏對嗎？`;
+   return;
+ }
+ const tok = state.token;
+ state.missing.delete(n); state.sel = null; Sfx.play('coin');
+ render();
+ const placed = $('shelf').children[k]; placed.classList.add('placed');
+ Voice.say([n]);
+ if (state.missing.size){ $('msg').textContent = '放對了！再放下一本。'; return; }
+ state.busy = true;
+ track.results[state.i] = !state.retried; track.update(state.i);
+ Sfx.play('correct'); $('msg').textContent = '書架整理好了！';
+ await wait(700); if (tok !== state.token) return;
+ await Voice.say(['排好咗！']); if (tok !== state.token) return;
+ await wait(500); if (tok !== state.token) return;
+ state.i++; nextRound();
+}
+function nextRound(){
+ state.token++;
+ if (state.i >= ROUNDS) return endGame();
+ state.nums = pickNumbers();
+ const idx = shuffle(Array.from({ length:SLOTS }, (_, k) => k)).slice(0, Number(settings.gaps));
+ state.missing = new Set(idx.map(k => state.nums[k]));
+ state.sel = null; state.retried = false; state.busy = false;
+ render(); track.update(state.i);
+ $('msg').textContent = '先按還書車上的一本書。';
+}
+function endGame(){
+ Voice.stop();
+ const stars = track.stars();
+ $('score').textContent = `★ ${stars} / ${ROUNDS}`;
+ $('endMsg').textContent = stars >= 6 ? '你是出色的小圖書館管理員！' : stars >= 4 ? '做得好，繼續努力！' : '想想哪個數字比較大，下一局會更好！';
+ $('endScreen').hidden = false; Sfx.play('finish');
+}
+function newGame(){ Voice.stop(); state.i = 0; track = Track($('track'), ROUNDS); nextRound(); }
+$('startBtn').onclick = () => { Sfx.unlock(); $('startScreen').hidden = true; newGame(); };
+$('againBtn').onclick = () => { Sfx.unlock(); $('endScreen').hidden = true; newGame(); };
+$('gearBtn').onclick = () => { settings.sync(); $('sheet').classList.toggle('open'); };
+$('applyBtn').onclick = () => {
+ Sfx.unlock(); settings.save(); $('sheet').classList.remove('open');
+ $('endScreen').hidden = true;
+ if ($('startScreen').hidden) newGame();
+};
+</script>
+</body>
+</html>
