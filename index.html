@@ -130,6 +130,7 @@ footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 4
  <button type="button" data-filter="1-10" aria-pressed="false">1–10</button>
  <button type="button" data-filter="11-20" aria-pressed="true">11–20</button>
  <button type="button" data-filter="1-20" aria-pressed="false">1–20</button>
+ <button type="button" data-filter="life" aria-pressed="false">生活應用</button>
  <button type="button" data-filter="back" aria-pressed="false">倒數</button>
  <button type="button" data-filter="21-30" aria-pressed="false">21–30</button>
  <button type="button" data-filter="31-40" aria-pressed="false">31–40</button>
@@ -149,7 +150,7 @@ href   ：資料夾請以 "/" 結尾（自動開啟該資料夾的 index.html）
         開頭不要加 "/"，否則會連到網站最頂層
 range  ：卡片上顯示的數字範圍
 group  ：篩選分類，須與上方篩選按鈕的 data-filter 完全相同
-        （"1-10"、"11-20"、"1-20"、"21-30"、"31-40"、"back"（倒數）、"0-31"、"cn"，中間是普通減號 -）
+        （"1-10"、"11-20"、"1-20"、"21-30"、"31-40"、"back"（倒數）、"life"（生活應用）、"0-31"、"cn"，中間是普通減號 -）
         如想一個遊戲同時出現在幾個分類，可寫成 ["11-20", "1-20"]
 ========================================================== */
 const DEFAULT_FILTER = "11-20";   // 開啟目錄時預設顯示的分類（"all" = 全部）
@@ -198,6 +199,19 @@ const GAMES = [
  { href: "comparetwentyframes/",   range: "1–20",  group: "1-20",
    icon: "📊", title: "二十格框：比較數量", desc: "比較兩個二十格框，哪一組較多、較少。",
    accent: "#c26a12", tint: "#fdf0e1" },
+
+ /* ---------- 生活應用 ---------- */
+ { href: "lift-1-40/",             range: "1–40",  group: ["life", "21-30", "31-40"],
+   icon: "🛗", title: "坐升降機",     desc: "聽乘客要去哪一層，按按鈕送他到達。",
+   accent: "#3559c7", tint: "#e7ecfb" },
+
+ { href: "shop-1-40/",             range: "$1–40", group: ["life", "21-30", "31-40"],
+   icon: "🏪", title: "小賣部買零食", desc: "聽價錢，用十元和一元剛好付款。",
+   accent: "#d9480f", tint: "#fff0e6" },
+
+ { href: "snakes-1-40/",           range: "1–40",  group: ["life", "21-30", "31-40"],
+   icon: "🎲", title: "數字蛇梯棋",   desc: "擲骰子接著數，爬梯子、避開蛇，先到 40 勝出。",
+   accent: "#2f9e44", tint: "#e6f6e9" },
 
  /* ---------- 倒數 20–1 ---------- */
  { href: "countback-learn-20-1/",  range: "20–1",  group: ["back", "1-20"],
