@@ -397,7 +397,7 @@ Game.onRound = tok => {
    shelf.appendChild(b);
  });
  $('explain').innerHTML = ''; $('msg').textContent = '先比十位，十位一樣才比個位。';
- Voice.say(['邊一件' + (S.cheap ? '最平' : '最貴') + '？']);
+ Voice.say(['邊一件' + (S.cheap ? '最便宜' : '最貴') + '？']);
 };
 async function pick(v, el){
  if (S.busy) return;
