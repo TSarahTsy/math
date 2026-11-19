@@ -1,0 +1,32 @@
+{
+  "name": "二十格框・接著數",
+  "short_name": "接著數",
+  "description": "恩慈數字學習生態圈：辨認數量 20 的一組，再接著數出總數",
+  "lang": "zh-HK",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#e7f5ff",
+  "theme_color": "#1c7ed6",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
