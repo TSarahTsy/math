@@ -10,7 +10,7 @@
 <link rel="manifest" href="../manifest.webmanifest">
 <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="../icons/favicon-48.png">
-<title>數字筆順 0–40</title>
+<title>寫數字 0–40</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
@@ -703,7 +703,7 @@ const token = ++game.token;
 const seqEnd = game.seqEnd;
 say("學識咗")
  .then(() => token === game.token && playNumber(n))
- .then(() => token === game.token && say("嘅筆順"))
+ .then(() => token === game.token && say("嘅寫法"))
  .then(() => {
    // 順序練習：讀完後稍停，自動進入下一個數字
    if (token === game.token && seqEnd !== null && nx !== null)
